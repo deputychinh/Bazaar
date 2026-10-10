@@ -1,0 +1,17 @@
+export enum ErrorCode {
+  ValidationFailed = 'VALIDATION_FAILED',
+  Unauthenticated = 'UNAUTHENTICATED',
+  Forbidden = 'FORBIDDEN',
+  NotFound = 'NOT_FOUND',
+  Conflict = 'CONFLICT',
+  RateLimited = 'RATE_LIMITED',
+  InvalidEvent = 'INVALID_EVENT',
+  EmailAlreadyRegistered = 'EMAIL_ALREADY_REGISTERED',
+  InvalidCredentials = 'INVALID_CREDENTIALS',
+  EmailNotVerified = 'EMAIL_NOT_VERIFIED',
+  TokenExpired = 'TOKEN_EXPIRED',
+  OutOfStock = 'OUT_OF_STOCK',
+  InvalidOrderTransition = 'INVALID_ORDER_TRANSITION',
+  PaymentFailed = 'PAYMENT_FAILED',
+  Internal = 'INTERNAL',
+}

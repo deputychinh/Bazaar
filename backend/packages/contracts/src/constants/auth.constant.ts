@@ -1,0 +1,6 @@
+export const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
+export const REFRESH_TOKEN_TTL_DAYS = 7;
+export const EMAIL_VERIFICATION_TTL_HOURS = 24;
+export const PASSWORD_RESET_TTL_MINUTES = 60;
+export const PASSWORD_MIN_LENGTH = 10;
+export const PASSWORD_MAX_LENGTH = 128;

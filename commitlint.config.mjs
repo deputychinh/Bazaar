@@ -1,0 +1,30 @@
+export default {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'scope-enum': [
+      2,
+      'always',
+      [
+        'repo',
+        'plan',
+        'backlog',
+        'docs',
+        'infra',
+        'db',
+        'contracts',
+        'nest-common',
+        'gateway',
+        'catalog',
+        'order',
+        'notification',
+        'web',
+        'admin',
+        'k8s',
+        'cdk',
+        'ci',
+        'e2e',
+        'deps',
+      ],
+    ],
+  },
+};

@@ -46,8 +46,8 @@ Rules taken from real teams: **build once, promote the same image**; config only
 ### 0.3 Ways of working
 - **Backlog:** `docs/backlog.md` — epics per phase, tickets `BZ-xxx` with user story, acceptance criteria, estimate (S/M/L). Optional mirror to GitHub Issues + Project board.
 - **Definition of Ready:** acceptance criteria written, contracts (DTO / event) agreed in `backend/packages/contracts` and the OpenAPI file, dependencies known.
-- **Definition of Done:** code + tests (unit, plus integration when DB/Kafka is touched), lint/typecheck green, docs/ADR updated, works in staging (kind), reviewed.
-- **Git:** trunk-based, short branches `feat/BZ-012-order-saga`, **Conventional Commits**, PR template (what / why / how tested / screenshots), squash merge, `main` always releasable.
+- **Definition of Done:** code + tests (unit, plus integration when DB/Kafka is touched), lint/typecheck green, docs/ADR updated, works in staging (kind).
+- **Git (decided 2026-10-11):** trunk-based, work committed straight to `main` — one **Conventional Commit** per finished ticket (`feat(order): add seller order split [BZ-041]`), pushed after lint + tests pass locally. No PR step; `main` must always build.
 - **Quality gates before commit:** Husky + lint-staged (ESLint, Prettier, Stylelint on staged files), commitlint.
 - **Security hygiene:** `npm audit` + Trivy image scan in CI, Renovate for dependency updates, no secrets in images.
 - **Release:** at the end of each phase → tag `v0.N.0`, `CHANGELOG.md` entry, demo of the milestone (screenshots in `docs/screenshots/`).
@@ -103,18 +103,21 @@ This domain is picked because it naturally needs all three rendering modes, both
 | F1 | Landing, pricing, about, "sell on Bazaar" pages | SSG |
 | F2 | Catalog: categories, product list with filters, full-text search | SSR · catalog-service (Mongo) |
 | F3 | Product detail with reviews, stock, seller info, SEO meta + JSON-LD | SSR + ISR · catalog-service |
-| F4 | Auth: sign up, sign in, refresh, roles (shopper, seller, admin) | gateway (MySQL), JWT access + httpOnly refresh cookie |
+| F4 | Auth: sign up with email verification, sign in, refresh, forgot / reset password, roles (shopper, seller, admin); shopper applies to become a seller → admin approves | gateway (MySQL), RS256 JWT access + httpOnly refresh cookie |
 | F5 | Cart (client state) and checkout | SSR shell + client components · order-service |
-| F6 | Order saga: create → reserve stock → pay (fake provider) → confirm / cancel | order-service (MySQL) ⇄ Kafka ⇄ catalog-service |
+| F6 | Order saga: create → reserve stock → pay (fake provider) → confirm / cancel; one checkout = one `Order`, split into one `SellerOrder` per seller | order-service (MySQL) ⇄ Kafka ⇄ catalog-service |
+| F6b | Fulfilment per seller: seller marks their `SellerOrder` shipped → delivered; shopper can cancel a seller order before it ships | admin site (seller) · order-service |
 | F7 | Shopper "My orders" with live status | client components, SSE from gateway |
 | F8 | Admin site — seller area: products CRUD, stock, images, orders queue, dashboard | SPA |
 | F9 | Admin site — platform area: approve sellers, moderate products, platform stats | SPA |
 | F10 | Notifications: email (Mailpit locally) + in-app list on order events | notification-service (Mongo), Kafka consumer |
 | F11 | Reviews after delivery, rating summary on product | catalog-service, event-driven rating update |
 | F12 | Event log viewer for admin | notification-service stores every event |
+| F13 | **Bilingual EN / VI**: both sites, emails and product content; locale in the URL (`/en`, `/vi`) on the customer site | next-intl (web), react-i18next (admin), localized fields in Mongo |
+| F14 | **Two currencies USD / VND**: shopper picks the display + checkout currency (default from locale); admin manages the USD→VND rate; orders snapshot currency + rate | order-service (MySQL `exchange_rates`), web |
 
 ### Out of scope (written as "next steps")
-Real payment provider, multi-currency, shipping carriers, recommendations, mobile app, i18n beyond EN/VI, multi-region.
+Real payment provider and refunds, live FX rates, currencies beyond USD/VND, languages beyond EN/VI, shipping carriers and fees, taxes, recommendations, mobile app, multi-region.
 
 ---
 
@@ -125,15 +128,17 @@ Real payment provider, multi-currency, shipping carriers, recommendations, mobil
 |---|---|---|---|
 | FR-01 | Public marketing pages load as static HTML | Visitor | Must |
 | FR-02 | Catalog and product pages are indexable by search engines and show current price/stock | Visitor | Must |
-| FR-03 | Sign up / in / out; roles shopper, seller, admin | All | Must |
+| FR-03 | Sign up (with email verification) / in / out, forgot + reset password; roles shopper, seller, admin | All | Must |
 | FR-04 | Search products by text, filter by category, price, rating; sort; paginate | Shopper | Must |
 | FR-05 | Place an order from the cart; stock is never oversold | Shopper | Must |
-| FR-06 | Order status moves PENDING → RESERVED → PAID → CONFIRMED (or CANCELLED with reason) and the shopper sees it live | Shopper | Must |
+| FR-06 | Order status moves PENDING → RESERVED → PAID → CONFIRMED (or CANCELLED with reason); each seller order then moves CONFIRMED → SHIPPED → DELIVERED (or CANCELLED before shipping); the shopper sees every change live | Shopper | Must |
 | FR-07 | Seller manages products and stock; sees and fulfils their orders | Seller | Must |
 | FR-08 | Shopper and seller get a notification on every order state change | System | Should |
 | FR-09 | Admin approves sellers and hides products | Admin | Should |
 | FR-10 | Reviews after delivery; product rating updates automatically | Shopper | Should |
 | FR-11 | Dashboards: seller sales per day, admin GMV / orders / top sellers | Seller, Admin | Could |
+| FR-12 | Every screen, email and error message available in English and Vietnamese; products have EN + VI title/description | All | Must |
+| FR-13 | Prices shown and charged in USD or VND; the rate used is stored on the order | Shopper | Must |
 
 ### 2A.2 Non-functional requirements (NFR)
 | ID | Requirement | Target |
@@ -163,6 +168,24 @@ Real payment provider, multi-currency, shipping carriers, recommendations, mobil
 | DS-09 | Config only from env, validated at boot (zod); fail fast |
 | DS-10 | Utils have plain names (`formatMoney`, `toSlug`, `sleep`) and live in one `utils` folder per package |
 | DS-11 | Coding conventions and patterns in §6A apply to every project: single-source enums/constants/interfaces, backend classes + SOLID, frontend arrow functions + tokens + BEM — enforced by lint where possible |
+
+---
+
+### 2B. Business rules (agreed 2026-10-11)
+| Area | Rule |
+|---|---|
+| Orders across sellers | One checkout = one `Order` (one payment). It is split into one `SellerOrder` per seller; each seller only sees and fulfils their own `SellerOrder` |
+| Order states | `Order`: PENDING → RESERVED → PAID → CONFIRMED, or CANCELLED (reasons: OUT_OF_STOCK, PAYMENT_FAILED, RESERVATION_TIMEOUT, SHOPPER_CANCELLED). `SellerOrder`: CONFIRMED → SHIPPED → DELIVERED, or CANCELLED before SHIPPED (stock released). When every seller order is final, the `Order` is COMPLETED |
+| Reviews | Only for items of a DELIVERED seller order, one review per item per shopper |
+| Payment (fake provider) | Card `4000 0000 0000 0002` → declined, `4000 0000 0000 0119` → timeout, any other valid test number → success. No real refunds (cancellation after payment marks a "refund pending" record) |
+| Currency | Product prices are entered in **USD** (base, minor units). Display and checkout in **USD or VND**; VND = USD × admin-managed rate, rounded to whole đồng (VND has 0 decimals — currency exponents live in `CURRENCY_EXPONENT` constant). The order stores `currency`, `fxRate` and all amounts in the charged currency |
+| Language | EN and VI everywhere. Backend returns error **codes**, frontends translate them. Emails use the user's `preferredLocale`. Product title/description stored as `{ en, vi }`; missing VI falls back to EN |
+| Time | Stored UTC; shown in the browser's time zone, formatted per locale |
+| Auth | Gateway signs RS256 JWT (15 min access, 7-day rotating refresh in httpOnly cookie). Downstream services verify the JWT themselves with the public key (zero-trust inside the cluster). Email verification and password reset links expire after 24 h / 1 h |
+| Shipping & tax | Free shipping, no tax in the MVP |
+| Images | Uploaded straight to object storage (MinIO locally, S3 in prod) with presigned URLs; max 5 MB, JPEG/PNG/WebP |
+| Live status at scale | Each gateway pod reads `order.events` with its own consumer group and pushes SSE only to its connected shoppers |
+| Event evolution | `version` in the envelope; only additive changes inside a version; breaking change = new `v2` event published alongside until consumers move |
 
 ---
 
@@ -205,6 +228,8 @@ Real payment provider, multi-currency, shipping carriers, recommendations, mobil
 | Kafka | apache/kafka (KRaft, no ZooKeeper) | Event backbone | — |
 | Kafka UI | kafbat/kafka-ui | Watch topics, messages, consumer lag | — |
 | Mailpit | axllent/mailpit | Catch emails locally | — |
+| **Redis** | redis (8.x) | Gateway rate limits shared across pods, catalog read cache (product / category pages), distributed locks for scheduled jobs (reservation timeout, outbox relay leader), idempotency keys for `POST /orders` | — |
+| MinIO | minio/minio | S3-compatible object storage for product images and backups | — |
 
 ### 3.2 Why gateway + 3 services (and not more)
 Enough to show real boundaries (two databases, async saga, fan-out consumer) without micro-service sprawl. Identity stays inside the gateway to save a hop; splitting it out later is a listed next step.
@@ -294,7 +319,7 @@ Every service uses the class-based folder structure, SOLID rules and patterns de
 
 | Topic | Producer | Consumers | Events |
 |---|---|---|---|
-| `order.events` | order | catalog, notification, gateway | `OrderCreated`, `OrderPaid`, `OrderConfirmed`, `OrderCancelled`, `OrderDelivered` |
+| `order.events` | order | catalog, notification, gateway | `OrderCreated`, `OrderPaid`, `OrderConfirmed`, `OrderCancelled`, `OrderCompleted`, `SellerOrderShipped`, `SellerOrderDelivered`, `SellerOrderCancelled` |
 | `inventory.events` | catalog | order, notification | `StockReserved`, `StockRejected`, `StockReleased` |
 | `catalog.events` | catalog | notification, web revalidate hook | `ProductPublished`, `ProductUpdated`, `ProductHidden`, `RatingUpdated` |
 | `identity.events` | gateway | notification | `UserRegistered`, `SellerApproved` |
@@ -306,14 +331,18 @@ Every service uses the class-based folder structure, SOLID rules and patterns de
 
 ### 5.3 Order saga (choreography)
 ```
-Shopper ─POST /orders→ gateway → order-svc: Order(PENDING) + OrderCreated
-OrderCreated  → catalog-svc: atomic decrement where stock ≥ qty
+Shopper ─POST /orders (Idempotency-Key)→ gateway → order-svc:
+        Order(PENDING) + SellerOrders(one per seller) + OrderCreated            [one MySQL tx + outbox]
+OrderCreated  → catalog-svc: atomic decrement where stock ≥ qty for every line
                  ├ ok   → StockReserved  → order-svc: RESERVED → fake payment
-                 │                         ├ ok   → PAID → CONFIRMED + OrderConfirmed
-                 │                         └ fail → CANCELLED + OrderCancelled → catalog releases stock
-                 └ fail → StockRejected  → order-svc: CANCELLED(reason=OUT_OF_STOCK)
-Every order.* event → notification-svc (email + in-app) and gateway (SSE push to the shopper)
-Reservation timeout (15 min, scheduled job in order-svc) → cancel + release
+                 │                         ├ ok   → PAID → CONFIRMED + OrderConfirmed (seller orders → CONFIRMED)
+                 │                         └ fail → CANCELLED(PAYMENT_FAILED) + OrderCancelled → catalog releases stock
+                 └ fail → StockRejected  → order-svc: CANCELLED(OUT_OF_STOCK)
+Seller: SellerOrder CONFIRMED → SHIPPED (SellerOrderShipped) → DELIVERED (SellerOrderDelivered → reviews unlocked)
+Shopper cancels a seller order before SHIPPED → SellerOrderCancelled → catalog releases that seller's stock
+All seller orders final → Order COMPLETED (OrderCompleted)
+Every event → notification-svc (email + in-app, in the user's locale) and gateway (SSE push to the shopper)
+Reservation timeout (15 min, scheduled job in order-svc, single runner via Redis lock) → CANCELLED(RESERVATION_TIMEOUT) + release
 ```
 
 ### 5.4 API (gateway, REST, OpenAPI at `/api/docs`)
@@ -333,6 +362,8 @@ Errors: one problem-details shape (`{ code, message, details }`), codes in `cont
 | Private but simple, inside the public site (cart, my orders) | SSR shell + client components | Keeps one site and one session for shoppers |
 
 ### 6.2 Route table
+All customer-site routes are prefixed with the locale: `/en/...`, `/vi/...` (`/` redirects by `Accept-Language`, `hreflang` alternates on every page). Admin site keeps the locale in user settings.
+
 | Route | App | Mode |
 |---|---|---|
 | `/`, `/pricing`, `/about`, `/sell`, `/legal/*` | web | SSG |
@@ -343,6 +374,7 @@ Errors: one problem-details shape (`{ code, message, details }`), codes in `cont
 | `/login`, `/register` | web | SSG page + client form |
 | `admin.*/seller/**` | admin | SPA |
 | `admin.*/platform/**` | admin | SPA |
+| `/verify-email`, `/reset-password` | web | SSG page + client form |
 
 ### 6.3 Shared frontend rules
 - **Design tokens**: full colour, spacing/padding, typography, radius, shadow, z-index, breakpoint and motion lists in §6A.5 (source of truth `docs/design-system.md`, copied into each frontend's `src/styles/tokens/`, kept equal by `scripts/check-tokens.mjs`). Brand: "Saffron & Ink".
@@ -631,21 +663,41 @@ export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => (
 ### 7.1 Which database, and why
 | Data | Store | Reason |
 |---|---|---|
-| Users, roles, refresh tokens | MySQL | Relational, unique constraints, small and strict |
-| Orders, order items, payments, outbox | MySQL | Money: ACID transactions, foreign keys, reporting with SQL |
-| Products, shops, categories | MongoDB | Different attributes per category (size, colour, specs…), nested images/variants, text index |
+| Users, roles, refresh tokens, verification / reset tokens, seller applications | MySQL | Relational, unique constraints, small and strict |
+| Orders, seller orders, order items, payments, exchange rates, outbox | MySQL | Money: ACID transactions, foreign keys, reporting with SQL |
+| Products, shops, categories | MongoDB | Different attributes per category (size, colour, specs…), nested images/variants, localized `{ en, vi }` fields, text index per language |
 | Stock | MongoDB (on product variant) | Kept with the product; atomic `findOneAndUpdate({ stock: { $gte: qty } })` prevents overselling |
 | Reviews + rating summary | MongoDB | Document per review, aggregation pipeline for summary |
 | Notifications, event log | MongoDB | Append-heavy, schemaless payloads, TTL index for old entries |
+| Rate-limit counters, cache, locks, idempotency keys | Redis | Short-lived, shared across pods, needs atomic counters and TTL |
 
 ### 7.2 MySQL (Prisma, `prisma migrate` — SQL migrations checked in)
-- `bazaar_identity`: `users(id, email UQ, password_hash, role, status, created_at)`, `refresh_tokens(id, user_id FK, token_hash, expires_at, revoked_at)`
-- `bazaar_order`: `orders(id, shopper_id, status, total_cents, currency, cancel_reason, created_at, updated_at)`, `order_items(id, order_id FK, product_id, variant_sku, seller_id, qty, unit_price_cents)`, `payments(id, order_id FK, status, provider_ref, amount_cents)`, `outbox(id, topic, msg_key, payload JSON, created_at, sent_at)`, `processed_events(event_id PK, processed_at)`
-- Money as integer cents. Indexes on `orders(shopper_id, created_at)`, `order_items(seller_id, order_id)`, `outbox(sent_at)`.
+- `bazaar_identity`: `users(id, email UQ, password_hash, role, status, preferred_locale, email_verified_at, created_at)`, `refresh_tokens(id, user_id FK, token_hash, family_id, expires_at, revoked_at)`, `user_tokens(id, user_id FK, purpose, token_hash, expires_at, used_at)` (email verification / password reset), `seller_applications(id, user_id FK, shop_name, status, reviewed_by, reviewed_at)`
+- `bazaar_order`: `orders(id, shopper_id, status, currency, fx_rate, total_minor, cancel_reason, idempotency_key UQ, created_at, updated_at)`, `seller_orders(id, order_id FK, seller_id, status, subtotal_minor, shipped_at, delivered_at, cancelled_at)`, `order_items(id, seller_order_id FK, product_id, variant_sku, title_snapshot JSON, qty, unit_price_minor)`, `payments(id, order_id FK, status, provider_ref, amount_minor, currency)`, `exchange_rates(id, base, quote, rate DECIMAL(18,6), effective_from, created_by)`, `outbox(id, topic, msg_key, payload JSON, created_at, sent_at)`, `processed_events(event_id PK, processed_at)`
+- Money as integer **minor units** of the order currency (cents for USD, đồng for VND). Indexes on `orders(shopper_id, created_at)`, `seller_orders(seller_id, status, id)`, `outbox(sent_at)`.
 
 ### 7.3 MongoDB (Prisma, replica set for transactions)
-- `products { _id, shopId, slug UQ, title, description, categoryId, attributes{}, variants[{ sku, priceCents, stock, attrs }], images[], status, rating{ avg, count }, createdAt }` — text index on title/description, compound index `(categoryId, status, variants.priceCents)`.
-- `shops`, `categories` (tree by `path`), `reviews`, `outbox`, `processed_events`, `notifications` (TTL 180 days), `event_log`.
+- `products { _id, shopId, slug UQ, title{ en, vi }, description{ en, vi }, categoryId, attributes{}, variants[{ sku, priceUsdMinor, stock, attrs }], images[], status, rating{ avg, count }, createdAt }` — text index on title/description (both languages), compound index `(categoryId, status, variants.priceUsdMinor)`.
+- `categories { _id, slug, name{ en, vi }, path }`, `shops { _id, sellerId, slug, name, description{ en, vi } }`.
+- `reviews`, `outbox`, `processed_events`, `notifications` (TTL 180 days), `event_log`.
+
+### 7.4 `backend/db/` — schema and seed files (decided 2026-10-11)
+All schema and seed data lives in plain files, one folder per database, easy to read and diff:
+```
+backend/db/
+├── identity/      schema.sql · data.sql          (MySQL bazaar_identity)
+├── order/         schema.sql · data.sql          (MySQL bazaar_order)
+├── catalog/       schema.js  · data.js           (MongoDB bazaar_catalog — mongosh scripts)
+└── notification/  schema.js                      (MongoDB bazaar_notification)
+```
+| File | Content | How it is kept right |
+|---|---|---|
+| `schema.sql` (MySQL) | Full current DDL of the database (tables, keys, indexes) in one readable file | Generated from the Prisma schema (`prisma migrate diff --from-empty --to-schema-datamodel --script`); CI fails if it is stale. Change history stays in `prisma/migrations/` |
+| `data.sql` (MySQL) | Seed: admin, 3 sellers, demo shoppers (EN + VI locales), exchange rate, sample orders in every state | Hand-written, idempotent (`INSERT … ON DUPLICATE KEY UPDATE`), loaded by `make seed` and the seed Job on kind |
+| `schema.js` (MongoDB) | Collections, JSON-Schema validators, all indexes (text, compound, unique, TTL) — Prisma cannot create these for MongoDB | Applied by `make db-schema` and an init Job on kind; checked by integration tests |
+| `data.js` (MongoDB) | Seed: categories (EN/VI), 3 shops, 1,000 products with EN/VI text, placeholder images | Deterministic (fixed ids, generated in a loop), idempotent upserts |
+
+The same files are used by docker compose (init), the kind Jobs, integration tests (fresh DB per run) and `make db-reset`.
 
 ---
 
@@ -653,7 +705,7 @@ export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => (
 
 - **Multi-stage Dockerfile** per app: `deps → build → runtime` on Node LTS Alpine (Next.js `output: 'standalone'`; admin → `nginx:alpine` serving static files). Non-root user, `HEALTHCHECK`, `.dockerignore`, service images < 200 MB.
 - **docker-compose.yml**
-  - default = infra only: `mysql`, `mongo` (single-node replica set), `kafka` (KRaft), `kafka-init` (creates topics), `kafka-ui`, `mailpit`.
+  - default = infra only: `mysql`, `mongo` (single-node replica set), `redis`, `kafka` (KRaft), `kafka-init` (creates topics), `kafka-ui`, `minio` (+ bucket init), `mailpit`.
   - `--profile full` = infra + all 6 apps as containers.
 - Ports (chosen not to clash with relay / real-estate / preclinic):
 
@@ -668,6 +720,8 @@ export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => (
 | Kafka (host listener) | 9094 |
 | Kafka UI | 8085 |
 | Mailpit UI | 8026 |
+| Redis | 6380 |
+| MinIO API / console | 9002 / 9003 |
 
 ---
 
@@ -681,7 +735,7 @@ export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => (
 |---|---|
 | Namespace | `bazaar` (apps), `bazaar-data` (stores), `observability` |
 | Deployment + Service | web, admin, gateway, catalog, order, notification |
-| StatefulSet + headless Service + PVC | MySQL, MongoDB (local overlay only) |
+| StatefulSet + headless Service + PVC | MySQL, MongoDB, Redis, MinIO (local overlay only) |
 | Kafka | **Strimzi operator** (Helm) + `Kafka` / `KafkaNodePool` / `KafkaTopic` resources — topics declared as code |
 | ConfigMap / Secret | env per app; Secrets from `.env` via `secretGenerator` locally (Sealed Secrets / External Secrets in prod — next step) |
 | Probes | `/health/live`, `/health/ready` (ready = DB + Kafka connected) |
@@ -697,7 +751,7 @@ Production-grade, the same three signals a real team runs (metrics · logs · tr
 
 | Signal | Stack | Details |
 |---|---|---|
-| Metrics | **kube-prometheus-stack** (Prometheus Operator, Prometheus, Alertmanager, Grafana, node-exporter, kube-state-metrics) | Every service exposes `/metrics` (prom-client: RED metrics per route, Kafka produce/consume counts, outbox backlog, saga state counts); `ServiceMonitor` per app; Strimzi Kafka exporter for consumer lag; mysqld-exporter + mongodb-exporter |
+| Metrics | **kube-prometheus-stack** (Prometheus Operator, Prometheus, Alertmanager, Grafana, node-exporter, kube-state-metrics) | Every service exposes `/metrics` (prom-client: RED metrics per route, Kafka produce/consume counts, outbox backlog, saga state counts); `ServiceMonitor` per app; Strimzi Kafka exporter for consumer lag; mysqld-exporter + mongodb-exporter + redis-exporter |
 | Logs | **Loki** + **Grafana Alloy** (collector, DaemonSet) | JSON logs (pino) with `traceId`, `service`, `env`; no PII in logs; retention 7 days locally |
 | Traces | **OpenTelemetry** SDK (auto HTTP/Prisma/Kafka instrumentation + manual spans for saga steps) → **OTel Collector** → **Tempo** | Trace context carried in Kafka headers, so one trace goes web → gateway → order → Kafka → catalog → notification |
 | Correlation | Grafana | Click from a metric spike → exemplar trace → its logs |
@@ -726,6 +780,8 @@ This is the **prod** environment of §0.2: written, tested and reviewed like a r
 | `.env` / k8s Secret | **Secrets Manager** → External Secrets → k8s Secret | DB passwords rotated by Secrets Manager |
 | Local images | **ECR** (one repo per app, scan on push, lifecycle rule) | |
 | Mailpit | **SES** (sandbox in dev) | |
+| Redis StatefulSet | **ElastiCache** (Valkey/Redis OSS, cluster mode off, Multi-AZ replica in prod) | TLS + AUTH token from Secrets Manager |
+| MinIO | **S3** (images bucket + backups bucket) | Same S3 API, only the endpoint/credentials change |
 | Grafana / Prometheus | **CloudWatch** (Container Insights, alarms, dashboard); optional Amazon Managed Prometheus/Grafana | |
 | — | **Route 53 + ACM**, **WAF** on CloudFront | Domain is a parameter; no domain = CloudFront default URL |
 
@@ -733,7 +789,7 @@ This is the **prod** environment of §0.2: written, tested and reviewed like a r
 | Stack | Contents | Depends on |
 |---|---|---|
 | `NetworkStack` | VPC 3 AZ (public / private / isolated subnets), NAT (1 in dev, 1 per AZ in prod), VPC endpoints (ECR, S3, Secrets Manager, CloudWatch) | — |
-| `DataStack` | Aurora MySQL, MongoDB Atlas project + cluster + PrivateLink endpoint, MSK cluster, security groups (only from EKS nodes), secrets, KMS keys | Network |
+| `DataStack` | Aurora MySQL, MongoDB Atlas project + cluster + PrivateLink endpoint, MSK cluster, ElastiCache, security groups (only from EKS nodes), secrets, KMS keys | Network |
 | `ClusterStack` | EKS cluster, node group, add-ons (Helm via CDK), IAM roles for service accounts, namespaces | Network, Data |
 | `EdgeStack` | S3 buckets (static, admin, product images), CloudFront distributions, WAF, ACM, Route 53 records | Cluster (ALB origin) |
 | `CiStack` | ECR repos, GitHub OIDC provider + deploy role (least privilege, no access keys) | — |
@@ -822,7 +878,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 |---|---|---|
 | **P0 Foundation** | Repo tooling (husky, commitlint, prettier), `backend/` workspace + Turborepo + TS/ESLint configs, `contracts`, `nest-common`, Prisma ↔ MongoDB spike, `docs/design-system.md`, `docs/backlog.md`, `CONTRIBUTING.md` (from §6A), Makefile, `.env.example`, compose infra (frontend projects are scaffolded in P3 / P6) | `make up` starts infra healthy; `make lint test` green |
 | **P1 Identity + gateway** | Register/login/refresh/roles, rate limit, OpenAPI exported to `backend/openapi/gateway.json` | Auth integration tests pass |
-| **P2 Catalog** | Shops, products, categories, search, seller CRUD, images (local disk / MinIO), seed (1k products) | Search + filters work through gateway |
+| **P2 Catalog** | Shops, products, categories (EN/VI), search, seller CRUD, images on MinIO, Redis read cache, `db/catalog/schema.js` + `data.js` | Search + filters work through gateway |
 | **P3 Web (SSG + SSR)** | Landing pages, catalog/product SSR, ISR revalidate, SEO, cart | Lighthouse ≥ 90 perf/SEO/a11y on landing + product |
 | **P4 Orders + Kafka saga** | Order service, outbox relay, stock reservation, fake payment, timeouts, DLQ | Concurrent-order test shows zero oversell; saga tests green |
 | **P5 Notifications + live status** | Notification service, Mailpit emails, in-app list, SSE in gateway | Shopper sees status change live |
@@ -835,7 +891,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 ---
 
 ## 14. Makefile targets (planned)
-`help · install · up · up-full · down · migrate · seed · dev · test · test-int · e2e · lint · gen-client · k8s-up (kind create + helm deps + apply local overlay) · k8s-down · k8s-load (build & load images) · k8s-status · ci (full CI pipeline locally) · images · release (promote current sha to staging/kind) · rollback · aws-synth · aws-test · load-test · drill-<name> · diagrams`
+`help · install · up · up-full · down · migrate · db-schema · seed · db-reset · dev · test · test-int · e2e · lint · gen-client · k8s-up (kind create + helm deps + apply local overlay) · k8s-down · k8s-load (build & load images) · k8s-status · ci (full CI pipeline locally) · images · release (promote current sha to staging/kind) · rollback · aws-synth · aws-test · load-test · drill-<name> · diagrams`
 
 ---
 
@@ -883,6 +939,12 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | D3 | Admin site | **Separate React SPA** (Vite + React Router), sellers + platform admins, served by nginx |
 | D12 | Frontend repo layout | **Two independent projects in the Bazaar repo** (`frontend-web/`, `frontend-admin/`), no shared workspace with each other or with the backend |
 | D13 | Sharing types / tokens with frontends | **Generated from the gateway OpenAPI** (openapi-typescript); each frontend keeps its own `tokens.css`, kept equal by a CI check |
+| D15 | Orders across sellers | **One `Order` (one payment) split into `SellerOrder`s**, each fulfilled by its seller |
+| D16 | Fulfilment states | **SHIPPED → DELIVERED** per seller order; shopper may cancel before shipping |
+| D17 | Language & currency | **EN + VI** everywhere; **USD + VND** with an admin-managed rate snapshotted on each order |
+| D18 | Redis | **Required**: rate limits, cache, locks, idempotency keys (ElastiCache in prod) |
+| D19 | Delivery workflow | **Commit straight to `main`** after each finished ticket (no PRs) |
+| D20 | Schema & seed files | **`backend/db/<database>/schema.sql|js` + `data.sql|js`**; code and docs in English |
 | D14 | Toolchain versions (checked 2026-10-11) | **TypeScript 6.0.x** (TS 7 not yet supported by typescript-eslint / ts-jest) · **NestJS 12** · **Kafka client `@confluentinc/kafka-javascript`** (KafkaJS unmaintained) · **Prisma latest stable** (not the 8.0 RC; MongoDB support verified by the P0 spike) · Node 24 LTS in images, engines `>=24` |
 | D4 | ORM | **Prisma** for both MySQL and MongoDB (risks and workarounds in §16) |
 | D5 | Kafka on k8s | **Strimzi operator** |

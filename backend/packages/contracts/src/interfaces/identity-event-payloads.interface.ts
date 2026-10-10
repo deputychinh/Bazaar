@@ -1,4 +1,4 @@
-import type { Locale } from '../enums/locale.enum';
+import type { Locale } from '../enums/locale.enum.js';
 
 export interface UserRegisteredPayload {
   userId: string;

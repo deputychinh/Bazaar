@@ -1,5 +1,5 @@
-import { DLQ_TOPIC_SUFFIX, RETRY_TOPIC_SUFFIX } from '../constants/kafka.constant';
-import { Topic } from '../enums/topic.enum';
+import { DLQ_TOPIC_SUFFIX, RETRY_TOPIC_SUFFIX } from '../constants/kafka.constant.js';
+import { Topic } from '../enums/topic.enum.js';
 
 /** Names of the main, retry and dead-letter topics (plan §5.2). */
 export class TopicUtil {

@@ -1,9 +1,9 @@
 import type { z } from 'zod';
 
-import { InvalidEventError } from '../errors/invalid-event.error';
-import type { AnyEventEnvelope } from '../interfaces/event-envelope.interface';
-import { eventEnvelopeSchema } from '../schemas/event-envelope.schema';
-import { eventPayloadSchemas } from '../schemas/event-payload.schema';
+import { InvalidEventError } from '../errors/invalid-event.error.js';
+import type { AnyEventEnvelope } from '../interfaces/event-envelope.interface.js';
+import { eventEnvelopeSchema } from '../schemas/event-envelope.schema.js';
+import { eventPayloadSchemas } from '../schemas/event-payload.schema.js';
 
 /** Turns raw Kafka message values into typed, validated envelopes. */
 export class EventParser {

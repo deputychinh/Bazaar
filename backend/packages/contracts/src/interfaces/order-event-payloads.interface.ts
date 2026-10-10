@@ -1,6 +1,6 @@
-import type { CancelReason } from '../enums/cancel-reason.enum';
+import type { CancelReason } from '../enums/cancel-reason.enum.js';
 
-import type { OrderLine } from './order-line.interface';
+import type { OrderLine } from './order-line.interface.js';
 
 export interface OrderCreatedPayload {
   orderId: string;

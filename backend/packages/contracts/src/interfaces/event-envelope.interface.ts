@@ -1,20 +1,20 @@
-import type { EventType } from '../enums/event-type.enum';
+import type { EventType } from '../enums/event-type.enum.js';
 
 import type {
   ProductChangedPayload,
   RatingUpdatedPayload,
-} from './catalog-event-payloads.interface';
+} from './catalog-event-payloads.interface.js';
 import type {
   EmailVerificationRequestedPayload,
   PasswordResetRequestedPayload,
   SellerApprovedPayload,
   UserRegisteredPayload,
-} from './identity-event-payloads.interface';
+} from './identity-event-payloads.interface.js';
 import type {
   StockRejectedPayload,
   StockReleasedPayload,
   StockReservedPayload,
-} from './inventory-event-payloads.interface';
+} from './inventory-event-payloads.interface.js';
 import type {
   OrderCancelledPayload,
   OrderCompletedPayload,
@@ -24,7 +24,7 @@ import type {
   SellerOrderCancelledPayload,
   SellerOrderDeliveredPayload,
   SellerOrderShippedPayload,
-} from './order-event-payloads.interface';
+} from './order-event-payloads.interface.js';
 
 /** Payload type of every event, keyed by its type. */
 export interface EventPayloadMap {

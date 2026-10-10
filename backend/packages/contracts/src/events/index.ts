@@ -1,2 +1,2 @@
-export * from './event-factory';
-export * from './event-parser';
+export * from './event-factory.js';
+export * from './event-parser.js';

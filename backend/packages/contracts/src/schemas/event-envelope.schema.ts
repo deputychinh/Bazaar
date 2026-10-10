@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { EventType } from '../enums/event-type.enum';
+import { EventType } from '../enums/event-type.enum.js';
 
 /** Shape check for the envelope; the payload is checked per type by `eventPayloadSchemas`. */
 export const eventEnvelopeSchema = z.object({

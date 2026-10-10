@@ -1,7 +1,7 @@
-import { EVENT_SCHEMA_VERSION } from '../constants/kafka.constant';
-import { EventType } from '../enums/event-type.enum';
+import { EVENT_SCHEMA_VERSION } from '../constants/kafka.constant.js';
+import { EventType } from '../enums/event-type.enum.js';
 
-import { EventFactory } from './event-factory';
+import { EventFactory } from './event-factory.js';
 
 describe('EventFactory', () => {
   it('fills id, version, time and an empty trace id by default', () => {

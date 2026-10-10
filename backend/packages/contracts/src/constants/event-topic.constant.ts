@@ -1,5 +1,5 @@
-import { EventType } from '../enums/event-type.enum';
-import { Topic } from '../enums/topic.enum';
+import { EventType } from '../enums/event-type.enum.js';
+import { Topic } from '../enums/topic.enum.js';
 
 /** Topic each event type is published to (plan §5.2). */
 export const EVENT_TOPIC: Readonly<Record<EventType, Topic>> = {

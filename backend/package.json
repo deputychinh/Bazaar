@@ -3,6 +3,7 @@
   "private": true,
   "description": "Bazaar backend: NestJS services and shared backend packages.",
   "packageManager": "npm@11.19.1",
+  "type": "module",
   "engines": {
     "node": ">=24"
   },
@@ -20,17 +21,17 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@types/jest": "30.0.0",
     "@types/node": "24.19.2",
+    "@vitest/coverage-v8": "5.0.3",
     "eslint": "10.12.0",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import-x": "4.17.1",
     "globals": "17.13.0",
-    "jest": "30.5.2",
-    "ts-jest": "29.4.14",
     "turbo": "2.11.7",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.71.1"
+    "typescript-eslint": "8.71.1",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
   },
   "allowScripts": {
     "@parcel/watcher": false,

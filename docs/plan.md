@@ -37,7 +37,7 @@
 | **dev** | Laptop | `make up` (infra in compose) + `make dev` (apps with hot reload) | Daily coding, fast feedback |
 | **CI** | GitHub Actions, or `make ci` locally (same steps) | lint → typecheck → unit → integration (Testcontainers) → build | Every PR must pass |
 | **staging** | **kind cluster** `bazaar-staging` | Images built once (tag = git sha), loaded into kind, `kubectl apply -k overlays/local`, migration Job first, Traefik ingress at `http://bazaar.localhost` | Behaves like prod: k8s, rolling updates, probes, HPA, Strimzi Kafka |
-| **prod** | **AWS CDK code** (§9A) | `cdk synth` + Jest assertions + cdk-nag + `cdk diff`; never `cdk deploy` | Shows exactly how prod would be built and reviewed |
+| **prod** | **AWS CDK code** (§9A) | `cdk synth` + Vitest assertions + cdk-nag + `cdk diff`; never `cdk deploy` | Shows exactly how prod would be built and reviewed |
 
 Rules taken from real teams: **build once, promote the same image**; config only from env (12-factor); secrets never committed (`.env` git-ignored, `.env.example` documented); DB migrations forward-only, run before the new version, expand → contract for breaking changes.
 
@@ -281,7 +281,7 @@ bazaar/
 │       ├── bin/bazaar.ts    # entry: builds stacks per environment (dev, prod)
 │       ├── lib/stacks/      # network, data, cluster, edge, ci, observability
 │       ├── lib/config/      # env settings (account, region, sizes) — one place, typed
-│       └── test/            # Jest assertions + snapshot + cdk-nag
+│       └── test/            # Vitest assertions + snapshot + cdk-nag
 ├── e2e/                     # Playwright journeys (own package.json)
 ├── loadtest/                # k6 scripts
 ├── docs/
@@ -766,7 +766,7 @@ On the dev laptop (compose) only the OTel Collector + Grafana LGTM all-in-one im
 
 ## 9A. AWS deployment with CDK
 
-This is the **prod** environment of §0.2: written, tested and reviewed like a real team would, **but not deployed** (local-only project). The same Kubernetes manifests would run on **Amazon EKS**; the stateful parts move to AWS managed services. All of it is written in **CDK TypeScript** (same language as the rest of the repo, one toolchain). Verified locally with `cdk synth`, Jest assertions and cdk-nag — no AWS account needed.
+This is the **prod** environment of §0.2: written, tested and reviewed like a real team would, **but not deployed** (local-only project). The same Kubernetes manifests would run on **Amazon EKS**; the stateful parts move to AWS managed services. All of it is written in **CDK TypeScript** (same language as the rest of the repo, one toolchain). Verified locally with `cdk synth`, Vitest assertions and cdk-nag — no AWS account needed.
 
 ### 9A.1 Local → AWS mapping
 | Local (compose / kind) | AWS | Notes |
@@ -810,7 +810,7 @@ This is the **prod** environment of §0.2: written, tested and reviewed like a r
 Argo CD (GitOps) instead of `kubectl apply` is a listed next step (ADR 0009).
 
 ### 9A.4 Quality checks for the CDK code
-- Jest: fine-grained assertions (`Template.fromStack`, e.g. "Aurora is encrypted", "no security group open to 0.0.0.0/0 on DB ports") + snapshot test.
+- Vitest: fine-grained assertions (`Template.fromStack`, e.g. "Aurora is encrypted", "no security group open to 0.0.0.0/0 on DB ports") + snapshot test.
 - **cdk-nag** (AwsSolutions pack) runs on every `cdk synth`; each suppression has a written reason.
 - `cdk diff` posted on PRs that touch `infra/cdk`.
 - Cost: monthly estimate for prod made with AWS Pricing Calculator at P8 and written in `docs/aws-cost.md` (what a client would pay).
@@ -820,8 +820,8 @@ Argo CD (GitOps) instead of `kubectl apply` is a listed next step (ADR 0009).
 ## 10. Testing strategy
 | Layer | Tool | What |
 |---|---|---|
-| Unit | Jest (services), Vitest (frontend, packages) | Domain rules, saga transitions, components |
-| Integration | Jest + **Testcontainers** (MySQL, Mongo, Kafka) | Repositories, outbox relay, consumer idempotency, concurrent stock decrement |
+| Unit | **Vitest** everywhere (backend, frontends, CDK) | Domain rules, saga transitions, components |
+| Integration | Vitest + **Testcontainers** (MySQL, Mongo, Kafka) | Repositories, outbox relay, consumer idempotency, concurrent stock decrement |
 | Contract | zod schemas from `contracts` checked in producer and consumer tests | Event shape never drifts |
 | E2E | Playwright against `docker compose --profile full` | Browse → buy → seller fulfils → notification |
 | Load | k6 | NFR-02/03 numbers written into README |
@@ -838,7 +838,7 @@ Every workflow step is also a Makefile target, so the whole pipeline runs on the
   - Repo-wide on every PR: commitlint, `scripts/check-tokens.mjs`.
 - `images.yml`: build multi-arch images (amd64 + arm64), Trivy scan, tag = git sha. Locally: `make images` + `make k8s-load`.
 - `k8s-smoke.yml`: kind cluster + Kustomize apply + rollout status + curl health. Locally: `make release` (= promote to staging).
-- `cdk.yml`: on PRs touching `infra/cdk` → Jest → `cdk synth` (cdk-nag). Locally: `make aws-test aws-synth`.
+- `cdk.yml`: on PRs touching `infra/cdk` → Vitest → `cdk synth` (cdk-nag). Locally: `make aws-test aws-synth`.
 - `deploy.yml`: the real prod pipeline (OIDC → ECR → `cdk deploy` → migration Job → `kubectl apply -k overlays/aws` → S3 sync + CloudFront invalidation → smoke test), written in full but **manual-trigger only and disabled** — no AWS account.
 
 ---
@@ -884,7 +884,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | **P5 Notifications + live status** | Notification service, Mailpit emails, in-app list, SSE in gateway | Shopper sees status change live |
 | **P6 Admin site (SPA)** | Seller products/orders/dashboard, admin moderation/stats | Playwright seller + admin journeys green |
 | **P7 Docker + Kubernetes** | Dockerfiles, compose full profile, kind script, Kustomize base/overlays, Strimzi, Traefik, migration Jobs, HPA | `make k8s-up` → app reachable at `http://bazaar.localhost` |
-| **P8 AWS with CDK** | `infra/cdk` (6 stacks, dev + prod config), `overlays/aws`, cdk-nag, Jest tests, `cdk.yml` + `deploy.yml`, cost estimate | `cdk synth` clean with cdk-nag; tests green; `docs/aws-cost.md` written |
+| **P8 AWS with CDK** | `infra/cdk` (6 stacks, dev + prod config), `overlays/aws`, cdk-nag, Vitest tests, `cdk.yml` + `deploy.yml`, cost estimate | `cdk synth` clean with cdk-nag; tests green; `docs/aws-cost.md` written |
 | **P9 Observability + quality** | OTel, Prometheus/Grafana dashboards, CloudWatch alarms, k6 load test, CI workflows, k8s smoke | CI green; numbers in README |
 | **P10 Docs & polish** | draw.io diagrams + PNGs, ADRs, runbook, README with screenshots | Ready to demo to clients |
 
@@ -925,7 +925,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | Mongo transactions need a replica set | Single-node replica set in compose and k8s (`--replSet rs0` + init) |
 | Scope creep | Phases are gated; out-of-scope list is explicit |
 | Dependency versions | Exact versions pinned at P0 scaffold; Renovate config |
-| Prod (AWS) is never really run, so mistakes could hide | Jest assertions + cdk-nag + the same manifests proven on kind; `deploy.yml` reviewed step by step in an ADR |
+| Prod (AWS) is never really run, so mistakes could hide | Vitest assertions + cdk-nag + the same manifests proven on kind; `deploy.yml` reviewed step by step in an ADR |
 | Prisma's MongoDB support is narrower than its SQL support (no migrations, no text index / positional array updates in the query API; newest Prisma major may lag on MongoDB) | Spike at P0: pin the Prisma version that supports MongoDB for all services; indexes created by a script; text search and the atomic stock decrement use `$runCommandRaw` inside one repository file each, covered by integration tests |
 
 ---
@@ -945,7 +945,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | D18 | Redis | **Required**: rate limits, cache, locks, idempotency keys (ElastiCache in prod) |
 | D19 | Delivery workflow | **Commit straight to `main`** after each finished ticket (no PRs) |
 | D20 | Schema & seed files | **`backend/db/<database>/schema.sql|js` + `data.sql|js`**; code and docs in English |
-| D14 | Toolchain versions (checked 2026-10-11) | **TypeScript 6.0.x** (TS 7 not yet supported by typescript-eslint / ts-jest) · **NestJS 12** · **Kafka client `@confluentinc/kafka-javascript`** (KafkaJS unmaintained) · **Prisma latest stable** (not the 8.0 RC; MongoDB support verified by the P0 spike) · Node 24 LTS in images, engines `>=24` |
+| D14 | Toolchain versions (checked 2026-10-11) | **TypeScript 6.0.x** (TS 7 not yet supported by typescript-eslint) · **NestJS 12 — ESM-only, so the backend is ESM (`"type": "module"`, `nodenext`) and tested with Vitest, as in the official Nest 12 starter** · **Kafka client `@confluentinc/kafka-javascript`** (KafkaJS unmaintained) · **Prisma latest stable** (not the 8.0 RC; MongoDB support verified by the P0 spike) · Node 24 LTS in images, engines `>=24` |
 | D4 | ORM | **Prisma** for both MySQL and MongoDB (risks and workarounds in §16) |
 | D5 | Kafka on k8s | **Strimzi operator** |
 | D6 | Observability | **Production-grade full stack** (§9.3): Prometheus + Alertmanager + Grafana, Loki, Tempo, OpenTelemetry, SLOs |

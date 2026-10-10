@@ -45,7 +45,15 @@ const restrictAllExcept = (...allowed) => [
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**', '**/*.js', '**/*.mjs'],
+    ignores: [
+      '**/dist/**',
+      '**/coverage/**',
+      '**/node_modules/**',
+      '**/*.js',
+      '**/*.mjs',
+      '**/vitest.config.ts',
+      'vitest.shared.ts',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

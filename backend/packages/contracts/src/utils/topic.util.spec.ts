@@ -1,6 +1,6 @@
-import { Topic } from '../enums/topic.enum';
+import { Topic } from '../enums/topic.enum.js';
 
-import { TopicUtil } from './topic.util';
+import { TopicUtil } from './topic.util.js';
 
 describe('TopicUtil', () => {
   it('names the retry and dead-letter topics', () => {

@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { CancelReason } from '../enums/cancel-reason.enum';
-import { EventType } from '../enums/event-type.enum';
-import { Locale } from '../enums/locale.enum';
-import type { EventPayloadMap } from '../interfaces/event-envelope.interface';
+import { CancelReason } from '../enums/cancel-reason.enum.js';
+import { EventType } from '../enums/event-type.enum.js';
+import { Locale } from '../enums/locale.enum.js';
+import type { EventPayloadMap } from '../interfaces/event-envelope.interface.js';
 
 const id = z.string().min(1);
 const cents = z.number().int().nonnegative();

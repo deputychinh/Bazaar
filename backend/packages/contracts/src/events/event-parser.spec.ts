@@ -1,9 +1,9 @@
-import { CancelReason } from '../enums/cancel-reason.enum';
-import { EventType } from '../enums/event-type.enum';
-import { InvalidEventError } from '../errors/invalid-event.error';
+import { CancelReason } from '../enums/cancel-reason.enum.js';
+import { EventType } from '../enums/event-type.enum.js';
+import { InvalidEventError } from '../errors/invalid-event.error.js';
 
-import { EventFactory } from './event-factory';
-import { EventParser } from './event-parser';
+import { EventFactory } from './event-factory.js';
+import { EventParser } from './event-parser.js';
 
 const buildOrderCreated = () =>
   EventFactory.create({

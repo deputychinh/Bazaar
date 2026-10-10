@@ -1,4 +1,4 @@
-import type { ErrorCode } from '../enums/error-code.enum';
+import type { ErrorCode } from '../enums/error-code.enum.js';
 
 /** Error body returned by every HTTP endpoint. Frontends translate `code`. */
 export interface ProblemDetails {

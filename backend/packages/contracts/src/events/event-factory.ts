@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 
-import { EVENT_SCHEMA_VERSION } from '../constants/kafka.constant';
-import type { EventType } from '../enums/event-type.enum';
-import type { EventEnvelope, EventPayloadMap } from '../interfaces/event-envelope.interface';
+import { EVENT_SCHEMA_VERSION } from '../constants/kafka.constant.js';
+import type { EventType } from '../enums/event-type.enum.js';
+import type { EventEnvelope, EventPayloadMap } from '../interfaces/event-envelope.interface.js';
 
 export interface CreateEventOptions<TType extends EventType> {
   type: TType;

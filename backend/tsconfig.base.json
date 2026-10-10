@@ -17,6 +17,8 @@
     "skipLibCheck": true,
     "declaration": true,
     "sourceMap": true,
-    "types": ["node", "jest"]
+    "types": ["node", "vitest/globals"],
+    "isolatedModules": true,
+    "resolvePackageJsonExports": true
   }
 }

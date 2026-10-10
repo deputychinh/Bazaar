@@ -1,4 +1,4 @@
-import { ErrorCode } from '../enums/error-code.enum';
+import { ErrorCode } from '../enums/error-code.enum.js';
 
 /** Thrown when a Kafka message does not match its contract. */
 export class InvalidEventError extends Error {

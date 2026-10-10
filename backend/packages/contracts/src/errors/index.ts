@@ -1,1 +1,1 @@
-export * from './invalid-event.error';
+export * from './invalid-event.error.js';

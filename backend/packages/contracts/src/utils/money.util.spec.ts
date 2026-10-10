@@ -1,4 +1,4 @@
-import { MoneyUtil } from './money.util';
+import { MoneyUtil } from './money.util.js';
 
 describe('MoneyUtil', () => {
   it('multiplies a unit price by the quantity', () => {

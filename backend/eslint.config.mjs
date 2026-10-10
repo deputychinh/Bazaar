@@ -1,0 +1,128 @@
+// Lint rules that enforce plan §6A (coding conventions) for the whole backend.
+import js from '@eslint/js';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import importX from 'eslint-plugin-import-x';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+
+const UPPER_SNAKE = '/^[A-Z][A-Z0-9_]*$/';
+
+// §6A.1 single-source declarations and §6A.3 "everything is a class".
+const RESTRICTIONS = {
+  enum: {
+    selector: 'TSEnumDeclaration',
+    message: 'Enums live only in enums/<name>.enum.ts (one enum per file).',
+  },
+  interface: {
+    selector: 'TSInterfaceDeclaration[id.name!=/Options$/]',
+    message: 'Shared interfaces live only in interfaces/<name>.interface.ts.',
+  },
+  typeAlias: {
+    selector: 'ExportNamedDeclaration > TSTypeAliasDeclaration',
+    message: 'Exported types live only in *.interface.ts, *.dto.ts or *.schema.ts files.',
+  },
+  constant: {
+    selector: `ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[id.name=${UPPER_SNAKE}]`,
+    message: 'Constants live only in constants/<topic>.constant.ts.',
+  },
+  functionDeclaration: {
+    selector: 'Program > FunctionDeclaration, ExportNamedDeclaration > FunctionDeclaration',
+    message: 'Backend code is written in classes (plan §6A.3).',
+  },
+  arrowFunction: {
+    selector:
+      'Program > VariableDeclaration > VariableDeclarator[init.type="ArrowFunctionExpression"], ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[init.type="ArrowFunctionExpression"]',
+    message: 'Backend code is written in classes (plan §6A.3).',
+  },
+};
+
+const restrictAllExcept = (...allowed) => [
+  'error',
+  ...Object.entries(RESTRICTIONS)
+    .filter(([name]) => !allowed.includes(name))
+    .map(([, restriction]) => restriction),
+];
+
+export default tseslint.config(
+  {
+    ignores: ['**/dist/**', '**/coverage/**', '**/node_modules/**', '**/*.js', '**/*.mjs'],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  importX.flatConfigs.recommended,
+  importX.flatConfigs.typescript,
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+    },
+    settings: {
+      'import-x/resolver-next': [createTypeScriptImportResolver({ project: '**/tsconfig.json' })],
+    },
+    rules: {
+      'no-console': 'error',
+      'no-restricted-syntax': restrictAllExcept(),
+      'no-restricted-properties': [
+        'error',
+        { object: 'process', property: 'env', message: 'Read env only in the config module.' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
+      '@typescript-eslint/explicit-member-accessibility': 'error',
+      '@typescript-eslint/member-ordering': 'error',
+      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+      '@typescript-eslint/no-extraneous-class': [
+        'error',
+        { allowStaticOnly: true, allowWithDecorator: true },
+      ],
+      'import-x/no-cycle': 'error',
+      'import-x/no-unresolved': 'off',
+      'import-x/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+          'newlines-between': 'always',
+          alphabetize: { order: 'asc', caseInsensitive: true },
+        },
+      ],
+      'max-params': ['error', 3],
+      'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
+    },
+  },
+  // Constructor injection is the one place where many parameters are expected.
+  {
+    files: ['**/*.ts'],
+    rules: {
+      'max-params': 'off',
+      '@typescript-eslint/max-params': ['error', { max: 3, countVoidThis: false }],
+    },
+  },
+  { files: ['**/*.enum.ts'], rules: { 'no-restricted-syntax': restrictAllExcept('enum') } },
+  {
+    files: ['**/*.interface.ts'],
+    rules: { 'no-restricted-syntax': restrictAllExcept('interface', 'typeAlias') },
+  },
+  {
+    files: ['**/*.dto.ts', '**/*.schema.ts'],
+    rules: { 'no-restricted-syntax': restrictAllExcept('typeAlias') },
+  },
+  { files: ['**/*.constant.ts'], rules: { 'no-restricted-syntax': restrictAllExcept('constant') } },
+  {
+    files: ['**/main.ts', '**/common/decorators/**/*.ts'],
+    rules: { 'no-restricted-syntax': restrictAllExcept('functionDeclaration', 'arrowFunction') },
+  },
+  { files: ['**/config/**/*.ts'], rules: { 'no-restricted-properties': 'off' } },
+  {
+    files: ['**/*.spec.ts', '**/*.int-spec.ts', '**/test/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': 'off',
+      'max-lines': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+    },
+  },
+);

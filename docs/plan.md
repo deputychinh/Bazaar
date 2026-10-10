@@ -553,7 +553,7 @@ Two layers: **primitive tokens** (raw scale) → **semantic tokens** (meaning). 
 |---|---|---|
 | `--color-bg` / `--color-surface` / `--color-surface-raised` | ink-50 / #FFFFFF / #FFFFFF + shadow | Page, cards, popovers |
 | `--color-text` / `--color-text-muted` / `--color-text-inverse` | ink-900 / ink-600 / #FFFFFF | Body, secondary, on brand |
-| `--color-border` / `--color-border-strong` | ink-200 / ink-300 | Dividers, inputs |
+| `--color-border` / `--color-border-control` | ink-200 / ink-500 | Decorative dividers / input borders (ink-500 = 4.8:1, meets WCAG 1.4.11; ink-300 failed at 1.49:1) |
 | `--color-primary` / `--color-primary-hover` / `--color-primary-subtle` | saffron-600 / saffron-700 / saffron-50 | CTA buttons (saffron-600 on white passes AA for normal text; saffron-500 only for large text/icons) |
 | `--color-success` / `--color-warning` / `--color-danger` / `--color-info` (+ `-subtle`) | teal-600 / amber-700 / red-600 / blue-600 (+ 50 shades) | Status badges, alerts |
 | `--color-focus-ring` | saffron-500 @ 40 % | Focus outline |

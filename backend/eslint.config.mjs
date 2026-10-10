@@ -29,6 +29,12 @@ const RESTRICTIONS = {
     selector: 'Program > FunctionDeclaration, ExportNamedDeclaration > FunctionDeclaration',
     message: 'Backend code is written in classes (plan §6A.3).',
   },
+  // Max 3 parameters, except constructors (dependency injection) — plan §6A.2.
+  tooManyParams: {
+    selector:
+      ':function[params.length>3]:not(MethodDefinition[kind="constructor"] > FunctionExpression)',
+    message: 'Use at most 3 parameters; pass one options object instead.',
+  },
   arrowFunction: {
     selector:
       'Program > VariableDeclaration > VariableDeclarator[init.type="ArrowFunctionExpression"], ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[init.type="ArrowFunctionExpression"]',
@@ -66,7 +72,12 @@ export default tseslint.config(
       parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
     },
     settings: {
-      'import-x/resolver-next': [createTypeScriptImportResolver({ project: '**/tsconfig.json' })],
+      'import-x/resolver-next': [
+        createTypeScriptImportResolver({
+          project: '**/tsconfig.json',
+          noWarnOnMultipleProjects: true,
+        }),
+      ],
     },
     rules: {
       'no-console': 'error',
@@ -96,16 +107,7 @@ export default tseslint.config(
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
-      'max-params': ['error', 3],
       'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
-    },
-  },
-  // Constructor injection is the one place where many parameters are expected.
-  {
-    files: ['**/*.ts'],
-    rules: {
-      'max-params': 'off',
-      '@typescript-eslint/max-params': ['error', { max: 3, countVoidThis: false }],
     },
   },
   { files: ['**/*.enum.ts'], rules: { 'no-restricted-syntax': restrictAllExcept('enum') } },
@@ -130,6 +132,8 @@ export default tseslint.config(
       'max-lines': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/unbound-method': 'off',
+      // `expect.any()` / `expect.objectContaining()` are typed as any by design.
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
     },
   },

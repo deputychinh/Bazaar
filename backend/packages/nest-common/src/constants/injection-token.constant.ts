@@ -1,0 +1,2 @@
+export const KAFKA_MODULE_OPTIONS = Symbol('KAFKA_MODULE_OPTIONS');
+export const HEALTH_INDICATORS = Symbol('HEALTH_INDICATORS');

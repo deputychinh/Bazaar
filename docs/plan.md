@@ -2,8 +2,8 @@
 
 > A production-style fullstack showcase: **React with three rendering modes (SSG · SSR · SPA)**, **NestJS microservices talking over Kafka**, **MySQL + MongoDB** each used where it fits, shipped with **Docker** and run on **Kubernetes** (local `kind` cluster).
 >
-> Frontend: **Next.js (React 19, App Router)** for the **customer site** — landing pages statically generated, catalog server-rendered — plus a **React SPA (Vite)** for the **admin site** (sellers + platform admins).
-> Backend: **NestJS 11** + **Prisma** (MySQL and MongoDB) — one API gateway (BFF) and three domain services, events on **Apache Kafka (KRaft)**, transactional outbox for reliable publishing.
+> Frontend (two independent projects): **Next.js 16 (React 19, App Router)** for the **customer site** — landing pages statically generated, catalog server-rendered — plus a **React SPA (Vite)** for the **admin site** (sellers + platform admins).
+> Backend: **NestJS 12** + **Prisma** (MySQL and MongoDB) — one API gateway (BFF) and three domain services, events on **Apache Kafka (KRaft)**, transactional outbox for reliable publishing.
 > Data: **MySQL 8.4** (users, orders, payments — money and strong consistency) · **MongoDB 8** (product catalog, reviews, notifications — flexible documents, text search).
 > Platform: **Docker** (multi-stage images, compose for daily dev) · **Kubernetes** (Kustomize base + overlays, `kind` locally) · **GitHub Actions** CI/CD.
 > Cloud: **AWS**, infrastructure as code with **AWS CDK (TypeScript)** — EKS, Aurora MySQL, MongoDB Atlas (on AWS, PrivateLink), MSK, S3 + CloudFront, ECR, Secrets Manager, CloudWatch.
@@ -45,7 +45,7 @@ Rules taken from real teams: **build once, promote the same image**; config only
 
 ### 0.3 Ways of working
 - **Backlog:** `docs/backlog.md` — epics per phase, tickets `BZ-xxx` with user story, acceptance criteria, estimate (S/M/L). Optional mirror to GitHub Issues + Project board.
-- **Definition of Ready:** acceptance criteria written, contracts (DTO / event) agreed in `packages/contracts`, dependencies known.
+- **Definition of Ready:** acceptance criteria written, contracts (DTO / event) agreed in `backend/packages/contracts` and the OpenAPI file, dependencies known.
 - **Definition of Done:** code + tests (unit, plus integration when DB/Kafka is touched), lint/typecheck green, docs/ADR updated, works in staging (kind), reviewed.
 - **Git:** trunk-based, short branches `feat/BZ-012-order-saga`, **Conventional Commits**, PR template (what / why / how tested / screenshots), squash merge, `main` always releasable.
 - **Quality gates before commit:** Husky + lint-staged (ESLint, Prettier, Stylelint on staged files), commitlint.
@@ -83,7 +83,7 @@ Run on staging (kind), each written up in `docs/drills.md` with what happened an
 | AWS with CDK | Whole cloud environment in CDK TypeScript (§9A): VPC, EKS, Aurora MySQL, MongoDB Atlas, MSK, S3 + CloudFront, ECR, GitHub OIDC, alarms; unit-tested and checked with cdk-nag |
 | Production quality | Tests (unit, integration with Testcontainers, e2e Playwright), CI, ADRs, diagrams, runbook, metrics & tracing |
 
-**Main aim: simple, explicit code.** No magic strings: one home for each enum, constant, event name and interface (`packages/contracts`). Small modules, readable names. When two options work, the simpler one wins.
+**Main aim: simple, explicit code.** No magic strings: one home for each enum, constant, event name and interface (`backend/packages/contracts`, exposed to the frontends through the gateway OpenAPI). Small modules, readable names. When two options work, the simpler one wins.
 
 ---
 
@@ -152,13 +152,13 @@ Real payment provider, multi-currency, shipping carriers, recommendations, mobil
 ### 2A.3 Design standards (DS)
 | ID | Standard |
 |---|---|
-| DS-01 | Every enum, constant, event name, topic name and shared DTO lives in `packages/contracts` and is imported — never re-typed |
+| DS-01 | Every enum, constant, event name, topic name and shared DTO lives in `backend/packages/contracts` and is imported — never re-typed. Frontends never hand-write API types; they generate them from the gateway OpenAPI |
 | DS-02 | Each service owns its database; no service reads another service's tables/collections |
 | DS-03 | Sync calls only gateway → service (HTTP); service ↔ service is **async** via Kafka |
 | DS-04 | A state change and its event are committed together (outbox table in MySQL, outbox collection in a Mongo transaction) |
 | DS-05 | Every consumer is idempotent (processed-event table/collection keyed by `eventId`) |
 | DS-06 | Rendering mode is decided by the rule in §6.1 and written in the route table |
-| DS-07 | All CSS is BEM, values only from design tokens (`packages/ui/tokens.css`), enforced by Stylelint |
+| DS-07 | All CSS is BEM, values only from design tokens (`src/styles/tokens.css` in each frontend, both matching `docs/design-system.md`), enforced by Stylelint |
 | DS-08 | Same NestJS module layout in every service: `controller → service → repository`; domain rules have no framework imports |
 | DS-09 | Config only from env, validated at boot (zod); fail fast |
 | DS-10 | Utils have plain names (`formatMoney`, `toSlug`, `sleep`) and live in one `utils` folder per package |
@@ -173,7 +173,7 @@ Real payment provider, multi-currency, shipping carriers, recommendations, mobil
                          └──────┬────────────┬────────────┬──────────┘
                                 │            │            │
                       ┌─────────▼────────────▼──┐   ┌─────▼───────────┐
-                      │  apps/web  (Next.js)    │   │ apps/admin      │
+                      │  frontend-web (Next.js) │   │ frontend-admin  │
                       │  SSG + SSR + ISR        │   │ (Vite SPA,nginx)│
                       └─────────┬───────────────┘   └─────┬───────────┘
                                 │  REST (server-side)     │ REST + SSE
@@ -195,12 +195,12 @@ Real payment provider, multi-currency, shipping carriers, recommendations, mobil
 ### 3.1 Components
 | Component | Tech | Responsibility | Data |
 |---|---|---|---|
-| `apps/web` | Next.js, React 19 | Public site: SSG marketing, SSR catalog, checkout, my orders | — |
-| `apps/admin` | Vite, React 19, React Router, TanStack Query | Seller & admin SPA | — |
-| `services/gateway` | NestJS, Prisma (MySQL) | Auth, JWT, roles, rate limit, routes requests to services, SSE for live order status (fed from Kafka) | MySQL `bazaar_identity` |
-| `services/catalog` | NestJS, Prisma (MongoDB) | Shops, products, categories, stock, reviews, search | MongoDB `bazaar_catalog` |
-| `services/order` | NestJS, Prisma (MySQL) | Orders, payments (fake provider), saga state, outbox | MySQL `bazaar_order` |
-| `services/notification` | NestJS, Prisma (MongoDB), Nodemailer | Consumes events, emails, in-app notifications, event log | MongoDB `bazaar_notification` |
+| `frontend-web` | Next.js 16, React 19 | Public site: SSG marketing, SSR catalog, checkout, my orders | — |
+| `frontend-admin` | Vite, React 19, React Router, TanStack Query | Seller & admin SPA | — |
+| `backend/services/gateway` | NestJS, Prisma (MySQL) | Auth, JWT, roles, rate limit, routes requests to services, SSE for live order status (fed from Kafka) | MySQL `bazaar_identity` |
+| `backend/services/catalog` | NestJS, Prisma (MongoDB) | Shops, products, categories, stock, reviews, search | MongoDB `bazaar_catalog` |
+| `backend/services/order` | NestJS, Prisma (MySQL) | Orders, payments (fake provider), saga state, outbox | MySQL `bazaar_order` |
+| `backend/services/notification` | NestJS, Prisma (MongoDB), Nodemailer | Consumes events, emails, in-app notifications, event log | MongoDB `bazaar_notification` |
 | Kafka | apache/kafka (KRaft, no ZooKeeper) | Event backbone | — |
 | Kafka UI | kafbat/kafka-ui | Watch topics, messages, consumer lag | — |
 | Mailpit | axllent/mailpit | Catch emails locally | — |
@@ -210,25 +210,39 @@ Enough to show real boundaries (two databases, async saga, fan-out consumer) wit
 
 ---
 
-## 4. Monorepo layout
+## 4. Repository layout — one repo, three independent projects
 
-npm workspaces (same as `b2b/folio`, no extra package manager) + Turborepo for cached `build/test/lint` across packages.
+One git repo (`deputychinh/Bazaar`), but **three projects that share nothing at build time** (decided 2026-10-11):
+
+| Project | Folder | Own package.json + lockfile | Talks to the others through |
+|---|---|---|---|
+| Backend (NestJS services + shared backend packages) | `backend/` | yes — npm workspaces + Turborepo **inside `backend/` only** | Kafka (between services), REST/OpenAPI (to frontends) |
+| Customer site (Next.js) | `frontend-web/` | yes | Gateway REST API; types generated from `backend/openapi/gateway.json` |
+| Admin site (React SPA) | `frontend-admin/` | yes | Gateway REST API; types generated from `backend/openapi/gateway.json` |
+
+Each project can be installed, built, tested, containerised and released on its own (own CI workflow with a path filter), exactly as if it lived in its own repo — splitting into three repos later is a `git subtree split`.
 
 ```
 bazaar/
-├── apps/
-│   ├── web/                 # Next.js — SSG + SSR
-│   └── admin/               # React SPA (Vite) — admin site: seller + platform admin
-├── services/
-│   ├── gateway/             # NestJS BFF + identity (MySQL)
-│   ├── catalog/             # NestJS (MongoDB)
-│   ├── order/               # NestJS (MySQL, outbox)
-│   └── notification/        # NestJS (MongoDB)
-├── packages/
-│   ├── contracts/           # enums, constants, topic names, event + DTO types, zod schemas  (DS-01)
-│   ├── nest-common/         # config, logger, health, Kafka module, outbox relay, idempotency
-│   ├── ui/                  # design tokens (tokens.css) + BEM components shared by web + admin
-│   └── api-client/          # typed client generated from gateway OpenAPI
+├── backend/
+│   ├── package.json         # npm workspaces: services/*, packages/*
+│   ├── turbo.json
+│   ├── services/
+│   │   ├── gateway/         # NestJS BFF + identity (MySQL)
+│   │   ├── catalog/         # NestJS (MongoDB)
+│   │   ├── order/           # NestJS (MySQL, outbox)
+│   │   └── notification/    # NestJS (MongoDB)
+│   ├── packages/
+│   │   ├── contracts/       # backend single source: enums, constants, topics, events, zod schemas (DS-01)
+│   │   └── nest-common/     # config, logger, health, Kafka wrapper, outbox relay, idempotency
+│   └── openapi/
+│       └── gateway.json     # exported OpenAPI of the gateway — the contract for both frontends (committed)
+├── frontend-web/            # Next.js — customer site (SSG + SSR + ISR)
+│   ├── src/api/schema.ts    # generated by openapi-typescript (never edited by hand)
+│   └── src/styles/tokens.css
+├── frontend-admin/          # React SPA (Vite) — admin site: seller + platform admin
+│   ├── src/api/schema.ts    # generated by openapi-typescript
+│   └── src/styles/tokens.css
 ├── infra/
 │   ├── docker/              # init scripts (mysql users, kafka topics, mongo replica set + indexes)
 │   ├── k8s/
@@ -237,24 +251,34 @@ bazaar/
 │   │   └── overlays/
 │   │       ├── local/       # kind: in-cluster MySQL/Mongo/Kafka, 1 replica
 │   │       └── aws/         # EKS: managed Aurora / MongoDB Atlas / MSK endpoints, ALB ingress, HPA, PDB
-│   └── cdk/                 # AWS CDK app (TypeScript) — see §9A
+│   └── cdk/                 # AWS CDK app (TypeScript, own package.json) — see §9A
 │       ├── bin/bazaar.ts    # entry: builds stacks per environment (dev, prod)
 │       ├── lib/stacks/      # network, data, cluster, edge, ci, observability
 │       ├── lib/config/      # env settings (account, region, sizes) — one place, typed
 │       └── test/            # Jest assertions + snapshot + cdk-nag
-├── e2e/                     # Playwright journeys
+├── e2e/                     # Playwright journeys (own package.json)
 ├── loadtest/                # k6 scripts
 ├── docs/
 │   ├── plan.md
+│   ├── design-system.md     # brand palette + BEM rules — source of truth for both tokens.css files
 │   ├── adr/
 │   ├── architecture/        # *.drawio + exported *.png + README
 │   └── runbook.md
-├── .github/workflows/       # ci.yml, images.yml, k8s-smoke.yml
+├── scripts/                 # check-tokens.mjs, check-openapi.mjs (cross-project consistency checks)
+├── .github/workflows/       # backend.yml, web.yml, admin.yml, cdk.yml, k8s-smoke.yml, deploy.yml
+├── package.json             # repo tooling only: husky, lint-staged, commitlint, prettier — no workspaces
 ├── docker-compose.yml
 ├── Makefile                 # one command per task, `make help`
 ├── .env.example
 └── requirement.md
 ```
+
+### 4.1 How "write it once" still holds without shared packages
+| Shared thing | Single source | How each frontend gets it | Drift check |
+|---|---|---|---|
+| Enums, DTOs, error codes | `backend/packages/contracts` → gateway DTOs → `backend/openapi/gateway.json` (enums exported as OpenAPI enums) | `npm run gen:api` (openapi-typescript) → `src/api/schema.ts` | CI fails if `gateway.json` is stale vs the gateway code, or if a frontend's `schema.ts` is stale vs `gateway.json` (`scripts/check-openapi.mjs`) |
+| Brand palette / tokens | `docs/design-system.md` | Each frontend has its own `src/styles/tokens.css` | CI compares the token block of both files (`scripts/check-tokens.mjs`) |
+| Events, topics | `backend/packages/contracts` | Not needed by frontends | — |
 
 ---
 
@@ -277,7 +301,7 @@ src/
 ```
 
 ### 5.2 Kafka
-- Client: `@nestjs/microservices` Kafka transport (hybrid app: HTTP + Kafka consumer in one process). Producer/consumer wrapped in `nest-common` so the underlying client library can be swapped in one place (see §16).
+- Client: **`@confluentinc/kafka-javascript`** (actively maintained, librdkafka-based, KafkaJS-compatible API). KafkaJS — and therefore the built-in `@nestjs/microservices` Kafka transport — is no longer maintained (last release 2023), so it is not used. Producer and consumer are wrapped in `nest-common` (`EventProducer`, `EventConsumer`), started inside each Nest app's lifecycle hooks; swapping the library touches one folder.
 - **Topics** (names only in `contracts/topics.ts`), 3 partitions locally, key = aggregate id (keeps order per order/product):
 
 | Topic | Producer | Consumers | Events |
@@ -333,10 +357,10 @@ Errors: one problem-details shape (`{ code, message, details }`), codes in `cont
 | `admin.*/platform/**` | admin | SPA |
 
 ### 6.3 Shared frontend rules
-- **Brand palette** (one set, in `packages/ui/tokens.css`) — proposal "Saffron & Ink":
+- **Brand palette** (one set, defined in `docs/design-system.md`, copied into each frontend's `src/styles/tokens.css`, kept equal by `scripts/check-tokens.mjs`) — "Saffron & Ink":
   `--color-brand-500 #E8590C` (saffron, CTA) · `--color-brand-600 #C2410C` (hover) · `--color-ink-900 #1C1917` (text) · `--color-ink-600 #57534E` · `--color-sand-50 #FAFAF9` (background) · `--color-teal-600 #0F766E` (success/secondary) · `--color-red-600 #DC2626` (danger) · `--color-amber-500 #F59E0B` (warning). Contrast checked for AA at P0; dark theme via token swap.
 - **CSS**: plain CSS files with BEM (`.product-card__price--sale`), tokens only, Stylelint (`stylelint-selector-bem-pattern`, `declaration-strict-value`). No Tailwind, no CSS-in-JS.
-- **Data**: web uses server fetch + `api-client`; admin uses TanStack Query + `api-client`. Enums come from `contracts`.
+- **Data**: each frontend generates `src/api/schema.ts` from `backend/openapi/gateway.json` (openapi-typescript) and calls the API through `openapi-fetch` (typed, tiny). web: server-side fetch in Server Components; admin: TanStack Query. Enums come from the generated schema.
 - **Tests**: Vitest + React Testing Library; Playwright for journeys.
 
 ---
@@ -490,7 +514,11 @@ Argo CD (GitOps) instead of `kubectl apply` is a listed next step (ADR 0009).
 
 ## 11. CI/CD (GitHub Actions)
 Every workflow step is also a Makefile target, so the whole pipeline runs on the laptop (`make ci`, `make release`).
-- `ci.yml`: install (npm cache) → lint (ESLint + Stylelint) → typecheck → unit → integration (Testcontainers) → build (Turborepo cache) → `npm audit`.
+- One workflow per project, triggered only by its own folder (path filters):
+  - `backend.yml` (`backend/**`): install → lint → typecheck → unit → integration (Testcontainers) → build (Turborepo cache) → OpenAPI freshness check → `npm audit`.
+  - `web.yml` (`frontend-web/**`, `backend/openapi/**`): install → generated-schema check → lint (ESLint + Stylelint) → typecheck → unit → build.
+  - `admin.yml` (`frontend-admin/**`, `backend/openapi/**`): same steps for the admin SPA.
+  - Repo-wide on every PR: commitlint, `scripts/check-tokens.mjs`.
 - `images.yml`: build multi-arch images (amd64 + arm64), Trivy scan, tag = git sha. Locally: `make images` + `make k8s-load`.
 - `k8s-smoke.yml`: kind cluster + Kustomize apply + rollout status + curl health. Locally: `make release` (= promote to staging).
 - `cdk.yml`: on PRs touching `infra/cdk` → Jest → `cdk synth` (cdk-nag). Locally: `make aws-test aws-synth`.
@@ -531,8 +559,8 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 
 | Phase | Output | Done when |
 |---|---|---|
-| **P0 Foundation** | Monorepo, Turborepo, TS/ESLint/Prettier/Stylelint configs, `contracts`, `nest-common`, `ui` tokens, Makefile, `.env.example`, compose infra | `make up` starts infra healthy; `make lint test` green |
-| **P1 Identity + gateway** | Register/login/refresh/roles, rate limit, OpenAPI, api-client generation | Auth integration tests pass |
+| **P0 Foundation** | Repo tooling (husky, commitlint, prettier), `backend/` workspace + Turborepo + TS/ESLint configs, `contracts`, `nest-common`, Prisma ↔ MongoDB spike, `docs/design-system.md`, `docs/backlog.md`, Makefile, `.env.example`, compose infra (frontend projects are scaffolded in P3 / P6) | `make up` starts infra healthy; `make lint test` green |
+| **P1 Identity + gateway** | Register/login/refresh/roles, rate limit, OpenAPI exported to `backend/openapi/gateway.json` | Auth integration tests pass |
 | **P2 Catalog** | Shops, products, categories, search, seller CRUD, images (local disk / MinIO), seed (1k products) | Search + filters work through gateway |
 | **P3 Web (SSG + SSR)** | Landing pages, catalog/product SSR, ISR revalidate, SEO, cart | Lighthouse ≥ 90 perf/SEO/a11y on landing + product |
 | **P4 Orders + Kafka saga** | Order service, outbox relay, stock reservation, fake payment, timeouts, DLQ | Concurrent-order test shows zero oversell; saga tests green |
@@ -553,7 +581,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 ## 15. Documentation deliverables
 - **draw.io** (`docs/architecture/`): `architecture.drawio`, `k8s_deployment.drawio`, `aws_deployment.drawio` (VPC/AZ/subnets, EKS, Aurora, MongoDB Atlas via PrivateLink, MSK, CloudFront, ALB), `aws_cicd.drawio` (GitHub OIDC → ECR → CDK → EKS), `erd_mysql.drawio`, `collections_mongo.drawio`, `event_map.drawio` (topics × producers × consumers), `order_state.drawio`, `rendering_modes.drawio`, and a sequence per flow: B1 sign-up, B2 browse (SSR), B3 place order saga, B4 stock rejected, B5 payment failed + compensation, B6 live status (SSE), B7 product update → ISR revalidate.
 - **ADRs** (`docs/adr/`):
-  0001 npm workspaces + Turborepo ·
+  0001 One repo, three independent projects (backend workspace, frontend-web, frontend-admin); frontends get types from OpenAPI ·
   0002 Next.js for SSG/SSR, separate React SPA for the admin site ·
   0003 Gateway/BFF + 3 services, database per service ·
   0004 MySQL vs MongoDB split ·
@@ -573,7 +601,8 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | Risk | Mitigation |
 |---|---|
 | Laptop resources (kind + Kafka + 2 DBs) | Compose for daily dev; kind only from P7; local overlay runs 1 replica with small limits |
-| Kafka client library maintenance | Producer/consumer wrapped in `nest-common`; library chosen and pinned at P0 after checking its status |
+| Kafka client library maintenance | KafkaJS is unmaintained → `@confluentinc/kafka-javascript` chosen; wrapped in `nest-common` so it can be swapped in one place; native librdkafka build verified on arm64 Mac and in the Alpine image at P0 |
+| Frontends drift from the API or from each other (no shared packages) | Generated API types + CI freshness checks; token-equality check (§4.1) |
 | Atlas is outside AWS billing / IAM | Only on paper (local-only project); access via PrivateLink + scoped API keys documented in ADR 0010 |
 | Saga complexity / stuck orders | State machine in one pure file with unit tests; reservation timeout job; DLQ + runbook |
 | Mongo transactions need a replica set | Single-node replica set in compose and k8s (`--replSet rs0` + init) |
@@ -591,6 +620,9 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | D1 | Product domain & name | **Bazaar — multi-vendor marketplace** |
 | D2 | Frontend framework | **Next.js (React)** for the **customer site** (SSG + SSR + ISR) |
 | D3 | Admin site | **Separate React SPA** (Vite + React Router), sellers + platform admins, served by nginx |
+| D12 | Frontend repo layout | **Two independent projects in the Bazaar repo** (`frontend-web/`, `frontend-admin/`), no shared workspace with each other or with the backend |
+| D13 | Sharing types / tokens with frontends | **Generated from the gateway OpenAPI** (openapi-typescript); each frontend keeps its own `tokens.css`, kept equal by a CI check |
+| D14 | Toolchain versions (checked 2026-10-11) | **TypeScript 6.0.x** (TS 7 not yet supported by typescript-eslint / ts-jest) · **NestJS 12** · **Kafka client `@confluentinc/kafka-javascript`** (KafkaJS unmaintained) · **Prisma latest stable** (not the 8.0 RC; MongoDB support verified by the P0 spike) · Node 24 LTS in images, engines `>=24` |
 | D4 | ORM | **Prisma** for both MySQL and MongoDB (risks and workarounds in §16) |
 | D5 | Kafka on k8s | **Strimzi operator** |
 | D6 | Observability | **Production-grade full stack** (§9.3): Prometheus + Alertmanager + Grafana, Loki, Tempo, OpenTelemetry, SLOs |

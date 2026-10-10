@@ -29,7 +29,7 @@
 | Containers | Docker (Dockerfile per app, docker compose for local dev) |
 | Orchestration | Kubernetes (local cluster with `kind`, manifests ready for a real cluster) |
 | Cache | **Redis** — required (added 2026-10-11) |
-| Language / currency | UI, emails and product content in **English and Vietnamese**; prices in **USD and VND** (added 2026-10-11) |
+| Language / currency | UI, emails and product content in **English and Vietnamese**; all money stored in **USD** in the backend, VND for display only (added 2026-10-11) |
 | Data files | Schema and seed data in `db/` as `schema.sql` / `data.sql` (MongoDB: `schema.js` / `data.js`) (added 2026-10-11) |
 | Code language | English |
 | Cloud | AWS deployment written as code with **AWS CDK** (added 2026-10-10: "Thiếu phần triển khai aws bằng cdk code nữa") |

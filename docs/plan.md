@@ -114,7 +114,7 @@ This domain is picked because it naturally needs all three rendering modes, both
 | F11 | Reviews after delivery, rating summary on product | catalog-service, event-driven rating update |
 | F12 | Event log viewer for admin | notification-service stores every event |
 | F13 | **Bilingual EN / VI**: both sites, emails and product content; locale in the URL (`/en`, `/vi`) on the customer site | next-intl (web), react-i18next (admin), localized fields in Mongo |
-| F14 | **Two currencies USD / VND**: shopper picks the display + checkout currency (default from locale); admin manages the USD→VND rate; orders snapshot currency + rate | order-service (MySQL `exchange_rates`), web |
+| F14 | **Display in USD or VND**: all money is stored and charged in **USD**; the shopper can view prices in VND (default for `vi`) using the admin-managed USD→VND rate | order-service (MySQL `exchange_rates`, rate served via gateway), both sites |
 
 ### Out of scope (written as "next steps")
 Real payment provider and refunds, live FX rates, currencies beyond USD/VND, languages beyond EN/VI, shipping carriers and fees, taxes, recommendations, mobile app, multi-region.
@@ -138,7 +138,7 @@ Real payment provider and refunds, live FX rates, currencies beyond USD/VND, lan
 | FR-10 | Reviews after delivery; product rating updates automatically | Shopper | Should |
 | FR-11 | Dashboards: seller sales per day, admin GMV / orders / top sellers | Seller, Admin | Could |
 | FR-12 | Every screen, email and error message available in English and Vietnamese; products have EN + VI title/description | All | Must |
-| FR-13 | Prices shown and charged in USD or VND; the rate used is stored on the order | Shopper | Must |
+| FR-13 | All amounts stored and charged in USD; prices can be displayed in VND; the rate shown at checkout is stored on the order for receipts | Shopper | Must |
 
 ### 2A.2 Non-functional requirements (NFR)
 | ID | Requirement | Target |
@@ -178,7 +178,7 @@ Real payment provider and refunds, live FX rates, currencies beyond USD/VND, lan
 | Order states | `Order`: PENDING → RESERVED → PAID → CONFIRMED, or CANCELLED (reasons: OUT_OF_STOCK, PAYMENT_FAILED, RESERVATION_TIMEOUT, SHOPPER_CANCELLED). `SellerOrder`: CONFIRMED → SHIPPED → DELIVERED, or CANCELLED before SHIPPED (stock released). When every seller order is final, the `Order` is COMPLETED |
 | Reviews | Only for items of a DELIVERED seller order, one review per item per shopper |
 | Payment (fake provider) | Card `4000 0000 0000 0002` → declined, `4000 0000 0000 0119` → timeout, any other valid test number → success. No real refunds (cancellation after payment marks a "refund pending" record) |
-| Currency | Product prices are entered in **USD** (base, minor units). Display and checkout in **USD or VND**; VND = USD × admin-managed rate, rounded to whole đồng (VND has 0 decimals — currency exponents live in `CURRENCY_EXPONENT` constant). The order stores `currency`, `fxRate` and all amounts in the charged currency |
+| Currency (decided 2026-10-11) | **The backend stores every amount in USD cents** (integers) — prices, order totals, payments, dashboards. VND is **display only**: frontends convert with the admin-managed USD→VND rate and round to whole đồng. At checkout the order snapshots `display_currency` and `fx_rate_usd_vnd` so receipts and emails show the VND figure the shopper saw; payment is always charged in USD |
 | Language | EN and VI everywhere. Backend returns error **codes**, frontends translate them. Emails use the user's `preferredLocale`. Product title/description stored as `{ en, vi }`; missing VI falls back to EN |
 | Time | Stored UTC; shown in the browser's time zone, formatted per locale |
 | Auth | Gateway signs RS256 JWT (15 min access, 7-day rotating refresh in httpOnly cookie). Downstream services verify the JWT themselves with the public key (zero-trust inside the cluster). Email verification and password reset links expire after 24 h / 1 h |
@@ -673,11 +673,11 @@ export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => (
 
 ### 7.2 MySQL (Prisma, `prisma migrate` — SQL migrations checked in)
 - `bazaar_identity`: `users(id, email UQ, password_hash, role, status, preferred_locale, email_verified_at, created_at)`, `refresh_tokens(id, user_id FK, token_hash, family_id, expires_at, revoked_at)`, `user_tokens(id, user_id FK, purpose, token_hash, expires_at, used_at)` (email verification / password reset), `seller_applications(id, user_id FK, shop_name, status, reviewed_by, reviewed_at)`
-- `bazaar_order`: `orders(id, shopper_id, status, currency, fx_rate, total_minor, cancel_reason, idempotency_key UQ, created_at, updated_at)`, `seller_orders(id, order_id FK, seller_id, status, subtotal_minor, shipped_at, delivered_at, cancelled_at)`, `order_items(id, seller_order_id FK, product_id, variant_sku, title_snapshot JSON, qty, unit_price_minor)`, `payments(id, order_id FK, status, provider_ref, amount_minor, currency)`, `exchange_rates(id, base, quote, rate DECIMAL(18,6), effective_from, created_by)`, `outbox(id, topic, msg_key, payload JSON, created_at, sent_at)`, `processed_events(event_id PK, processed_at)`
-- Money as integer **minor units** of the order currency (cents for USD, đồng for VND). Indexes on `orders(shopper_id, created_at)`, `seller_orders(seller_id, status, id)`, `outbox(sent_at)`.
+- `bazaar_order`: `orders(id, shopper_id, status, total_usd_cents, display_currency, fx_rate_usd_vnd, cancel_reason, idempotency_key UQ, created_at, updated_at)`, `seller_orders(id, order_id FK, seller_id, status, subtotal_usd_cents, shipped_at, delivered_at, cancelled_at)`, `order_items(id, seller_order_id FK, product_id, variant_sku, title_snapshot JSON, qty, unit_price_usd_cents)`, `payments(id, order_id FK, status, provider_ref, amount_usd_cents)`, `exchange_rates(id, base, quote, rate DECIMAL(18,6), effective_from, created_by)`, `outbox(id, topic, msg_key, payload JSON, created_at, sent_at)`, `processed_events(event_id PK, processed_at)`
+- Money is **always USD cents** (`*_usd_cents` columns, integers); `fx_rate_usd_vnd` is a display snapshot only. Indexes on `orders(shopper_id, created_at)`, `seller_orders(seller_id, status, id)`, `outbox(sent_at)`.
 
 ### 7.3 MongoDB (Prisma, replica set for transactions)
-- `products { _id, shopId, slug UQ, title{ en, vi }, description{ en, vi }, categoryId, attributes{}, variants[{ sku, priceUsdMinor, stock, attrs }], images[], status, rating{ avg, count }, createdAt }` — text index on title/description (both languages), compound index `(categoryId, status, variants.priceUsdMinor)`.
+- `products { _id, shopId, slug UQ, title{ en, vi }, description{ en, vi }, categoryId, attributes{}, variants[{ sku, priceUsdCents, stock, attrs }], images[], status, rating{ avg, count }, createdAt }` — text index on title/description (both languages), compound index `(categoryId, status, variants.priceUsdCents)`.
 - `categories { _id, slug, name{ en, vi }, path }`, `shops { _id, sellerId, slug, name, description{ en, vi } }`.
 - `reviews`, `outbox`, `processed_events`, `notifications` (TTL 180 days), `event_log`.
 
@@ -941,7 +941,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | D13 | Sharing types / tokens with frontends | **Generated from the gateway OpenAPI** (openapi-typescript); each frontend keeps its own `tokens.css`, kept equal by a CI check |
 | D15 | Orders across sellers | **One `Order` (one payment) split into `SellerOrder`s**, each fulfilled by its seller |
 | D16 | Fulfilment states | **SHIPPED → DELIVERED** per seller order; shopper may cancel before shipping |
-| D17 | Language & currency | **EN + VI** everywhere; **USD + VND** with an admin-managed rate snapshotted on each order |
+| D17 | Language & currency | **EN + VI** everywhere; **all money stored and charged in USD (cents)**; VND display-only via admin-managed rate, snapshotted on each order for receipts |
 | D18 | Redis | **Required**: rate limits, cache, locks, idempotency keys (ElastiCache in prod) |
 | D19 | Delivery workflow | **Commit straight to `main`** after each finished ticket (no PRs) |
 | D20 | Schema & seed files | **`backend/db/<database>/schema.sql|js` + `data.sql|js`**; code and docs in English |

@@ -30,5 +30,20 @@ Size: S (< 2 h) · M (half day) · L (1 day+). Status: ☐ todo · ◐ doing · 
 | BZ-018 | OpenAPI export | `backend/openapi/gateway.json` generated without a database; CI fails when it or `schema.sql` is stale | M | ☑ |
 | BZ-019 | Events via outbox, proven | Integration tests on MySQL + Redis + Kafka: lifecycle, seller approval, rate limit | M | ☑ |
 
-## P2 — Catalog · P3 — Customer site · P4 — Orders + saga · P5 — Notifications + live status · P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
+## P2 — Catalog
+| Id | Ticket | Acceptance criteria | Size | Status |
+|---|---|---|---|---|
+| BZ-020 | Shared service auth + catalog skeleton | `nest-common` verifies access tokens through the gateway JWKS (`@Public`, `@Roles`, `CurrentUser` shared); catalog service boots with Prisma (MongoDB), Redis, Kafka, health on :4010 | M | ☐ |
+| BZ-021 | Catalog schema + seed | Prisma models (localized `{ en, vi }` fields, variants, images), `db/catalog/schema.js` (validators + text/unique/compound indexes), deterministic `data.js` (categories, 3 shops, 1,000 products) | L | ☐ |
+| BZ-022 | Shops via Kafka | `SellerApproved` → shop created (idempotent consumer, slug from Vietnamese names); public shop page data; seller edits own shop | M | ☐ |
+| BZ-023 | Categories | Category tree with EN/VI names, public read | S | ☐ |
+| BZ-024 | Public catalog + search | List with filters (category, price range in USD cents, rating), sort (newest, price, rating), page/pageSize + total, full-text search in EN and VI; product detail by slug; only published products | L | ☐ |
+| BZ-025 | Seller products | Create / update / publish / hide own products, variants with stock; `ProductPublished/Updated/Hidden` via the Mongo outbox | L | ☐ |
+| BZ-026 | Product images | Presigned upload to object storage (S3 API), size/type checks, attach/remove image | M | ☐ |
+| BZ-027 | Redis read cache | Product detail and category tree cached; invalidated when a product changes | S | ☐ |
+| BZ-028 | Admin moderation | Admin hides / restores any product, with a reason | S | ☐ |
+| BZ-029 | Gateway routes + contract | Gateway forwards catalog routes (rate limit applies); `backend/openapi/catalog.json` exported and checked in CI | M | ☐ |
+| BZ-030 | Catalog integration tests | Real MongoDB/Redis/Kafka/storage: seller approval → shop, product lifecycle → events, search, upload, cache | M | ☐ |
+
+## P3 — Customer site · P4 — Orders + saga · P5 — Notifications + live status · P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
 Detailed tickets are written at the start of each phase (plan §13).

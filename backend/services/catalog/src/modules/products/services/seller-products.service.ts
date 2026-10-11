@@ -1,10 +1,11 @@
 import { EventType, ProductStatus } from '@bazaar/contracts';
-import { Clock, ConflictError, NotFoundError } from '@bazaar/nest-common';
+import { CacheStore, Clock, ConflictError, NotFoundError } from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
 
 import { TransactionManager } from '../../../common/transaction/transaction-manager.js';
 import { ProductAction } from '../../../enums/product-action.enum.js';
 import type { Product, ProductPage } from '../../../interfaces/product.interface.js';
+import { CacheKeyUtil } from '../../../utils/cache-key.util.js';
 import { SlugUtil } from '../../../utils/slug.util.js';
 import { CategoriesService } from '../../categories/services/categories.service.js';
 import { ShopsRepository } from '../../shops/repositories/shops.repository.js';
@@ -28,6 +29,7 @@ export class SellerProductsService {
     private readonly categories: CategoriesService,
     private readonly events: ProductEvents,
     private readonly transactions: TransactionManager,
+    private readonly cache: CacheStore,
     private readonly clock: Clock,
   ) {}
 
@@ -55,12 +57,15 @@ export class SellerProductsService {
       SlugUtil.from(request.title.en),
       async (candidate) => (await this.products.findBySlug(candidate)) !== null,
     );
-    return this.transactions.run((transaction) =>
+    const changed = await this.transactions.run((transaction) =>
       this.products.create(
         { ...request, ...summary, shopId: shop.id, sellerId, slug, status: ProductStatus.Draft },
         transaction,
       ),
     );
+    // After commit: the public page must not show stale data.
+    await this.cache.delete(CacheKeyUtil.productDetail(changed.slug));
+    return changed;
   }
 
   public async update(
@@ -73,7 +78,7 @@ export class SellerProductsService {
       await this.categories.assertExists(changes.categoryId);
     }
     const summary = changes.variants === undefined ? {} : ProductRules.summarize(changes.variants);
-    return this.transactions.run(async (transaction) => {
+    const changed = await this.transactions.run(async (transaction) => {
       const updated = await this.products.update(
         product.id,
         { ...changes, ...summary },
@@ -84,12 +89,15 @@ export class SellerProductsService {
       }
       return updated;
     });
+    // After commit: the public page must not show stale data.
+    await this.cache.delete(CacheKeyUtil.productDetail(changed.slug));
+    return changed;
   }
 
   public async publish(sellerId: string, productId: string): Promise<Product> {
     const product = await this.get(sellerId, productId);
     const status = ProductStateMachine.transition(product.status, ProductAction.Publish);
-    return this.transactions.run(async (transaction) => {
+    const changed = await this.transactions.run(async (transaction) => {
       const published = await this.products.update(
         product.id,
         { status, publishedAt: this.clock.now() },
@@ -98,15 +106,21 @@ export class SellerProductsService {
       await this.events.record(EventType.ProductPublished, published, transaction);
       return published;
     });
+    // After commit: the public page must not show stale data.
+    await this.cache.delete(CacheKeyUtil.productDetail(changed.slug));
+    return changed;
   }
 
   public async unpublish(sellerId: string, productId: string): Promise<Product> {
     const product = await this.get(sellerId, productId);
     const status = ProductStateMachine.transition(product.status, ProductAction.Unpublish);
-    return this.transactions.run(async (transaction) => {
+    const changed = await this.transactions.run(async (transaction) => {
       const draft = await this.products.update(product.id, { status }, transaction);
       await this.events.record(EventType.ProductHidden, draft, transaction);
       return draft;
     });
+    // After commit: the public page must not show stale data.
+    await this.cache.delete(CacheKeyUtil.productDetail(changed.slug));
+    return changed;
   }
 }

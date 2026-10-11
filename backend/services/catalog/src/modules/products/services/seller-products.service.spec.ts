@@ -1,5 +1,5 @@
 import { EventType, ProductStatus } from '@bazaar/contracts';
-import { ConflictError, FixedClock, NotFoundError } from '@bazaar/nest-common';
+import { ConflictError, FixedClock, InMemoryCacheStore, NotFoundError } from '@bazaar/nest-common';
 
 import {
   category,
@@ -34,6 +34,7 @@ describe('SellerProductsService', () => {
   let products: InMemoryProductsRepository;
   let outbox: RecordingOutbox;
   let service: SellerProductsService;
+  let cache: InMemoryCacheStore;
 
   beforeEach(async () => {
     const shops = new InMemoryShopsRepository();
@@ -49,6 +50,7 @@ describe('SellerProductsService', () => {
       }),
     ]);
     outbox = new RecordingOutbox();
+    cache = new InMemoryCacheStore();
     service = new SellerProductsService(
       products,
       shops,
@@ -56,9 +58,11 @@ describe('SellerProductsService', () => {
         new InMemoryCategoriesRepository([
           category({ id: CATEGORY_ID, slug: 'ceramics', path: '/ceramics' }),
         ]),
+        cache,
       ),
       new ProductEvents(outbox),
       new ImmediateTransactionManager(),
+      cache,
       new FixedClock(NOW),
     );
   });
@@ -127,6 +131,18 @@ describe('SellerProductsService', () => {
     await expect(service.unpublish('seller-1', draft.id)).rejects.toBeInstanceOf(
       InvalidProductTransitionError,
     );
+  });
+
+  it('drops the cached public page when the product changes', async () => {
+    const draft = await service.create('seller-1', newProduct());
+    await service.publish('seller-1', draft.id);
+    cache.entries.set('catalog:product:ceramic-tea-set', '{"stale":true}');
+
+    await service.update('seller-1', draft.id, {
+      title: { en: 'Ceramic tea set', vi: 'Bộ ấm chén gốm mới' },
+    });
+
+    expect(cache.entries.has('catalog:product:ceramic-tea-set')).toBe(false);
   });
 
   it('lists only the caller’s products', async () => {

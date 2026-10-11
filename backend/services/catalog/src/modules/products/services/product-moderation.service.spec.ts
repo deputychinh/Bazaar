@@ -1,5 +1,5 @@
 import { EventType, ProductStatus } from '@bazaar/contracts';
-import { NotFoundError } from '@bazaar/nest-common';
+import { InMemoryCacheStore, NotFoundError } from '@bazaar/nest-common';
 
 import {
   ImmediateTransactionManager,
@@ -32,6 +32,7 @@ describe('ProductModerationService', () => {
       products,
       new ProductEvents(outbox),
       new ImmediateTransactionManager(),
+      new InMemoryCacheStore(),
     );
   });
 

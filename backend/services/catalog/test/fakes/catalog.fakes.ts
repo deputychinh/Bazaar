@@ -9,6 +9,8 @@ import {
 } from '@bazaar/nest-common';
 
 import { TransactionManager } from '../../src/common/transaction/transaction-manager.js';
+import { AppConfig } from '../../src/config/app-config.js';
+import { catalogEnvSchema } from '../../src/config/env.schema.js';
 import { ProductSort } from '../../src/enums/product-sort.enum.js';
 import type { Category } from '../../src/interfaces/category.interface.js';
 import type {
@@ -32,6 +34,18 @@ import {
 } from '../../src/modules/shops/repositories/shops.repository.js';
 
 export const NOW = new Date('2026-10-11T08:00:00.000Z');
+
+export const testConfig = (): AppConfig =>
+  new AppConfig(
+    catalogEnvSchema.parse({
+      CATALOG_DATABASE_URL: 'mongodb://test',
+      REDIS_URL: 'redis://test',
+      KAFKA_BROKERS: 'localhost:9094',
+      STORAGE_ACCESS_KEY: 'key',
+      STORAGE_SECRET_KEY: 'secret',
+      STORAGE_PUBLIC_URL: 'https://cdn.bazaar.test/',
+    }),
+  );
 export const NO_TRANSACTION = {} as Transaction;
 
 /** Tokens in tests read "ROLE:userId", e.g. "SELLER:seller-1". */

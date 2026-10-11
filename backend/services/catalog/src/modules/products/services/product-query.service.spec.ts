@@ -1,5 +1,5 @@
 import { ProductStatus } from '@bazaar/contracts';
-import { NotFoundError } from '@bazaar/nest-common';
+import { InMemoryCacheStore, NotFoundError } from '@bazaar/nest-common';
 
 import {
   category,
@@ -8,16 +8,20 @@ import {
   InMemoryShopsRepository,
   NO_TRANSACTION,
   productFixture,
+  testConfig,
 } from '../../../../test/fakes/catalog.fakes.js';
+import { ImageUrlBuilder } from '../../../common/storage/image-url.builder.js';
 import { ProductSort } from '../../../enums/product-sort.enum.js';
 import { CategoriesService } from '../../categories/services/categories.service.js';
 import { ShopsService } from '../../shops/services/shops.service.js';
 
+import { ProductPresenter } from './product-presenter.js';
 import { ProductQueryService } from './product-query.service.js';
 
 describe('ProductQueryService', () => {
   let products: InMemoryProductsRepository;
   let service: ProductQueryService;
+  let cache: InMemoryCacheStore;
 
   beforeEach(async () => {
     const shops = new InMemoryShopsRepository();
@@ -56,7 +60,14 @@ describe('ProductQueryService', () => {
       }),
       productFixture({ id: 'p4', slug: 'draft', status: ProductStatus.Draft }),
     ]);
-    service = new ProductQueryService(products, new CategoriesService(categories), shops);
+    cache = new InMemoryCacheStore();
+    service = new ProductQueryService(
+      products,
+      new CategoriesService(categories, cache),
+      shops,
+      new ProductPresenter(new ImageUrlBuilder(testConfig())),
+      cache,
+    );
   });
 
   it('includes sub-categories when filtering by a parent category', async () => {
@@ -101,10 +112,23 @@ describe('ProductQueryService', () => {
   });
 
   it('shows only published products by slug', async () => {
-    await expect(service.bySlug('vase')).resolves.toMatchObject({
+    await expect(service.detail('vase')).resolves.toMatchObject({
+      slug: 'vase',
       shop: { slug: 'gom-minh-long' },
     });
-    await expect(service.bySlug('draft')).rejects.toBeInstanceOf(NotFoundError);
-    await expect(service.bySlug('missing')).rejects.toBeInstanceOf(NotFoundError);
+    await expect(service.detail('draft')).rejects.toBeInstanceOf(NotFoundError);
+    await expect(service.detail('missing')).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it('serves a product page from the cache after the first read, but never caches a 404', async () => {
+    const spy = vi.spyOn(products, 'findBySlug');
+
+    await service.detail('vase');
+    await service.detail('vase');
+    await expect(service.detail('missing')).rejects.toBeInstanceOf(NotFoundError);
+    await expect(service.detail('missing')).rejects.toBeInstanceOf(NotFoundError);
+
+    expect(spy.mock.calls.map(([slug]) => slug)).toEqual(['vase', 'missing', 'missing']);
+    expect([...cache.entries.keys()]).toContain('catalog:product:vase');
   });
 });

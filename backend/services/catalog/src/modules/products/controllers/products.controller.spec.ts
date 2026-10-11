@@ -1,6 +1,7 @@
 import type { Server } from 'node:http';
 
 import { ErrorCode } from '@bazaar/contracts';
+import { CacheStore, InMemoryCacheStore } from '@bazaar/nest-common';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 
@@ -56,6 +57,7 @@ describe('Products and categories (HTTP)', () => {
         ImageUrlBuilder,
         CategoriesService,
         { provide: AppConfig, useValue: config },
+        { provide: CacheStore, useValue: new InMemoryCacheStore() },
         { provide: ShopsRepository, useValue: shops },
         {
           provide: ProductsRepository,

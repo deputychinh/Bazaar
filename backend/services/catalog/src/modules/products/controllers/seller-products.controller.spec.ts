@@ -1,6 +1,7 @@
 import type { Server } from 'node:http';
 
 import { ErrorCode, UserRole } from '@bazaar/contracts';
+import { CacheStore, InMemoryCacheStore } from '@bazaar/nest-common';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 
@@ -70,6 +71,7 @@ describe('Seller products (HTTP)', () => {
             }),
           ),
         },
+        { provide: CacheStore, useValue: new InMemoryCacheStore() },
         { provide: ShopsRepository, useValue: shops },
         { provide: ProductsRepository, useValue: new InMemoryProductsRepository() },
         {

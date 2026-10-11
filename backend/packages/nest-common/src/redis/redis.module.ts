@@ -3,6 +3,8 @@ import { type DynamicModule, Module } from '@nestjs/common';
 import { REDIS_MODULE_OPTIONS } from '../constants/injection-token.constant.js';
 import type { RedisModuleOptions } from '../interfaces/redis-module-options.interface.js';
 
+import { CacheStore } from './cache-store.js';
+import { RedisCacheStore } from './redis-cache.store.js';
 import { RedisHealthIndicator } from './redis-health.indicator.js';
 import { RedisService } from './redis.service.js';
 

@@ -33,8 +33,7 @@ export class ProductsController {
 
   @Get(':slug')
   @ApiZodResponse(HttpStatus.OK, productDetailSchema)
-  public async bySlug(@Param('slug') slug: string): Promise<ProductDetail> {
-    const { product, shop } = await this.queries.bySlug(slug);
-    return this.presenter.detail(product, shop);
+  public bySlug(@Param('slug') slug: string): Promise<ProductDetail> {
+    return this.queries.detail(slug);
   }
 }

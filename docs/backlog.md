@@ -54,7 +54,7 @@ Size: S (< 2 h) · M (half day) · L (1 day+). Status: ☐ todo · ◐ doing · 
 | BZ-034 | Bilingual routing | next-intl `/en` `/vi`, locale redirect, typed messages with key-parity test, error codes translated, `hreflang` | M | ☑ |
 | BZ-035 | Layout and UI primitives | Header (locale + currency switch), footer, Button, Price (USD/VND), ProductCard, Pagination, empty/error states — BEM | M | ☑ |
 | BZ-036 | Landing pages (SSG) | Home, pricing, about, sell — statically generated in both languages | M | ☑ |
-| BZ-037 | Catalog pages (SSR) | Category and search pages with filters, sort and pagination from the URL | L | ☐ |
+| BZ-037 | Catalog pages (SSR) | Category and search pages with filters, sort and pagination from the URL | L | ☑ |
 | BZ-038 | Product page (SSR + ISR) | Variants, gallery, stock, shop link, metadata + JSON-LD, revalidate endpoint protected by a secret | M | ☐ |
 | BZ-039 | Cart | Client cart (context + localStorage), cart page with totals in USD cents converted once | M | ☐ |
 | BZ-040 | Account pages | Register, verify email, login, forgot/reset password; access token in memory, refresh cookie same-origin through a rewrite | L | ☐ |

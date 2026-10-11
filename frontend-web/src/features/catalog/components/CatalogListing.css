@@ -1,0 +1,15 @@
+.catalog-listing {
+  display: grid;
+  gap: var(--space-8);
+  padding-block: var(--space-8);
+}
+
+.catalog-listing__count {
+  color: var(--color-text-muted);
+}
+
+@media (--bp-lg) {
+  .catalog-listing {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}

@@ -152,5 +152,29 @@
         "text": "Giao hàng và nhận thanh toán hằng tuần."
       }
     ]
+  },
+  "catalog": {
+    "searchTitle": "Tìm kiếm",
+    "resultsFor": "Kết quả cho “{query}”",
+    "categories": "Danh mục",
+    "search": "Tìm kiếm",
+    "minPrice": "Giá từ (USD)",
+    "maxPrice": "Giá đến (USD)",
+    "minRating": "Đánh giá",
+    "anyRating": "Tất cả",
+    "ratingAtLeast": "Từ {rating}★",
+    "sort": "Sắp xếp",
+    "sortDefault": "Đề xuất",
+    "sorts": {
+      "relevance": "Phù hợp nhất",
+      "newest": "Mới nhất",
+      "price_asc": "Giá: thấp đến cao",
+      "price_desc": "Giá: cao đến thấp",
+      "rating": "Đánh giá cao"
+    },
+    "apply": "Áp dụng",
+    "results": "{count} sản phẩm",
+    "noResults": "Không tìm thấy sản phẩm",
+    "noResultsHint": "Hãy bớt bộ lọc hoặc thử từ khoá khác."
   }
 }

@@ -152,5 +152,29 @@
         "text": "Ship orders and receive weekly payouts."
       }
     ]
+  },
+  "catalog": {
+    "searchTitle": "Search",
+    "resultsFor": "Results for “{query}”",
+    "categories": "Categories",
+    "search": "Search",
+    "minPrice": "Min price (USD)",
+    "maxPrice": "Max price (USD)",
+    "minRating": "Rating",
+    "anyRating": "Any",
+    "ratingAtLeast": "{rating}★ and up",
+    "sort": "Sort by",
+    "sortDefault": "Recommended",
+    "sorts": {
+      "relevance": "Best match",
+      "newest": "Newest",
+      "price_asc": "Price: low to high",
+      "price_desc": "Price: high to low",
+      "rating": "Top rated"
+    },
+    "apply": "Apply",
+    "results": "{count, plural, one {# product} other {# products}}",
+    "noResults": "No products found",
+    "noResultsHint": "Try fewer filters or another word."
   }
 }

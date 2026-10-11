@@ -302,7 +302,7 @@ bazaar/
 ### 4.1 How "write it once" still holds without shared packages
 | Shared thing | Single source | How each frontend gets it | Drift check |
 |---|---|---|---|
-| Enums, DTOs, error codes | `backend/packages/contracts` → gateway DTOs → `backend/openapi/gateway.json` (enums exported as OpenAPI enums) | `npm run gen:api` (openapi-typescript) → `src/api/schema.ts` | CI fails if `gateway.json` is stale vs the gateway code, or if a frontend's `schema.ts` is stale vs `gateway.json` (`scripts/check-openapi.mjs`) |
+| Enums, DTOs, error codes | `backend/packages/contracts` → service DTOs → `backend/openapi/gateway.json` + `backend/openapi/catalog.json` (one file per service behind the gateway; enums exported as OpenAPI enums) | `npm run gen:api` (openapi-typescript, one schema per file) → `src/api/*.schema.ts` | CI fails if `gateway.json` is stale vs the gateway code, or if a frontend's `schema.ts` is stale vs `gateway.json` (`scripts/check-openapi.mjs`) |
 | Brand palette / tokens | `docs/design-system.md` | Each frontend has its own `src/styles/tokens.css` | CI compares the token block of both files (`scripts/check-tokens.mjs`) |
 | Events, topics | `backend/packages/contracts` | Not needed by frontends | — |
 

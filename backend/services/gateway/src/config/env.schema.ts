@@ -24,6 +24,7 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
   WEB_APP_URL: z.url().default('http://localhost:3100'),
   CORS_ORIGINS: commaList.default(['http://localhost:3100', 'http://localhost:3200']),
   COOKIE_SECURE: z.stringbool().default(false),
+  CATALOG_SERVICE_URL: z.url().default('http://127.0.0.1:4010'),
 });
 
 export type GatewayEnv = z.infer<typeof gatewayEnvSchema>;

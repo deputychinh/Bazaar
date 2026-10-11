@@ -19,6 +19,7 @@ export const ERROR_HTTP_STATUS: Readonly<Record<ErrorCode, HttpStatus>> = {
   [ErrorCode.OutOfStock]: HttpStatus.CONFLICT,
   [ErrorCode.InvalidOrderTransition]: HttpStatus.CONFLICT,
   [ErrorCode.PaymentFailed]: HttpStatus.PAYMENT_REQUIRED,
+  [ErrorCode.UpstreamUnavailable]: HttpStatus.BAD_GATEWAY,
   [ErrorCode.Internal]: HttpStatus.INTERNAL_SERVER_ERROR,
 };
 

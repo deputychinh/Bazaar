@@ -36,6 +36,7 @@ jobs:
       - name: Generated files are up to date (OpenAPI, schema.sql)
         run: |
           npm run openapi -w @bazaar/gateway
+          npm run openapi -w @bazaar/catalog
           npm run db:schema-sql -w @bazaar/gateway
           git diff --exit-code -- openapi db
       - run: npm audit --omit=dev --audit-level=high

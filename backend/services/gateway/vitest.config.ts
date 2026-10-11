@@ -12,6 +12,7 @@ export default mergeConfig(shared, {
         'src/app.setup.ts',
         'src/infrastructure/**',
         'src/**/prisma-*.ts',
+        'src/modules/catalog-proxy/catalog-proxy.controller.ts',
       ],
     },
   },

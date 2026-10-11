@@ -15,5 +15,6 @@ export enum ErrorCode {
   OutOfStock = 'OUT_OF_STOCK',
   InvalidOrderTransition = 'INVALID_ORDER_TRANSITION',
   PaymentFailed = 'PAYMENT_FAILED',
+  UpstreamUnavailable = 'UPSTREAM_UNAVAILABLE',
   Internal = 'INTERNAL',
 }

@@ -21,6 +21,7 @@ import type { GatewayEnv } from './config/env.schema.js';
 import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.indicator.js';
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { CatalogProxyModule } from './modules/catalog-proxy/catalog-proxy.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
 import { SellersModule } from './modules/sellers/sellers.module.js';
@@ -49,6 +50,7 @@ export class AppModule {
         TokensModule,
         AuthModule,
         SellersModule,
+        CatalogProxyModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

@@ -28,6 +28,10 @@ jobs:
           cache: npm
           cache-dependency-path: frontend-web/package-lock.json
       - run: npm ci
+      - name: API types match backend/openapi
+        run: |
+          npm run gen:api
+          git diff --exit-code -- src/api
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test

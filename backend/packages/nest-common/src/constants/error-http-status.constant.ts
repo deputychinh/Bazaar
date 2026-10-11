@@ -14,6 +14,8 @@ export const ERROR_HTTP_STATUS: Readonly<Record<ErrorCode, HttpStatus>> = {
   [ErrorCode.InvalidCredentials]: HttpStatus.UNAUTHORIZED,
   [ErrorCode.EmailNotVerified]: HttpStatus.FORBIDDEN,
   [ErrorCode.TokenExpired]: HttpStatus.UNAUTHORIZED,
+  [ErrorCode.InvalidToken]: HttpStatus.BAD_REQUEST,
+  [ErrorCode.AccountSuspended]: HttpStatus.FORBIDDEN,
   [ErrorCode.OutOfStock]: HttpStatus.CONFLICT,
   [ErrorCode.InvalidOrderTransition]: HttpStatus.CONFLICT,
   [ErrorCode.PaymentFailed]: HttpStatus.PAYMENT_REQUIRED,

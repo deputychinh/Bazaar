@@ -26,3 +26,15 @@ describe('domain errors', () => {
     );
   });
 });
+
+describe('generic HTTP-shaped errors', () => {
+  it('carry the matching codes', async () => {
+    const { UnauthenticatedError } = await import('./unauthenticated.error.js');
+    const { ForbiddenError } = await import('./forbidden.error.js');
+    const { ConflictError } = await import('./conflict.error.js');
+
+    expect(new UnauthenticatedError('no token').code).toBe(ErrorCode.Unauthenticated);
+    expect(new ForbiddenError('nope').code).toBe(ErrorCode.Forbidden);
+    expect(new ConflictError('taken').code).toBe(ErrorCode.Conflict);
+  });
+});

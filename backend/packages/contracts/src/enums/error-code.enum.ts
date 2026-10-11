@@ -10,6 +10,8 @@ export enum ErrorCode {
   InvalidCredentials = 'INVALID_CREDENTIALS',
   EmailNotVerified = 'EMAIL_NOT_VERIFIED',
   TokenExpired = 'TOKEN_EXPIRED',
+  InvalidToken = 'INVALID_TOKEN',
+  AccountSuspended = 'ACCOUNT_SUSPENDED',
   OutOfStock = 'OUT_OF_STOCK',
   InvalidOrderTransition = 'INVALID_ORDER_TRANSITION',
   PaymentFailed = 'PAYMENT_FAILED',

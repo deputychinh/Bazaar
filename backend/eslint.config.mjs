@@ -92,7 +92,21 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/explicit-member-accessibility': 'error',
-      '@typescript-eslint/member-ordering': 'error',
+      // Plan §6A.3: fields → constructor → public → protected → private methods.
+      '@typescript-eslint/member-ordering': [
+        'error',
+        {
+          default: [
+            'signature',
+            'static-field',
+            'instance-field',
+            'constructor',
+            'public-method',
+            'protected-method',
+            'private-method',
+          ],
+        },
+      ],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
       '@typescript-eslint/no-extraneous-class': [
         'error',
@@ -134,8 +148,9 @@ export default tseslint.config(
       'no-restricted-properties': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/unbound-method': 'off',
-      // `expect.any()` / `expect.objectContaining()` are typed as any by design.
+      // `expect.any()` matchers and supertest's `response.body` are typed as any by design.
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
     },
   },

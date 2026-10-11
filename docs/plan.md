@@ -472,7 +472,7 @@ src/
 
 **Class rules**
 - Constructor injection only, `private readonly` dependencies; no `new` of collaborators inside a class (except value objects).
-- Explicit access modifiers on every member; member order: static → fields → constructor → public → protected → private.
+- Explicit access modifiers on every member; member order: fields → constructor → public → protected → private methods.
 - Composition over inheritance; inheritance only for template-method bases and `DomainError`.
 - No mutable public fields; domain objects expose behaviour (`order.cancel(reason)`), not setters.
 - Controllers: validate (global `ZodValidationPipe`), call **one** service method, map with the mapper. No logic, no Prisma.

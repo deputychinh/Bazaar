@@ -5,6 +5,7 @@ BACKEND := cd backend &&
 COMPOSE := docker compose
 INFRA := mysql mongo redis kafka kafka-ui storage mailpit
 INIT_JOBS := kafka-init storage-init
+GATEWAY_SECRETS := backend/services/gateway/.secrets
 
 help: ## Show this help
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -13,9 +14,16 @@ help: ## Show this help
 env: ## Create .env from .env.example (keeps an existing .env)
 	@cp -n .env.example .env && echo "created .env" || echo ".env already exists"
 
-install: env ## Install repo tooling and backend dependencies
+install: env keys ## Install repo tooling and backend dependencies
 	npm install
 	$(BACKEND) npm install
+
+keys: ## Create the local RS256 key pair for access tokens (kept if it exists)
+	@mkdir -p $(GATEWAY_SECRETS)
+	@test -f $(GATEWAY_SECRETS)/jwt-private.pem || ( \
+		openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out $(GATEWAY_SECRETS)/jwt-private.pem 2>/dev/null && \
+		openssl pkey -in $(GATEWAY_SECRETS)/jwt-private.pem -pubout -out $(GATEWAY_SECRETS)/jwt-public.pem && \
+		chmod 600 $(GATEWAY_SECRETS)/jwt-private.pem && echo "created JWT keys in $(GATEWAY_SECRETS)" )
 
 # --- local infrastructure ----------------------------------------------------
 up: env ## Start MySQL, MongoDB, Redis, Kafka (+ topics), Kafka UI, object storage, Mailpit
@@ -76,4 +84,7 @@ ci: lint typecheck test build ## Run the CI pipeline locally
 format: ## Format every file with Prettier
 	npx prettier --write .
 
-.PHONY: help env install up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build ci format
+dev-gateway: keys ## Run the gateway with reload on :4000
+	$(BACKEND) npm run dev -w @bazaar/gateway
+
+.PHONY: help env install keys dev-gateway up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build ci format

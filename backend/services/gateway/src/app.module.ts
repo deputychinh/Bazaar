@@ -5,15 +5,24 @@ import {
   HttpCommonModule,
   KafkaHealthIndicator,
   KafkaModule,
+  Clock,
+  SystemClock,
 } from '@bazaar/nest-common';
 import { type DynamicModule, Global, Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
+import { RolesGuard } from './common/guards/roles.guard.js';
 import { AppConfig } from './config/app-config.js';
 import type { GatewayEnv } from './config/env.schema.js';
 import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.indicator.js';
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
 import { RedisHealthIndicator } from './infrastructure/redis/redis-health.indicator.js';
 import { RedisModule } from './infrastructure/redis/redis.module.js';
+import './interfaces/express-request.interface.js';
+import { AuthModule } from './modules/auth/auth.module.js';
+import { OutboxModule } from './modules/outbox/outbox.module.js';
+import { TokensModule } from './modules/tokens/tokens.module.js';
 
 @Global()
 @Module({})
@@ -33,9 +42,17 @@ export class AppModule {
         PrismaModule,
         RedisModule,
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),
+        OutboxModule,
+        TokensModule,
+        AuthModule,
       ],
-      providers: [{ provide: AppConfig, useValue: new AppConfig(env) }],
-      exports: [AppConfig],
+      providers: [
+        { provide: AppConfig, useValue: new AppConfig(env) },
+        { provide: Clock, useClass: SystemClock },
+        { provide: APP_GUARD, useClass: JwtAuthGuard },
+        { provide: APP_GUARD, useClass: RolesGuard },
+      ],
+      exports: [AppConfig, Clock],
     };
   }
 }

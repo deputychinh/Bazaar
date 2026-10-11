@@ -16,6 +16,9 @@ export class KeyStore implements OnModuleInit {
   public constructor(private readonly config: AppConfig) {}
 
   public async onModuleInit(): Promise<void> {
+    if (this.privateKey !== undefined) {
+      return; // already loaded through use(), e.g. by tests
+    }
     const [privatePem, publicPem] = await Promise.all([
       readFile(this.config.env.JWT_PRIVATE_KEY_FILE, 'utf8'),
       readFile(this.config.env.JWT_PUBLIC_KEY_FILE, 'utf8'),

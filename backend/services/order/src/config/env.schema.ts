@@ -14,6 +14,8 @@ export const orderEnvSchema = baseEnvSchema.extend({
   JWT_ISSUER: z.string().min(1).default(JWT_DEFAULT_ISSUER),
   JWT_AUDIENCE: z.string().min(1).default(JWT_DEFAULT_AUDIENCE),
   /** Shared with the gateway for /internal routes; when unset they always answer 403. */
+  /** How often the timeout / payment-retry sweep runs. */
+  ORDER_SWEEP_INTERVAL_MS: z.coerce.number().int().min(1000).default(30_000),
   INTERNAL_API_KEY: z.string().min(INTERNAL_API_KEY_MIN_LENGTH).optional(),
 });
 

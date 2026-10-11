@@ -1,4 +1,7 @@
 export * from './cache-store.js';
+export * from './distributed-lock.js';
+export * from './in-memory-distributed-lock.js';
+export * from './redis-distributed-lock.js';
 export * from './in-memory-cache.store.js';
 export * from './redis-cache.store.js';
 export * from './redis-health.indicator.js';

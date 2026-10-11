@@ -1,6 +1,7 @@
 import { type AnyEventEnvelope, ProductStatus, UserRole } from '@bazaar/contracts';
 import {
   type AuthenticatedUser,
+  ConflictError,
   EnumUtil,
   ProcessedEventStore,
   TokenVerifier,
@@ -11,15 +12,20 @@ import { TransactionManager } from '../../src/common/transaction/transaction-man
 import { ProductSort } from '../../src/enums/product-sort.enum.js';
 import type { Category } from '../../src/interfaces/category.interface.js';
 import type {
+  NewProduct,
   Product,
   ProductPage,
   ProductSearchCriteria,
+  SellerProductsCriteria,
 } from '../../src/interfaces/product.interface.js';
 import type { NewShop, Shop } from '../../src/interfaces/shop.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
 import { CategoriesRepository } from '../../src/modules/categories/repositories/categories.repository.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
-import { ProductsRepository } from '../../src/modules/products/repositories/products.repository.js';
+import {
+  type ProductChangesOptions,
+  ProductsRepository,
+} from '../../src/modules/products/repositories/products.repository.js';
 import {
   type ShopChangesOptions,
   ShopsRepository,
@@ -196,5 +202,67 @@ export class InMemoryProductsRepository extends ProductsRepository {
 
   public findBySlug(slug: string): Promise<Product | null> {
     return Promise.resolve(this.rows.find((product) => product.slug === slug) ?? null);
+  }
+
+  public findById(id: string): Promise<Product | null> {
+    return Promise.resolve(this.rows.find((product) => product.id === id) ?? null);
+  }
+
+  public findBySeller(criteria: SellerProductsCriteria): Promise<ProductPage> {
+    const mine = this.rows.filter(
+      (product) =>
+        product.sellerId === criteria.sellerId &&
+        (criteria.status === undefined || product.status === criteria.status),
+    );
+    const start = (criteria.page - 1) * criteria.pageSize;
+    return Promise.resolve({
+      items: mine.slice(start, start + criteria.pageSize),
+      total: mine.length,
+      page: criteria.page,
+      pageSize: criteria.pageSize,
+    });
+  }
+
+  public create(product: NewProduct): Promise<Product> {
+    this.assertSkusFree(
+      product.variants.map((variant) => variant.sku),
+      null,
+    );
+    const row: Product = {
+      ...product,
+      id: `p${this.rows.length + 100}`,
+      images: [],
+      rating: { average: 0, count: 0 },
+      hiddenReason: null,
+      publishedAt: null,
+      createdAt: NOW,
+      updatedAt: NOW,
+    };
+    this.rows.push(row);
+    return Promise.resolve({ ...row });
+  }
+
+  public update(id: string, changes: ProductChangesOptions): Promise<Product> {
+    const row = this.rows.find((product) => product.id === id)!;
+    if (changes.variants !== undefined) {
+      this.assertSkusFree(
+        changes.variants.map((variant) => variant.sku),
+        id,
+      );
+    }
+    Object.assign(row, changes);
+    // Like a real database: callers get a snapshot, not the stored object.
+    return Promise.resolve({ ...row });
+  }
+
+  /** Same rule as the unique index on variants.sku. */
+  private assertSkusFree(skus: string[], ownerId: string | null): void {
+    const clash = this.rows.some(
+      (product) =>
+        product.id !== ownerId && product.variants.some((variant) => skus.includes(variant.sku)),
+    );
+    if (clash) {
+      throw new ConflictError('A SKU or slug in this product is already used by another product');
+    }
   }
 }

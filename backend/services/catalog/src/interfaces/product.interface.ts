@@ -54,3 +54,24 @@ export interface ProductPage {
   page: number;
   pageSize: number;
 }
+
+export interface NewProduct {
+  shopId: string;
+  sellerId: string;
+  slug: string;
+  title: LocalizedText;
+  description: LocalizedText;
+  categoryId: string;
+  attributes: Record<string, unknown> | null;
+  variants: ProductVariant[];
+  status: ProductStatus;
+  minPriceUsdCents: number;
+  totalStock: number;
+}
+
+export interface SellerProductsCriteria {
+  sellerId: string;
+  status?: ProductStatus;
+  page: number;
+  pageSize: number;
+}

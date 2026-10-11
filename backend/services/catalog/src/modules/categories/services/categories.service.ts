@@ -13,6 +13,12 @@ export class CategoriesService {
     return CategoryTree.build(await this.categories.findAll());
   }
 
+  public async assertExists(id: string): Promise<void> {
+    if (!(await this.categories.findAll()).some((category) => category.id === id)) {
+      throw new NotFoundError('Category', id);
+    }
+  }
+
   /** Ids of the category with this slug and all its sub-categories. */
   public async idsForSlug(slug: string): Promise<string[]> {
     const all = await this.categories.findAll();

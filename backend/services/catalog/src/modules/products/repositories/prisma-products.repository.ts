@@ -1,18 +1,25 @@
 import { ProductStatus } from '@bazaar/contracts';
+import { ConflictError } from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
 
-import type { Prisma } from '#prisma';
+import { Prisma } from '#prisma';
 
 import { ProductSort } from '../../../enums/product-sort.enum.js';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service.js';
 import type {
+  NewProduct,
   Product,
   ProductPage,
   ProductSearchCriteria,
+  ProductVariant,
+  SellerProductsCriteria,
 } from '../../../interfaces/product.interface.js';
+import type { Transaction } from '../../../interfaces/transaction.interface.js';
 import { ProductMapper } from '../mappers/product.mapper.js';
 
-import { ProductsRepository } from './products.repository.js';
+import { type ProductChangesOptions, ProductsRepository } from './products.repository.js';
+
+const UNIQUE_VIOLATION = 'P2002';
 
 @Injectable()
 export class PrismaProductsRepository extends ProductsRepository {
@@ -27,6 +34,102 @@ export class PrismaProductsRepository extends ProductsRepository {
   public async findBySlug(slug: string): Promise<Product | null> {
     const row = await this.prisma.product.findUnique({ where: { slug } });
     return row === null ? null : ProductMapper.toDomain(row);
+  }
+
+  public async findById(id: string): Promise<Product | null> {
+    const row = await this.prisma.product.findUnique({ where: { id } });
+    return row === null ? null : ProductMapper.toDomain(row);
+  }
+
+  public async findBySeller(criteria: SellerProductsCriteria): Promise<ProductPage> {
+    const where: Prisma.ProductWhereInput = {
+      sellerId: criteria.sellerId,
+      ...(criteria.status === undefined ? {} : { status: criteria.status }),
+    };
+    const [rows, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip: (criteria.page - 1) * criteria.pageSize,
+        take: criteria.pageSize,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+    return {
+      items: rows.map((row) => ProductMapper.toDomain(row)),
+      total,
+      page: criteria.page,
+      pageSize: criteria.pageSize,
+    };
+  }
+
+  public async create(product: NewProduct, transaction: Transaction): Promise<Product> {
+    return this.translateConflicts(async () =>
+      ProductMapper.toDomain(
+        await transaction.product.create({
+          data: {
+            ...product,
+            attributes: (product.attributes ?? {}) as Prisma.InputJsonObject,
+            variants: this.toVariantRows(product.variants),
+            images: [],
+            rating: { average: 0, count: 0 },
+          },
+        }),
+      ),
+    );
+  }
+
+  public async update(
+    id: string,
+    changes: ProductChangesOptions,
+    transaction: Transaction,
+  ): Promise<Product> {
+    const { variants, images, attributes, ...rest } = changes;
+    return this.translateConflicts(async () =>
+      ProductMapper.toDomain(
+        await transaction.product.update({
+          where: { id },
+          data: {
+            ...rest,
+            ...(attributes === undefined
+              ? {}
+              : { attributes: (attributes ?? {}) as Prisma.InputJsonObject }),
+            ...(variants === undefined ? {} : { variants: { set: this.toVariantRows(variants) } }),
+            ...(images === undefined
+              ? {}
+              : {
+                  images: {
+                    set: images.map((image) => ({ key: image.key, alt: image.alt ?? undefined })),
+                  },
+                }),
+          },
+        }),
+      ),
+    );
+  }
+
+  private toVariantRows(variants: readonly ProductVariant[]): Prisma.ProductVariantCreateInput[] {
+    return variants.map((variant) => ({
+      sku: variant.sku,
+      priceUsdCents: variant.priceUsdCents,
+      stock: variant.stock,
+      attributes: (variant.attributes ?? undefined) as Prisma.InputJsonObject | undefined,
+    }));
+  }
+
+  /** The unique index on variants.sku is the source of truth for SKU clashes. */
+  private async translateConflicts<T>(work: () => Promise<T>): Promise<T> {
+    try {
+      return await work();
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === UNIQUE_VIOLATION
+      ) {
+        throw new ConflictError('A SKU or slug in this product is already used by another product');
+      }
+      throw error;
+    }
   }
 
   private async browse(criteria: ProductSearchCriteria): Promise<ProductPage> {

@@ -15,6 +15,8 @@ MONGO_DATABASES=(catalog notification)
 
 mysql_exec() { "${COMPOSE[@]}" exec -T -e MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql mysql -uroot "$@"; }
 mongo_exec() { "${COMPOSE[@]}" exec -T mongo mongosh --quiet "$@"; }
+# Runs a whole .js file as one script (stdin would be read line by line as a REPL).
+mongo_file() { mongo_exec "$1" --eval "$(cat "$2")"; }
 
 case "${1:-}" in
   schema)
@@ -22,7 +24,7 @@ case "${1:-}" in
       file="$DB_DIR/$name/schema.js"
       [[ -f "$file" ]] || continue
       echo "→ schema  bazaar_$name"
-      mongo_exec "bazaar_$name" < "$file"
+      mongo_file "bazaar_$name" "$file"
     done
     ;;
   data)
@@ -36,7 +38,7 @@ case "${1:-}" in
       file="$DB_DIR/$name/data.js"
       [[ -f "$file" ]] || continue
       echo "→ seed    bazaar_$name"
-      mongo_exec "bazaar_$name" < "$file"
+      mongo_file "bazaar_$name" "$file"
     done
     ;;
   drop)

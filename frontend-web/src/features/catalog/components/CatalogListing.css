@@ -5,6 +5,8 @@
 }
 
 .catalog-listing__count {
+  font-size: var(--text-md);
+  font-weight: var(--weight-regular);
   color: var(--color-text-muted);
 }
 

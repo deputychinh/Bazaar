@@ -13,7 +13,11 @@ import type { Request, Response } from 'express';
 
 import { RateLimit } from '../../../common/decorators/rate-limit.decorator.js';
 import { AppConfig } from '../../../config/app-config.js';
-import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../../constants/auth.constant.js';
+import {
+  REFRESH_COOKIE_NAME,
+  REFRESH_COOKIE_PATH,
+  SESSION_HINT_COOKIE_NAME,
+} from '../../../constants/auth.constant.js';
 import { RateLimitPolicy } from '../../../enums/rate-limit-policy.enum.js';
 import type { IssuedSession } from '../../../interfaces/session.interface.js';
 import { type UserResponse, userResponseSchema } from '../../users/dto/user-response.dto.js';
@@ -107,8 +111,14 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<SessionResponse> {
-    const session = await this.sessions.refresh(AuthController.refreshCookie(request) ?? '');
-    return this.startSession(session, response);
+    try {
+      const session = await this.sessions.refresh(AuthController.refreshCookie(request) ?? '');
+      return this.startSession(session, response);
+    } catch (error) {
+      // A dead refresh token also ends the hint, so the site stops trying on every page.
+      AuthController.endSession(response);
+      throw error;
+    }
   }
 
   @Public()
@@ -119,7 +129,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
     await this.sessions.logout(AuthController.refreshCookie(request));
-    response.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
+    AuthController.endSession(response);
   }
 
   @Public()
@@ -160,11 +170,22 @@ export class AuthController {
       path: REFRESH_COOKIE_PATH,
       maxAge: REFRESH_TOKEN_TTL_DAYS * MS_PER_DAY,
     });
+    response.cookie(SESSION_HINT_COOKIE_NAME, '1', {
+      secure: this.config.env.COOKIE_SECURE,
+      sameSite: 'strict',
+      path: '/',
+      maxAge: REFRESH_TOKEN_TTL_DAYS * MS_PER_DAY,
+    });
     return {
       accessToken: session.accessToken,
       expiresIn: session.expiresIn,
       user: UserMapper.toResponse(session.user),
     };
+  }
+
+  private static endSession(response: Response): void {
+    response.clearCookie(REFRESH_COOKIE_NAME, { path: REFRESH_COOKIE_PATH });
+    response.clearCookie(SESSION_HINT_COOKIE_NAME, { path: '/' });
   }
 
   private static refreshCookie(request: Request): string | undefined {

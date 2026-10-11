@@ -1,6 +1,6 @@
 :root {
-  --font-sans: 'Inter Variable', system-ui, sans-serif;
-  --font-display: 'Fraunces Variable', georgia, serif;
+  --font-sans: 'Inter Variable', 'Inter Variable Fallback', system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', 'Fraunces Variable Fallback', georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --text-xs: 12px;
   --text-sm: 14px;

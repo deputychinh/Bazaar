@@ -20,6 +20,8 @@ jobs:
       - run: npm ci
       - name: Formatting
         run: npx prettier --check .
+      - name: Design tokens match docs/design-system.md
+        run: node scripts/check-tokens.mjs
       - name: Commit messages (Conventional Commits)
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then

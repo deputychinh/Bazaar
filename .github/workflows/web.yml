@@ -36,4 +36,6 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Lighthouse ≥ 90 on landing pages
+        run: npx --yes @lhci/cli@0.15.1 autorun
       - run: npm audit --omit=dev --audit-level=high

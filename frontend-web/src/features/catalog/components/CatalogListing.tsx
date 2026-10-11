@@ -45,7 +45,8 @@ export const CatalogListing = async ({
           <EmptyState title={t('noResults')} description={t('noResultsHint')} />
         ) : (
           <>
-            <p className="catalog-listing__count">{t('results', { count: result.data.total })}</p>
+            {/* An h2 keeps the outline h1 → h2 → h3 (product card titles). */}
+            <h2 className="catalog-listing__count">{t('results', { count: result.data.total })}</h2>
             <ProductGrid products={result.data.items} />
             <Pagination
               page={result.data.page}

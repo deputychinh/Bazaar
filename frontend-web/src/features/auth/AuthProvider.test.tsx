@@ -40,7 +40,23 @@ const Probe = (): React.ReactElement => {
   );
 };
 
+const setHint = (present: boolean): void => {
+  document.cookie = present ? 'bazaar_session=1; path=/' : 'bazaar_session=; path=/; max-age=0';
+};
+
+beforeEach(() => setHint(true));
+afterEach(() => setHint(false));
+
 describe('AuthProvider', () => {
+  it('sends no refresh request for a visitor who never signed in', async () => {
+    setHint(false);
+    const fetchMock = mockGateway({ 'POST /api/v1/auth/refresh': session('t1') });
+    renderWithProviders(<Probe />);
+
+    expect(await screen.findByText('status: anonymous')).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('restores the session from the refresh cookie on load', async () => {
     mockGateway({ 'POST /api/v1/auth/refresh': session('t1') });
     renderWithProviders(<Probe />);

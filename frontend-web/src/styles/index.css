@@ -6,6 +6,7 @@
 @import './tokens/z-index.css';
 @import './tokens/motion.css';
 @import './tokens/layout.css';
+@import './base/fonts.css';
 @import './base/reset.css';
 @import './base/base.css';
 @import './base/a11y.css';

@@ -28,6 +28,10 @@ describe('AuthController (HTTP)', () => {
     const cookies = headers['set-cookie'] as string[] | undefined;
     return cookies?.find((cookie) => cookie.startsWith('bazaar_refresh=')) ?? '';
   };
+  const hintCookie = (headers: Record<string, unknown>): string => {
+    const cookies = headers['set-cookie'] as string[] | undefined;
+    return cookies?.find((cookie) => cookie.startsWith('bazaar_session=')) ?? '';
+  };
 
   it('registers a shopper without exposing the password hash', async () => {
     const response = await http()
@@ -84,6 +88,11 @@ describe('AuthController (HTTP)', () => {
     expect(cookie).toContain('HttpOnly');
     expect(cookie).toContain('SameSite=Strict');
     expect(cookie).toContain('Path=/api/v1/auth');
+    // The hint is script-readable and secret-free: it only says "a session may exist".
+    const hint = hintCookie(login.headers);
+    expect(hint).toMatch(/^bazaar_session=1;/);
+    expect(hint).not.toContain('HttpOnly');
+    expect(hint).toContain('Path=/;');
   });
 
   it('answers wrong credentials with 401 and the same code for unknown emails', async () => {
@@ -128,7 +137,8 @@ describe('AuthController (HTTP)', () => {
     const second = refreshCookie(refreshed.headers).split(';')[0] ?? '';
 
     expect(second).not.toBe(first);
-    await http().post('/api/v1/auth/refresh').set('cookie', first).expect(401);
+    const reused = await http().post('/api/v1/auth/refresh').set('cookie', first).expect(401);
+    expect(hintCookie(reused.headers)).toContain('Expires=Thu, 01 Jan 1970');
     await http().post('/api/v1/auth/refresh').set('cookie', second).expect(401);
   });
 
@@ -142,6 +152,7 @@ describe('AuthController (HTTP)', () => {
     const logout = await http().post('/api/v1/auth/logout').set('cookie', cookie).expect(204);
 
     expect(refreshCookie(logout.headers)).toContain('Expires=Thu, 01 Jan 1970');
+    expect(hintCookie(logout.headers)).toContain('Expires=Thu, 01 Jan 1970');
     await http().post('/api/v1/auth/refresh').set('cookie', cookie).expect(401);
   });
 

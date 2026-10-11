@@ -65,25 +65,26 @@ Rules for writing CSS: plan §6A.6. Contrast ratios below were computed with the
 | Semantic token | Value |
 |---|---|
 | `--padding-control` | `var(--space-2) var(--space-4)` |
-| `--padding-control-sm` / `-lg` | `var(--space-1) var(--space-3)` / `var(--space-3) var(--space-6)` |
+| `--padding-control-sm` / `--padding-control-lg` | `var(--space-1) var(--space-3)` / `var(--space-3) var(--space-6)` |
 | `--padding-card` | `var(--space-4)` → `var(--space-6)` from `--bp-md` |
 | `--padding-section` | `var(--space-10) 0` → `var(--space-16) 0` from `--bp-md` |
 | `--padding-page-x` | `var(--space-4)` → `var(--space-6)` (md) → `var(--space-8)` (lg) |
 | `--gap-stack` / `--gap-inline` / `--gap-grid` | `var(--space-4)` / `var(--space-2)` / `var(--space-6)` |
 
-Minimum touch target: 44 × 44 px (controls use `min-block-size: 44px`).
+Minimum touch target: 44 × 44 px — controls use `min-block-size: var(--size-touch-target)`.
 
 ## 5. Typography (`tokens/typography.css`)
 | Token | Value |
 |---|---|
-| `--font-sans` | `'Inter Variable', system-ui, sans-serif` — UI and body (supports Vietnamese diacritics) |
-| `--font-display` | `'Fraunces Variable', Georgia, serif` — headings on the customer site only |
+| `--font-sans` | `'Inter Variable', 'Inter Variable Fallback', system-ui, sans-serif` — UI and body (supports Vietnamese diacritics) |
+| `--font-display` | `'Fraunces Variable', 'Fraunces Variable Fallback', Georgia, serif` — headings on the customer site only |
 | `--font-mono` | `'JetBrains Mono', ui-monospace, monospace` — SKUs, ids |
 | Sizes | `--text-xs 12px` · `--text-sm 14px` · `--text-md 16px` · `--text-lg 18px` · `--text-xl 20px` · `--text-2xl 24px` · `--text-3xl 30px` · `--text-4xl 36px` · `--text-5xl 48px` |
 | Weights | `--weight-regular 400` · `--weight-medium 500` · `--weight-semibold 600` · `--weight-bold 700` |
 | Line heights | `--leading-tight 1.2` (headings) · `--leading-normal 1.5` (UI) · `--leading-relaxed 1.7` (long text, Vietnamese) |
 
 Body text is never smaller than `--text-sm`; prices use `font-variant-numeric: tabular-nums`.
+The `* Fallback` families are metric-matched local fonts declared in `styles/base/fonts.css` (no layout shift on font swap).
 
 ## 6. Shape, depth, layers, motion, layout
 | Group | Tokens |
@@ -92,7 +93,7 @@ Body text is never smaller than `--text-sm`; prices use `font-variant-numeric: t
 | Shadow | `--shadow-sm 0 1px 2px rgb(28 25 23 / 6%)` · `--shadow-md 0 4px 12px rgb(28 25 23 / 8%)` · `--shadow-lg 0 12px 32px rgb(28 25 23 / 12%)` |
 | Z-index | `--z-base 0` · `--z-dropdown 100` · `--z-sticky 200` · `--z-overlay 300` · `--z-modal 400` · `--z-toast 500` |
 | Breakpoints (custom media) | `--bp-sm (min-width: 640px)` · `--bp-md (min-width: 768px)` · `--bp-lg (min-width: 1024px)` · `--bp-xl (min-width: 1280px)` |
-| Layout | `--container-max 1200px` · `--container-narrow 720px` · `--header-height 64px` · `--sidebar-width 248px` (admin) |
+| Layout | `--container-max 1200px` · `--container-narrow 720px` · `--header-height 64px` · `--sidebar-width 248px` (admin) · `--size-touch-target 44px` |
 | Motion | `--duration-fast 120ms` · `--duration-normal 200ms` · `--duration-slow 320ms` · `--ease-standard cubic-bezier(0.2, 0, 0, 1)`; all transitions disabled under `prefers-reduced-motion: reduce` |
 
 ## 7. CSS patterns (summary of plan §6A.6)

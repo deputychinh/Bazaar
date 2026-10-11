@@ -1,5 +1,10 @@
 export const REFRESH_COOKIE_NAME = 'bazaar_refresh';
 export const REFRESH_COOKIE_PATH = '/api/v1/auth';
+/**
+ * Readable by scripts and holds no secret: it only tells the site a refresh cookie probably
+ * exists, so anonymous visitors skip a refresh call that would fail with 401.
+ */
+export const SESSION_HINT_COOKIE_NAME = 'bazaar_session';
 export const OPAQUE_TOKEN_BYTES = 32;
 export const JWT_ALGORITHM = 'RS256';
 export const JWT_KEY_ID = 'bazaar-gateway-1';

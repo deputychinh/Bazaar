@@ -44,7 +44,7 @@ CREATE TABLE `order_items` (
     `product_slug` VARCHAR(160) NOT NULL,
     `variant_sku` VARCHAR(64) NOT NULL,
     `title_snapshot` JSON NOT NULL,
-    `variant_label` VARCHAR(120) NOT NULL,
+    `variant_label` JSON NOT NULL,
     `image_url` VARCHAR(512) NULL,
     `quantity` INTEGER NOT NULL,
     `unit_price_usd_cents` INTEGER NOT NULL,

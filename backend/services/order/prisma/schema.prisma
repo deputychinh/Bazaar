@@ -66,7 +66,7 @@ model OrderItem {
   productSlug       String      @map("product_slug") @db.VarChar(160)
   variantSku        String      @map("variant_sku") @db.VarChar(64)
   titleSnapshot     Json        @map("title_snapshot")
-  variantLabel      String      @map("variant_label") @db.VarChar(120)
+  variantLabel      Json        @map("variant_label")
   imageUrl          String?     @map("image_url") @db.VarChar(512)
   quantity          Int
   unitPriceUsdCents Int         @map("unit_price_usd_cents")

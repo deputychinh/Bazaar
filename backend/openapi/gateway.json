@@ -1615,8 +1615,19 @@
                   "additionalProperties": false
                 },
                 "variantLabel": {
-                  "type": "string",
-                  "minLength": 1
+                  "type": "object",
+                  "properties": {
+                    "en": {
+                      "type": "string"
+                    },
+                    "vi": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "en"
+                  ],
+                  "additionalProperties": false
                 },
                 "imageUrl": {
                   "nullable": true,

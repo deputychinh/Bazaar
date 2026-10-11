@@ -44,7 +44,7 @@ describe('ProductPurchase', () => {
         sku: 'L',
         quantity: 1,
         unitPriceUsdCents: 1200,
-        variantLabel: 'L',
+        variantLabel: { en: 'L', vi: 'L' },
         maxQuantity: 20,
       }),
     ]);

@@ -42,7 +42,7 @@ export const pricedOrderLineSchema = z.object({
   shopId: id,
   shopName: id,
   title: localizedText,
-  variantLabel: id,
+  variantLabel: localizedText,
   imageUrl: z.string().nullable(),
   unitPriceUsdCents: cents,
 });
@@ -60,7 +60,7 @@ const orderItemViewSchema = z.object({
   productSlug: id,
   variantSku: id,
   title: localizedText,
-  variantLabel: id,
+  variantLabel: localizedText,
   imageUrl: z.string().nullable(),
   quantity: z.number().int().positive(),
   unitPriceUsdCents: cents,

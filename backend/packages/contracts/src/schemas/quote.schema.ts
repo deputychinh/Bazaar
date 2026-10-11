@@ -25,7 +25,7 @@ const pricedLineSchema = quoteLineRequestSchema.extend({
   shopId: text,
   shopName: text,
   title: localizedText,
-  variantLabel: text,
+  variantLabel: localizedText,
   imageUrl: z.string().nullable(),
   unitPriceUsdCents: z.number().int().nonnegative(),
   stock: z.number().int().nonnegative(),

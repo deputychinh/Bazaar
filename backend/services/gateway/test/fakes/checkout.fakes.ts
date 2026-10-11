@@ -22,7 +22,7 @@ export const pricedQuoteLine = (overrides: Partial<PricedQuoteLine> = {}): Price
   shopId: 'shop-1',
   shopName: 'Hội An Lights',
   title: { en: 'Silk lantern' },
-  variantLabel: 'Red',
+  variantLabel: { en: 'Red', vi: 'Đỏ' },
   imageUrl: null,
   unitPriceUsdCents: 1500,
   stock: 5,

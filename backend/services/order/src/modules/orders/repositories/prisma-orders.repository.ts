@@ -44,7 +44,7 @@ export class PrismaOrdersRepository extends OrdersRepository {
                   productSlug: item.productSlug,
                   variantSku: item.variantSku,
                   titleSnapshot: item.title as unknown as Prisma.InputJsonObject,
-                  variantLabel: item.variantLabel,
+                  variantLabel: item.variantLabel as unknown as Prisma.InputJsonObject,
                   imageUrl: item.imageUrl,
                   quantity: item.quantity,
                   unitPriceUsdCents: item.unitPriceUsdCents,

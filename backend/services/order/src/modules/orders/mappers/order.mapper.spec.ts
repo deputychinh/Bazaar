@@ -50,7 +50,7 @@ const row: OrderRow = {
           productSlug: 'silk-lantern',
           variantSku: 'LAN-RED',
           titleSnapshot: { en: 'Silk lantern' },
-          variantLabel: 'Red',
+          variantLabel: { en: 'Red', vi: 'Đỏ' },
           imageUrl: null,
           quantity: 1,
           unitPriceUsdCents: 1500,

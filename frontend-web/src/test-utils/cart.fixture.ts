@@ -4,7 +4,7 @@ export const cartLineFixture = (overrides: Partial<CartLine> = {}): CartLine => 
   sku: 'LAN-RED',
   productSlug: 'silk-lantern',
   title: { en: 'Silk lantern', vi: 'Đèn lồng lụa' },
-  variantLabel: 'Red',
+  variantLabel: { en: 'Red', vi: 'Đỏ' },
   imageUrl: null,
   unitPriceUsdCents: 1500,
   quantity: 1,

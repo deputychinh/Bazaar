@@ -55,7 +55,7 @@ describe('QuoteService', () => {
         shopId: 'shop-1',
         shopName: 'Hội An Lights',
         title: { en: 'Ceramic vase', vi: 'Bình hoa gốm' },
-        variantLabel: 'Red',
+        variantLabel: { en: 'Red', vi: 'Red' },
         imageUrl: 'https://cdn.bazaar.test/bazaar-images/products/p1/a.webp',
         unitPriceUsdCents: 1500,
         stock: 3,

@@ -9,7 +9,7 @@ const lineSchema = z.object({
   sku: z.string().min(1),
   productSlug: z.string().min(1),
   title: z.object({ en: z.string(), vi: z.string().nullish() }),
-  variantLabel: z.string(),
+  variantLabel: z.object({ en: z.string(), vi: z.string().nullish() }),
   imageUrl: z.string().nullable(),
   unitPriceUsdCents: z.number().int().nonnegative(),
   quantity: z.number().int().positive(),

@@ -64,7 +64,7 @@ export const pricedLine = (overrides: Partial<PricedOrderLine> = {}): PricedOrde
   shopId: 'shop-1',
   shopName: 'Hội An Lights',
   title: { en: 'Silk lantern', vi: 'Đèn lồng lụa' },
-  variantLabel: 'Red',
+  variantLabel: { en: 'Red', vi: 'Đỏ' },
   imageUrl: null,
   unitPriceUsdCents: 1500,
   ...overrides,

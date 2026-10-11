@@ -25,7 +25,7 @@ describe('quote schemas', () => {
           shopId: 'sh1',
           shopName: 'Hội An Lights',
           title: { en: 'Lantern' },
-          variantLabel: 'Red',
+          variantLabel: { en: 'Red', vi: 'Đỏ' },
           imageUrl: null,
           unitPriceUsdCents: 1500,
           stock: 3,

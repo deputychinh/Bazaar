@@ -8,7 +8,7 @@ export interface CartLine {
   sku: string;
   productSlug: string;
   title: LocalizedText;
-  variantLabel: string;
+  variantLabel: LocalizedText;
   imageUrl: string | null;
   unitPriceUsdCents: number;
   quantity: number;

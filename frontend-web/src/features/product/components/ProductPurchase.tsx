@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState, type ReactElement } from 'react';
 
 import { LOW_STOCK_THRESHOLD } from '@/constants/catalog.constant';
@@ -9,6 +9,7 @@ import { Price } from '@/features/currency/components/Price';
 import type { CartProduct } from '@/interfaces/cart.interface';
 import type { ProductVariant } from '@/interfaces/catalog.interface';
 import { cx } from '@/utils/cx.util';
+import { pickLocalized } from '@/utils/localized-text.util';
 import { defaultVariant, variantLabel } from '@/utils/product.util';
 
 import './ProductPurchase.css';
@@ -21,6 +22,7 @@ interface ProductPurchaseProps {
 /** Variant choice, then price, stock and add-to-cart for the chosen variant. */
 export const ProductPurchase = ({ product, variants }: ProductPurchaseProps): ReactElement => {
   const t = useTranslations('product');
+  const locale = useLocale();
   const [sku, setSku] = useState(() => defaultVariant(variants)?.sku);
   const variant = variants.find((candidate) => candidate.sku === sku);
   if (variant === undefined) return <p className="product-purchase__stock">{t('unavailable')}</p>;
@@ -41,7 +43,7 @@ export const ProductPurchase = ({ product, variants }: ProductPurchaseProps): Re
                 disabled={candidate.stock === 0}
                 onChange={() => setSku(candidate.sku)}
               />
-              {variantLabel(candidate)}
+              {pickLocalized(variantLabel(candidate), locale)}
             </label>
           ))}
         </fieldset>

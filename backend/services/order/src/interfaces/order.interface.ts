@@ -12,7 +12,7 @@ export interface OrderItem {
   productSlug: string;
   variantSku: string;
   title: LocalizedText;
-  variantLabel: string;
+  variantLabel: LocalizedText;
   imageUrl: string | null;
   quantity: number;
   unitPriceUsdCents: number;

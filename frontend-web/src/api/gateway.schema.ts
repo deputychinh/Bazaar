@@ -388,7 +388,10 @@ export interface components {
                     en: string;
                     vi?: string;
                 };
-                variantLabel: string;
+                variantLabel: {
+                    en: string;
+                    vi?: string;
+                };
                 imageUrl: string | null;
                 quantity: number;
                 unitPriceUsdCents: number;

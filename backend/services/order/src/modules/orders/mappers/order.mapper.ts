@@ -53,7 +53,7 @@ export class OrderMapper {
           productSlug: item.productSlug,
           variantSku: item.variantSku,
           title: item.titleSnapshot as unknown as LocalizedText,
-          variantLabel: item.variantLabel,
+          variantLabel: item.variantLabel as unknown as LocalizedText,
           imageUrl: item.imageUrl,
           quantity: item.quantity,
           unitPriceUsdCents: item.unitPriceUsdCents,

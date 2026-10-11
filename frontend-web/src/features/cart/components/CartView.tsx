@@ -64,7 +64,9 @@ export const CartView = (): ReactElement => {
                       <Link className="cart-view__title" href={`/p/${line.productSlug}`}>
                         {title}
                       </Link>
-                      <span className="cart-view__variant">{line.variantLabel}</span>
+                      <span className="cart-view__variant">
+                        {pickLocalized(line.variantLabel, locale)}
+                      </span>
                       <Price usdCents={line.unitPriceUsdCents} />
                     </div>
                     <QuantityStepper

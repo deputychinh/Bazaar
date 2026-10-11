@@ -35,6 +35,41 @@ model Notification {
   @@map("notifications")
 }
 
+/// What one seller sells in an order, kept from OrderCreated.
+type SellerPart {
+  sellerOrderId    String
+  sellerId         String
+  subtotalUsdCents Int
+  itemCount        Int
+}
+
+/// Order facts the emails need (total, sellers), kept from OrderCreated (_id = order id).
+model OrderSummary {
+  id            String       @id @map("_id")
+  shopperId     String
+  totalUsdCents Int
+  sellers       SellerPart[]
+  createdAt     DateTime
+
+  @@map("order_summaries")
+}
+
+/// Email queue (an outbox for SMTP): written with the event, sent by the relay with retries.
+model OutgoingEmail {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  to        String
+  subject   String
+  text      String
+  html      String
+  status    String
+  attempts  Int       @default(0)
+  lastError String?
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+
+  @@map("outgoing_emails")
+}
+
 /// Every event this service saw, once (_id = event id) — the admin event log (plan F12).
 model EventLogEntry {
   id          String   @id @map("_id")

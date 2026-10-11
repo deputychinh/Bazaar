@@ -16,6 +16,13 @@ export const notificationEnvSchema = baseEnvSchema.extend({
   GATEWAY_JWKS_URL: z.url().default('http://127.0.0.1:4000/.well-known/jwks.json'),
   JWT_ISSUER: z.string().min(1).default(JWT_DEFAULT_ISSUER),
   JWT_AUDIENCE: z.string().min(1).default(JWT_DEFAULT_AUDIENCE),
+  SMTP_HOST: z.string().min(1).default('127.0.0.1'),
+  SMTP_PORT: z.coerce.number().int().positive().default(1026),
+  MAIL_FROM: z.string().min(3).default('Bazaar <no-reply@bazaar.test>'),
+  /** Customer site, for links in emails (order pages). */
+  WEB_APP_URL: z.url().default('http://localhost:3100'),
+  /** How often queued emails are sent. */
+  EMAIL_RELAY_INTERVAL_MS: z.coerce.number().int().min(200).default(2_000),
 });
 
 export type NotificationEnv = z.infer<typeof notificationEnvSchema>;

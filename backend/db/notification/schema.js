@@ -63,6 +63,45 @@ db.event_log.createIndex({ occurredAt: -1 }, { name: 'event_log_newest' });
 db.event_log.createIndex({ type: 1, occurredAt: -1 }, { name: 'event_log_type' });
 db.event_log.createIndex({ aggregateId: 1, occurredAt: 1 }, { name: 'event_log_aggregate' });
 
+ensureCollection('order_summaries', {
+  bsonType: 'object',
+  required: ['_id', 'shopperId', 'totalUsdCents', 'sellers', 'createdAt'],
+  properties: {
+    _id: { bsonType: 'string' },
+    shopperId: { bsonType: 'string' },
+    totalUsdCents: { bsonType: ['int', 'long'], minimum: 0 },
+    sellers: { bsonType: 'array' },
+    createdAt: { bsonType: 'date' },
+  },
+});
+// Old summaries are useless once an order is long finished.
+db.order_summaries.createIndex(
+  { createdAt: 1 },
+  { name: 'order_summaries_ttl', expireAfterSeconds: 365 * 24 * 3600 },
+);
+
+ensureCollection('outgoing_emails', {
+  bsonType: 'object',
+  required: ['to', 'subject', 'text', 'html', 'status', 'attempts', 'createdAt'],
+  properties: {
+    to: { bsonType: 'string' },
+    subject: { bsonType: 'string' },
+    text: { bsonType: 'string' },
+    html: { bsonType: 'string' },
+    status: { bsonType: 'string' },
+    attempts: { bsonType: ['int', 'long'], minimum: 0 },
+    lastError: { bsonType: ['string', 'null'] },
+    createdAt: { bsonType: 'date' },
+    sentAt: { bsonType: ['date', 'null'] },
+  },
+});
+db.outgoing_emails.createIndex({ status: 1, createdAt: 1 }, { name: 'outgoing_emails_queue' });
+// Sent mail is kept 30 days for support questions, then dropped.
+db.outgoing_emails.createIndex(
+  { sentAt: 1 },
+  { name: 'outgoing_emails_ttl', expireAfterSeconds: 30 * 24 * 3600 },
+);
+
 // Kafka keeps messages 7 days, so remembering processed ids for 30 days is enough.
 db.processed_events.createIndex(
   { processedAt: 1 },

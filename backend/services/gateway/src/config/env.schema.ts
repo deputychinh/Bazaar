@@ -3,6 +3,7 @@ import { baseEnvSchema } from '@bazaar/nest-common';
 import { z } from 'zod';
 
 import { GATEWAY_DEFAULT_PORT, GATEWAY_SERVICE_NAME } from '../constants/gateway.constant.js';
+import { FxProviderKind } from '../enums/fx-provider-kind.enum.js';
 
 const commaList = z.string().transform((value) =>
   value
@@ -25,6 +26,10 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
   CORS_ORIGINS: commaList.default(['http://localhost:3100', 'http://localhost:3200']),
   COOKIE_SECURE: z.stringbool().default(false),
   CATALOG_SERVICE_URL: z.url().default('http://127.0.0.1:4010'),
+  FX_PROVIDER: z.enum(FxProviderKind).default(FxProviderKind.Http),
+  FX_API_URL: z.url().default('https://open.er-api.com/v6/latest/USD'),
+  /** VND per USD used by the static provider and as the last-resort fallback. */
+  FX_STATIC_USD_VND: z.coerce.number().positive().default(26_000),
 });
 
 export type GatewayEnv = z.infer<typeof gatewayEnvSchema>;

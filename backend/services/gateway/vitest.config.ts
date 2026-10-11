@@ -13,6 +13,7 @@ export default mergeConfig(shared, {
         'src/infrastructure/**',
         'src/**/prisma-*.ts',
         'src/modules/catalog-proxy/catalog-proxy.controller.ts',
+        'src/modules/currency/services/redis-fx-rate.cache.ts',
       ],
     },
   },

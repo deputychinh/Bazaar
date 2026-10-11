@@ -22,6 +22,7 @@ import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.ind
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { CatalogProxyModule } from './modules/catalog-proxy/catalog-proxy.module.js';
+import { CurrencyModule } from './modules/currency/currency.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
 import { SellersModule } from './modules/sellers/sellers.module.js';
@@ -51,6 +52,7 @@ export class AppModule {
         AuthModule,
         SellersModule,
         CatalogProxyModule,
+        CurrencyModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

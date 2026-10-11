@@ -16,7 +16,31 @@
   },
   "home": {
     "heading": "Handmade goods from independent Vietnamese makers",
-    "lead": "Ceramics from Bát Tràng, silk from Hà Đông, and more — straight from the people who make them."
+    "lead": "Ceramics from Bát Tràng, silk from Hà Đông, and more — straight from the people who make them.",
+    "shopNow": "Start shopping",
+    "sell": "Open your shop",
+    "categoriesTitle": "Shop by category",
+    "categories": {
+      "crafts": "Arts & crafts",
+      "fashion": "Fashion",
+      "home-kitchen": "Home & kitchen",
+      "beauty": "Beauty"
+    },
+    "valuesTitle": "Why Bazaar",
+    "values": [
+      {
+        "title": "Made by real people",
+        "text": "Every shop is run by its maker — you know who made what you buy."
+      },
+      {
+        "title": "Fair prices",
+        "text": "Makers keep most of the price; there are no middlemen."
+      },
+      {
+        "title": "Shop in your language",
+        "text": "English or Vietnamese, prices in USD or VND."
+      }
+    ]
   },
   "errors": {
     "VALIDATION_FAILED": "Please check the highlighted fields.",
@@ -66,5 +90,67 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page {number}"
+  },
+  "pricing": {
+    "title": "Pricing",
+    "lead": "Simple fees for sellers. Shopping on Bazaar is free.",
+    "plansTitle": "What sellers pay",
+    "plans": [
+      {
+        "title": "Free to list",
+        "text": "Add as many products as you like at no cost."
+      },
+      {
+        "title": "8% per sale",
+        "text": "A commission only when you sell, including payment fees."
+      },
+      {
+        "title": "Weekly payouts",
+        "text": "Your earnings are paid every week, in USD."
+      }
+    ]
+  },
+  "about": {
+    "title": "About us",
+    "lead": "Bazaar connects independent Vietnamese makers with shoppers who care where things come from.",
+    "storyTitle": "What we believe",
+    "story": [
+      {
+        "title": "Craft deserves a market",
+        "text": "Generations of skill should reach buyers far beyond the village."
+      },
+      {
+        "title": "Transparency",
+        "text": "Clear prices, clear shops, clear delivery — in two languages."
+      },
+      {
+        "title": "Small is fine",
+        "text": "One person with a kiln can run a shop as well as a big brand."
+      }
+    ]
+  },
+  "sell": {
+    "title": "Become a seller",
+    "lead": "Open a shop in minutes and reach shoppers in Vietnam and abroad.",
+    "start": "Create an account",
+    "stepsTitle": "How it works",
+    "steps": [
+      {
+        "title": "Create an account",
+        "text": "Sign up and verify your email."
+      },
+      {
+        "title": "Apply to sell",
+        "text": "Tell us your shop name; we review applications quickly."
+      },
+      {
+        "title": "List your products",
+        "text": "Add photos, prices and stock from your seller console."
+      },
+      {
+        "title": "Get paid",
+        "text": "Ship orders and receive weekly payouts."
+      }
+    ]
   }
 }

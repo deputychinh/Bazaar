@@ -16,7 +16,31 @@
   },
   "home": {
     "heading": "Hàng thủ công từ những người làm nghề Việt Nam",
-    "lead": "Gốm Bát Tràng, lụa Hà Đông và nhiều hơn nữa — trực tiếp từ người làm ra chúng."
+    "lead": "Gốm Bát Tràng, lụa Hà Đông và nhiều hơn nữa — trực tiếp từ người làm ra chúng.",
+    "shopNow": "Bắt đầu mua sắm",
+    "sell": "Mở cửa hàng",
+    "categoriesTitle": "Mua theo danh mục",
+    "categories": {
+      "crafts": "Thủ công mỹ nghệ",
+      "fashion": "Thời trang",
+      "home-kitchen": "Nhà cửa & Bếp",
+      "beauty": "Làm đẹp"
+    },
+    "valuesTitle": "Vì sao chọn Bazaar",
+    "values": [
+      {
+        "title": "Do người thật làm ra",
+        "text": "Mỗi cửa hàng do chính người làm nghề quản lý — bạn biết ai làm ra món đồ mình mua."
+      },
+      {
+        "title": "Giá công bằng",
+        "text": "Người làm nghề giữ phần lớn giá bán; không qua trung gian."
+      },
+      {
+        "title": "Mua sắm bằng ngôn ngữ của bạn",
+        "text": "Tiếng Anh hoặc tiếng Việt, giá theo USD hoặc VND."
+      }
+    ]
   },
   "errors": {
     "VALIDATION_FAILED": "Vui lòng kiểm tra các trường được đánh dấu.",
@@ -66,5 +90,67 @@
     "previous": "Trang trước",
     "next": "Trang sau",
     "page": "Trang {number}"
+  },
+  "pricing": {
+    "title": "Bảng phí",
+    "lead": "Phí đơn giản cho người bán. Mua sắm trên Bazaar hoàn toàn miễn phí.",
+    "plansTitle": "Người bán trả gì",
+    "plans": [
+      {
+        "title": "Đăng sản phẩm miễn phí",
+        "text": "Đăng bao nhiêu sản phẩm tuỳ thích, không tốn phí."
+      },
+      {
+        "title": "8% mỗi đơn bán được",
+        "text": "Chỉ tính hoa hồng khi bạn bán được hàng, đã gồm phí thanh toán."
+      },
+      {
+        "title": "Thanh toán hằng tuần",
+        "text": "Tiền bán hàng được chuyển cho bạn mỗi tuần, bằng USD."
+      }
+    ]
+  },
+  "about": {
+    "title": "Về chúng tôi",
+    "lead": "Bazaar kết nối những người làm nghề độc lập ở Việt Nam với người mua quan tâm đến nguồn gốc món đồ.",
+    "storyTitle": "Điều chúng tôi tin",
+    "story": [
+      {
+        "title": "Nghề thủ công cần có chợ",
+        "text": "Tay nghề qua nhiều thế hệ xứng đáng đến được với người mua ở khắp nơi."
+      },
+      {
+        "title": "Minh bạch",
+        "text": "Giá rõ ràng, cửa hàng rõ ràng, giao hàng rõ ràng — bằng hai ngôn ngữ."
+      },
+      {
+        "title": "Nhỏ cũng được",
+        "text": "Một người với một lò gốm cũng có thể bán hàng như một thương hiệu lớn."
+      }
+    ]
+  },
+  "sell": {
+    "title": "Trở thành người bán",
+    "lead": "Mở cửa hàng trong vài phút và bán cho khách ở Việt Nam lẫn nước ngoài.",
+    "start": "Tạo tài khoản",
+    "stepsTitle": "Cách thức hoạt động",
+    "steps": [
+      {
+        "title": "Tạo tài khoản",
+        "text": "Đăng ký và xác thực email."
+      },
+      {
+        "title": "Đăng ký bán hàng",
+        "text": "Cho chúng tôi biết tên cửa hàng; đơn được duyệt nhanh chóng."
+      },
+      {
+        "title": "Đăng sản phẩm",
+        "text": "Thêm ảnh, giá và tồn kho trong trang quản lý người bán."
+      },
+      {
+        "title": "Nhận tiền",
+        "text": "Giao hàng và nhận thanh toán hằng tuần."
+      }
+    ]
   }
 }

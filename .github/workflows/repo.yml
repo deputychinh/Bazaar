@@ -1,0 +1,31 @@
+name: repo
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Formatting
+        run: npx prettier --check .
+      - name: Commit messages (Conventional Commits)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}"
+          elif [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            npx commitlint --from "${{ github.event.before }}" --to "${{ github.sha }}"
+          else
+            npx commitlint --last
+          fi

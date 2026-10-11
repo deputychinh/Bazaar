@@ -1,0 +1,58 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', 'infra/docker/**', 'docker-compose.yml', '.github/workflows/backend.yml']
+  pull_request:
+    paths: ['backend/**', 'infra/docker/**', 'docker-compose.yml', '.github/workflows/backend.yml']
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Kafka topics match contracts
+        run: node ../scripts/check-topics.mjs
+      - run: npm audit --omit=dev --audit-level=high
+
+  integration:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Start infrastructure
+        run: |
+          cp .env.example .env
+          docker compose up -d --wait --wait-timeout 300 mysql mongo redis kafka storage
+          docker compose run --rm --no-deps kafka-init
+          docker compose run --rm --no-deps storage-init
+      - run: npm ci && npm run build && npm run test:int
+        working-directory: backend
+      - name: Infrastructure logs on failure
+        if: failure()
+        run: docker compose logs --tail 200

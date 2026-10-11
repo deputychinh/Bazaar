@@ -27,7 +27,7 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
   COOKIE_SECURE: z.stringbool().default(false),
   /**
    * Proxy hops whose X-Forwarded-For is trusted (Express "trust proxy"); 0 = socket address.
-   * Count only proxies that append the client IP (ingress-nginx). The Next rewrite does not — it
+   * Count only proxies that append the client IP (the Traefik ingress). The Next rewrite does not — it
    * passes a client-sent header through — so it must not be counted, or clients could spoof IPs.
    */
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),

@@ -60,5 +60,23 @@ Size: S (< 2 h) · M (half day) · L (1 day+). Status: ☐ todo · ◐ doing · 
 | BZ-040 | Account pages | Register, verify email, login, forgot/reset password; access token in memory, refresh cookie same-origin through a rewrite | L | ☑ |
 | BZ-041 | Quality gates | `web.yml` CI (lint, types, tests, build, schema freshness), `check-tokens.mjs`, Lighthouse ≥ 90 on landing and product pages | M | ☑ |
 
-## P4 — Orders + saga · P5 — Notifications + live status · P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
+## P4 — Orders + Kafka saga
+Checkout is orchestrated by the gateway (allowed sync path, DS-03): it asks the catalog for an
+authoritative quote (price, seller, availability), then creates the order with priced lines. Stock is
+reserved asynchronously through the saga (plan §5.3). Internal routes (`/internal/*`) are never proxied
+and need the shared `INTERNAL_API_KEY` plus the shopper's JWT.
+
+| Id | Ticket | Acceptance criteria | Size | Status |
+|---|---|---|---|---|
+| BZ-042 | Order service scaffold | NestJS service on :4020 like catalog: Prisma (MySQL `bazaar_order`: orders, seller_orders, order_items, payments, outbox, processed_events), migration + generated `db/order/schema.sql`, health (MySQL, Redis, Kafka), outbox relay, OpenAPI export, `make dev-order`, CI | M | ☐ |
+| BZ-043 | Internal API guard + catalog quote | `@Internal()` routes + `InternalApiGuard` (constant-time key check) in nest-common; catalog `POST /internal/v1/quote` returns price, seller, shop, title, stock for cart lines or a per-line problem | M | ☐ |
+| BZ-044 | Checkout | Gateway `POST /api/v1/orders` (Idempotency-Key required, replay returns the same order): quote → order `POST /internal/v1/orders` → Order PENDING + one SellerOrder per seller + items + payment intent (fake tokenised card) + `OrderCreated`, one MySQL transaction | L | ☐ |
+| BZ-045 | Stock reservation | Catalog consumes `OrderCreated` → conditional decrement of every line in one Mongo transaction → `StockReserved` or `StockRejected` (nothing kept); consumes `OrderCancelled` / `SellerOrderCancelled` → release once → `StockReleased` | M | ☐ |
+| BZ-046 | Payment + confirmation | Order consumes `StockReserved` → RESERVED → fake provider charge (test cards: decline, timeout, success) → PAID → CONFIRMED (+ seller orders CONFIRMED) or CANCELLED(PAYMENT_FAILED); `StockRejected` → CANCELLED(OUT_OF_STOCK); state machine unit-tested | M | ☐ |
+| BZ-047 | Reservation timeout | Scheduled job in order (single runner via Redis lock) cancels orders still PENDING/RESERVED after 15 min with RESERVATION_TIMEOUT | S | ☐ |
+| BZ-048 | Orders API + fulfilment | Shopper: list/detail own orders, cancel a seller order before SHIPPED. Seller: list own seller orders, ship, deliver. Order COMPLETED when every seller order is final; events for each change | M | ☐ |
+| BZ-049 | Web checkout + my orders | Checkout page (test card), order page with status (polling until P5 SSE), orders list; cart cleared after order; EN/VI | M | ☐ |
+| BZ-050 | Saga quality | Integration tests: happy path, out of stock, payment declined, timeout; concurrent orders on the last items never oversell; poison message lands in DLQ | M | ☐ |
+
+## P5 — Notifications + live status · P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
 Detailed tickets are written at the start of each phase (plan §13).

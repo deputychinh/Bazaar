@@ -11,6 +11,7 @@ export default mergeConfig(shared, {
         'src/kafka/kafka-connection.ts',
         'src/kafka/event-producer.ts',
         'src/kafka/event-consumer.ts',
+        'src/health/kafka-health.indicator.ts',
       ],
     },
   },

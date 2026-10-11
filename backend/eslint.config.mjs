@@ -122,7 +122,7 @@ export default tseslint.config(
   },
   { files: ['**/*.constant.ts'], rules: { 'no-restricted-syntax': restrictAllExcept('constant') } },
   {
-    files: ['**/main.ts', '**/common/decorators/**/*.ts'],
+    files: ['**/main.ts', '**/decorators/**/*.ts'],
     rules: { 'no-restricted-syntax': restrictAllExcept('functionDeclaration', 'arrowFunction') },
   },
   { files: ['**/config/**/*.ts'], rules: { 'no-restricted-properties': 'off' } },

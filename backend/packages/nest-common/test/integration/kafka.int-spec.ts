@@ -19,6 +19,7 @@ import {
   EventConsumer,
   EventProducer,
   KafkaConnection,
+  KafkaHealthIndicator,
   KafkaModule,
   LogLevel,
   ProcessedEventStore,
@@ -117,6 +118,13 @@ describe('Kafka (real broker)', () => {
   afterAll(async () => {
     await dlqConsumer.disconnect();
     await moduleRef.close();
+  });
+
+  it('reports the broker as healthy', async () => {
+    const indicator = new KafkaHealthIndicator(moduleRef.get(KafkaConnection));
+
+    await expect(indicator.check()).resolves.toBeUndefined();
+    await indicator.onApplicationShutdown();
   });
 
   it('delivers a published event to its handler exactly once', async () => {

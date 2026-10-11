@@ -37,6 +37,13 @@
     "@parcel/watcher": false,
     "unrs-resolver": false,
     "@confluentinc/kafka-javascript@1.11.0": true,
-    "fsevents": false
+    "fsevents": false,
+    "prisma@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "@prisma/client@6.19.3": true,
+    "@scarf/scarf": false
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2"
   }
 }

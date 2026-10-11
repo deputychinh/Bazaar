@@ -1129,22 +1129,27 @@
                   "type": "object",
                   "properties": {
                     "base": {
-                      "type": "string",
-                      "enum": [
-                        "USD"
-                      ]
+                      "$ref": "#/components/schemas/DisplayCurrency"
                     },
                     "rates": {
                       "type": "object",
-                      "additionalProperties": {
-                        "type": "number",
-                        "minimum": 0,
-                        "exclusiveMinimum": true
+                      "properties": {
+                        "USD": {
+                          "type": "number",
+                          "minimum": 0,
+                          "exclusiveMinimum": true
+                        },
+                        "VND": {
+                          "type": "number",
+                          "minimum": 0,
+                          "exclusiveMinimum": true
+                        }
                       },
                       "required": [
                         "USD",
                         "VND"
-                      ]
+                      ],
+                      "additionalProperties": false
                     },
                     "fetchedAt": {
                       "type": "string",
@@ -1286,6 +1291,13 @@
           "PENDING",
           "APPROVED",
           "REJECTED"
+        ]
+      },
+      "DisplayCurrency": {
+        "type": "string",
+        "enum": [
+          "USD",
+          "VND"
         ]
       }
     }

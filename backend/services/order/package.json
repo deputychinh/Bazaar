@@ -21,7 +21,8 @@
     "migrate": "prisma migrate deploy",
     "migrate:dev": "prisma migrate dev",
     "db:schema-sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > ../../db/order/schema.sql",
-    "openapi": "node dist/openapi.js ../../openapi/order.json"
+    "openapi": "node dist/openapi.js ../../openapi/order.json",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts"
   },
   "devDependencies": {
     "@nestjs/cli": "12.0.8",

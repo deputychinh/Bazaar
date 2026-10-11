@@ -69,6 +69,22 @@ jobs:
           npm run migrate --workspaces --if-present
           ./db/scripts/apply.sh schema
           npm run test:int
+      - name: Saga end to end (gateway + catalog + order over Kafka)
+        working-directory: backend
+        run: |
+          set -a && source ../.env && set +a
+          ./db/scripts/apply.sh data
+          for service in gateway catalog order; do
+            (cd services/$service && nohup node --enable-source-maps dist/main.js > /tmp/$service.log 2>&1 &)
+          done
+          for attempt in $(seq 1 60); do
+            curl -sf localhost:4000/health/ready && curl -sf localhost:4010/health/ready && curl -sf localhost:4020/health/ready && break
+            sleep 2
+          done
+          npm run test:e2e -w @bazaar/order
+      - name: Service logs on failure
+        if: failure()
+        run: tail -n 100 /tmp/gateway.log /tmp/catalog.log /tmp/order.log || true
       - name: Infrastructure logs on failure
         if: failure()
         run: docker compose logs --tail 200

@@ -60,6 +60,7 @@ export default tseslint.config(
       '**/*.mjs',
       '**/vitest.config.ts',
       '**/vitest.int.config.ts',
+      '**/vitest.e2e.config.ts',
       'vitest.shared.ts',
     ],
   },

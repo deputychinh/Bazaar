@@ -8,6 +8,8 @@ import type { Transaction } from '../../../interfaces/transaction.interface.js';
 
 import { StockRepository } from './stock.repository.js';
 
+const OBJECT_ID = /^[a-f\d]{24}$/i;
+
 /**
  * Stock lives in the product's variant array. The decrement is one conditional update
  * (`$elemMatch` with `stock ≥ qty`, then `$inc` on the matched element — ADR 0011): it either
@@ -20,6 +22,8 @@ export class PrismaStockRepository extends StockRepository {
   }
 
   public async tryTake(line: StockLine, transaction: Transaction): Promise<boolean> {
+    // Not an ObjectId: no such product. Answer "unavailable" instead of failing the message.
+    if (!OBJECT_ID.test(line.productId)) return false;
     const result = await transaction.$runCommandRaw({
       update: 'products',
       updates: [
@@ -36,6 +40,7 @@ export class PrismaStockRepository extends StockRepository {
   }
 
   public async giveBack(line: StockLine, transaction: Transaction): Promise<void> {
+    if (!OBJECT_ID.test(line.productId)) return;
     await transaction.$runCommandRaw({
       update: 'products',
       updates: [
@@ -48,6 +53,7 @@ export class PrismaStockRepository extends StockRepository {
   }
 
   public async available(line: StockLine, transaction: Transaction): Promise<number> {
+    if (!OBJECT_ID.test(line.productId)) return 0;
     const product = await transaction.product.findUnique({
       where: { id: line.productId },
       select: { variants: true },
@@ -88,7 +94,7 @@ export class PrismaStockRepository extends StockRepository {
 
   public async slugsOf(productIds: string[]): Promise<string[]> {
     const rows = await this.prisma.product.findMany({
-      where: { id: { in: productIds } },
+      where: { id: { in: productIds.filter((id) => OBJECT_ID.test(id)) } },
       select: { slug: true },
     });
     return rows.map((row) => row.slug);

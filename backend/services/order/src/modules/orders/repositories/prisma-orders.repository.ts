@@ -4,8 +4,13 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '#prisma';
 
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service.js';
+import type {
+  OrderTransition,
+  SellerOrderTransition,
+} from '../../../interfaces/order-transition.interface.js';
 import type { NewOrder, Order } from '../../../interfaces/order.interface.js';
 import type { Transaction } from '../../../interfaces/transaction.interface.js';
+import { OrderStateMachine } from '../domain/order-state-machine.js';
 import { DuplicateIdempotencyKeyError } from '../errors/duplicate-idempotency-key.error.js';
 import { OrderMapper } from '../mappers/order.mapper.js';
 
@@ -89,5 +94,82 @@ export class PrismaOrdersRepository extends OrdersRepository {
       include: WITH_DETAILS,
     });
     return row === null ? null : OrderMapper.toDomain(row);
+  }
+
+  public async transition(change: OrderTransition, transaction: Transaction): Promise<boolean> {
+    const moved = await transaction.order.updateMany({
+      where: { id: change.orderId, status: { in: OrderStateMachine.sourcesOf(change.to) } },
+      data: {
+        status: change.to,
+        ...(change.cancelReason && { cancelReason: change.cancelReason }),
+      },
+    });
+    if (moved.count === 0) return false;
+    if (change.sellerOrders !== undefined) {
+      const { to, cancelReason, at } = change.sellerOrders;
+      await transaction.sellerOrder.updateMany({
+        where: { orderId: change.orderId, status: { in: OrderStateMachine.sellerSourcesOf(to) } },
+        data: {
+          status: to,
+          ...(cancelReason && { cancelReason }),
+          ...PrismaOrdersRepository.stamp(to, at),
+        },
+      });
+    }
+    if (change.payment !== undefined) {
+      await transaction.payment.update({
+        where: { orderId: change.orderId },
+        data: change.payment,
+      });
+    }
+    return true;
+  }
+
+  public async transitionSellerOrder(
+    change: SellerOrderTransition,
+    transaction: Transaction,
+  ): Promise<boolean> {
+    const moved = await transaction.sellerOrder.updateMany({
+      where: {
+        id: change.sellerOrderId,
+        status: { in: OrderStateMachine.sellerSourcesOf(change.to) },
+      },
+      data: {
+        status: change.to,
+        ...(change.cancelReason && { cancelReason: change.cancelReason }),
+        ...PrismaOrdersRepository.stamp(change.to, change.at),
+      },
+    });
+    return moved.count === 1;
+  }
+
+  public async updatePayment(
+    orderId: string,
+    payment: NonNullable<OrderTransition['payment']>,
+    transaction: Transaction,
+  ): Promise<void> {
+    await transaction.payment.update({ where: { orderId }, data: payment });
+  }
+
+  public async findStale(statuses: OrderStatus[], before: Date, limit: number): Promise<Order[]> {
+    const rows = await this.prisma.order.findMany({
+      where: { status: { in: statuses }, createdAt: { lt: before } },
+      orderBy: { createdAt: 'asc' },
+      take: limit,
+      include: WITH_DETAILS,
+    });
+    return rows.map((row) => OrderMapper.toDomain(row));
+  }
+
+  /** The timestamp column that records reaching a seller order status. */
+  private static stamp(
+    to: SellerOrderStatus,
+    at: Date | undefined,
+  ): Partial<Record<'shippedAt' | 'deliveredAt' | 'cancelledAt', Date>> {
+    const when = at ?? new Date();
+    if (to === SellerOrderStatus.Shipped) return { shippedAt: when };
+    if (to === SellerOrderStatus.Delivered) return { deliveredAt: when };
+    if (to === SellerOrderStatus.Cancelled) return { cancelledAt: when };
+    return {};
   }
 }

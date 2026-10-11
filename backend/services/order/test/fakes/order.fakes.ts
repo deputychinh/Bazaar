@@ -18,8 +18,13 @@ import {
 import { TransactionManager } from '../../src/common/transaction/transaction-manager.js';
 import { AppConfig } from '../../src/config/app-config.js';
 import { orderEnvSchema } from '../../src/config/env.schema.js';
+import type {
+  OrderTransition,
+  SellerOrderTransition,
+} from '../../src/interfaces/order-transition.interface.js';
 import type { NewOrder, Order } from '../../src/interfaces/order.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
+import { OrderStateMachine } from '../../src/modules/orders/domain/order-state-machine.js';
 import { DuplicateIdempotencyKeyError } from '../../src/modules/orders/errors/duplicate-idempotency-key.error.js';
 import { OrdersRepository } from '../../src/modules/orders/repositories/orders.repository.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
@@ -145,5 +150,68 @@ export class InMemoryOrdersRepository extends OrdersRepository {
       (candidate) => candidate.shopperId === shopperId && candidate.idempotencyKey === key,
     );
     return Promise.resolve(row === undefined ? null : structuredClone(row));
+  }
+
+  public transition(change: OrderTransition): Promise<boolean> {
+    const order = this.rows.find((row) => row.id === change.orderId);
+    if (order === undefined || !OrderStateMachine.sourcesOf(change.to).includes(order.status)) {
+      return Promise.resolve(false);
+    }
+    order.status = change.to;
+    if (change.cancelReason !== undefined) order.cancelReason = change.cancelReason;
+    if (change.sellerOrders !== undefined) {
+      const { to, cancelReason, at } = change.sellerOrders;
+      for (const sellerOrder of order.sellerOrders) {
+        if (!OrderStateMachine.sellerSourcesOf(to).includes(sellerOrder.status)) continue;
+        sellerOrder.status = to;
+        if (cancelReason !== undefined) sellerOrder.cancelReason = cancelReason;
+        if (to === SellerOrderStatus.Cancelled) sellerOrder.cancelledAt = at ?? NOW;
+      }
+    }
+    if (change.payment !== undefined && order.payment !== null)
+      Object.assign(order.payment, change.payment);
+    return Promise.resolve(true);
+  }
+
+  public transitionSellerOrder(change: SellerOrderTransition): Promise<boolean> {
+    const sellerOrder = this.rows
+      .flatMap((row) => row.sellerOrders)
+      .find((candidate) => candidate.id === change.sellerOrderId);
+    if (
+      sellerOrder === undefined ||
+      !OrderStateMachine.sellerSourcesOf(change.to).includes(sellerOrder.status)
+    ) {
+      return Promise.resolve(false);
+    }
+    sellerOrder.status = change.to;
+    if (change.cancelReason !== undefined) sellerOrder.cancelReason = change.cancelReason;
+    if (change.to === SellerOrderStatus.Shipped) sellerOrder.shippedAt = change.at;
+    if (change.to === SellerOrderStatus.Delivered) sellerOrder.deliveredAt = change.at;
+    if (change.to === SellerOrderStatus.Cancelled) sellerOrder.cancelledAt = change.at;
+    return Promise.resolve(true);
+  }
+
+  public updatePayment(
+    orderId: string,
+    payment: NonNullable<OrderTransition['payment']>,
+  ): Promise<void> {
+    const order = this.rows.find((row) => row.id === orderId);
+    if (order?.payment) Object.assign(order.payment, payment);
+    return Promise.resolve();
+  }
+
+  public findStale(statuses: OrderStatus[], before: Date, limit: number): Promise<Order[]> {
+    return Promise.resolve(
+      this.rows
+        .filter((row) => statuses.includes(row.status) && row.createdAt < before)
+        .slice(0, limit)
+        .map((row) => structuredClone(row)),
+    );
+  }
+
+  /** Test helper: put an order straight into a state. */
+  public force(orderId: string, status: OrderStatus): void {
+    const order = this.rows.find((row) => row.id === orderId);
+    if (order !== undefined) order.status = status;
   }
 }

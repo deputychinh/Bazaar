@@ -23,6 +23,7 @@ import { EventsModule } from './modules/events/events.module.js';
 import { OrdersModule } from './modules/orders/orders.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { PaymentsModule } from './modules/payments/payments.module.js';
+import { SagaModule } from './modules/saga/saga.module.js';
 
 @Global()
 @Module({})
@@ -52,6 +53,7 @@ export class AppModule {
         EventsModule,
         PaymentsModule,
         OrdersModule,
+        SagaModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

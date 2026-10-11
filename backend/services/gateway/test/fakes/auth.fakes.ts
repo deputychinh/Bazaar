@@ -15,6 +15,7 @@ import { TransactionManager } from '../../src/common/transaction/transaction-man
 import { AppConfig } from '../../src/config/app-config.js';
 import { gatewayEnvSchema } from '../../src/config/env.schema.js';
 import type { UserTokenPurpose } from '../../src/enums/user-token-purpose.enum.js';
+import type { RateLimitResult, RateLimitRule } from '../../src/interfaces/rate-limit.interface.js';
 import type { SellerApplication } from '../../src/interfaces/seller-application.interface.js';
 import type { StoredRefreshToken, StoredUserToken } from '../../src/interfaces/token.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
@@ -29,6 +30,7 @@ import {
   UserTokensRepository,
 } from '../../src/modules/auth/repositories/user-tokens.repository.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
+import { RateLimiter } from '../../src/modules/rate-limit/rate-limiter.js';
 import {
   type ListApplicationsOptions,
   type ReviewOptions,
@@ -237,5 +239,24 @@ export class InMemorySellerApplicationsRepository extends SellerApplicationsRepo
     const row = this.rows.find((application) => application.id === id)!;
     Object.assign(row, { rejectionReason: null, ...review });
     return Promise.resolve(row);
+  }
+}
+
+export class InMemoryRateLimiter extends RateLimiter {
+  private readonly counts = new Map<string, number>();
+  public failWith: Error | null = null;
+
+  public hit(key: string, rule: RateLimitRule): Promise<RateLimitResult> {
+    if (this.failWith !== null) {
+      return Promise.reject(this.failWith);
+    }
+    const hits = (this.counts.get(key) ?? 0) + 1;
+    this.counts.set(key, hits);
+    return Promise.resolve({
+      allowed: hits <= rule.limit,
+      limit: rule.limit,
+      remaining: Math.max(rule.limit - hits, 0),
+      resetSeconds: rule.windowSeconds,
+    });
   }
 }

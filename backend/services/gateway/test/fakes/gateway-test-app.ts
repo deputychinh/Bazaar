@@ -12,6 +12,7 @@ import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 
 import { JwtAuthGuard } from '../../src/common/guards/jwt-auth.guard.js';
+import { RateLimitGuard } from '../../src/common/guards/rate-limit.guard.js';
 import { RolesGuard } from '../../src/common/guards/roles.guard.js';
 import { TransactionManager } from '../../src/common/transaction/transaction-manager.js';
 import { AppConfig } from '../../src/config/app-config.js';
@@ -25,6 +26,7 @@ import { PasswordResetService } from '../../src/modules/auth/services/password-r
 import { RegistrationService } from '../../src/modules/auth/services/registration.service.js';
 import { SessionService } from '../../src/modules/auth/services/session.service.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
+import { RateLimiter } from '../../src/modules/rate-limit/rate-limiter.js';
 import { AdminSellerApplicationsController } from '../../src/modules/sellers/controllers/admin-seller-applications.controller.js';
 import { SellerApplicationsController } from '../../src/modules/sellers/controllers/seller-applications.controller.js';
 import { SellerApplicationsRepository } from '../../src/modules/sellers/repositories/seller-applications.repository.js';
@@ -38,6 +40,7 @@ import {
   buildAccessTokenService,
   FakePasswordHasher,
   ImmediateTransactionManager,
+  InMemoryRateLimiter,
   InMemoryRefreshTokensRepository,
   InMemorySellerApplicationsRepository,
   InMemoryUsersRepository,
@@ -93,6 +96,8 @@ export const createGatewayTestApp = async (): Promise<GatewayTestApp> => {
       { provide: PasswordHasher, useValue: new FakePasswordHasher() },
       { provide: EventOutbox, useValue: outbox },
       { provide: TransactionManager, useValue: new ImmediateTransactionManager() },
+      { provide: RateLimiter, useValue: new InMemoryRateLimiter() },
+      { provide: APP_GUARD, useClass: RateLimitGuard },
       { provide: APP_GUARD, useClass: JwtAuthGuard },
       { provide: APP_GUARD, useClass: RolesGuard },
     ],

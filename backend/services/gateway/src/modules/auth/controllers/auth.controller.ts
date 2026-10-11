@@ -6,8 +6,10 @@ import type { Request, Response } from 'express';
 
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
 import { Public } from '../../../common/decorators/public.decorator.js';
+import { RateLimit } from '../../../common/decorators/rate-limit.decorator.js';
 import { AppConfig } from '../../../config/app-config.js';
 import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../../constants/auth.constant.js';
+import { RateLimitPolicy } from '../../../enums/rate-limit-policy.enum.js';
 import type { AuthenticatedUser } from '../../../interfaces/authenticated-user.interface.js';
 import type { IssuedSession } from '../../../interfaces/session.interface.js';
 import { type UserResponse, userResponseSchema } from '../../users/dto/user-response.dto.js';
@@ -44,6 +46,7 @@ export class AuthController {
   ) {}
 
   @Public()
+  @RateLimit(RateLimitPolicy.Strict)
   @Post('register')
   @ApiZodBody(registerSchema)
   @ApiZodResponse(
@@ -58,6 +61,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit(RateLimitPolicy.Strict)
   @Post('verify-email')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiZodBody(verifyEmailSchema)
@@ -68,6 +72,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit(RateLimitPolicy.Strict)
   @Post('resend-verification')
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiZodBody(emailOnlySchema)
@@ -78,6 +83,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit(RateLimitPolicy.Strict)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiZodBody(loginSchema)
@@ -113,6 +119,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit(RateLimitPolicy.Strict)
   @Post('forgot-password')
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiZodBody(emailOnlySchema)
@@ -123,6 +130,7 @@ export class AuthController {
   }
 
   @Public()
+  @RateLimit(RateLimitPolicy.Strict)
   @Post('reset-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiZodBody(resetPasswordSchema)

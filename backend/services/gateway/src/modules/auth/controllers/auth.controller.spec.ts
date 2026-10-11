@@ -174,6 +174,23 @@ describe('AuthController (HTTP)', () => {
       .expect(202);
   });
 
+  it('slows down password guessing with the strict rate limit', async () => {
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      await http()
+        .post('/api/v1/auth/login')
+        .send({ email: 'tom@bazaar.test', password: 'guess' })
+        .expect(401);
+    }
+
+    const blocked = await http()
+      .post('/api/v1/auth/login')
+      .send({ email: 'tom@bazaar.test', password: 'guess' })
+      .expect(429);
+
+    expect(blocked.body.code).toBe(ErrorCode.RateLimited);
+    expect(blocked.headers['retry-after']).toBe('60');
+  });
+
   it('serves the public key set without authentication', async () => {
     const response = await http().get('/.well-known/jwks.json').expect(200);
 

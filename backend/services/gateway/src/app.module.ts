@@ -12,6 +12,7 @@ import { type DynamicModule, Global, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard.js';
+import { RateLimitGuard } from './common/guards/rate-limit.guard.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
 import { AppConfig } from './config/app-config.js';
 import type { GatewayEnv } from './config/env.schema.js';
@@ -22,6 +23,7 @@ import { RedisModule } from './infrastructure/redis/redis.module.js';
 import './interfaces/express-request.interface.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
+import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
 import { SellersModule } from './modules/sellers/sellers.module.js';
 import { TokensModule } from './modules/tokens/tokens.module.js';
 
@@ -44,6 +46,7 @@ export class AppModule {
         RedisModule,
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),
         OutboxModule,
+        RateLimitModule,
         TokensModule,
         AuthModule,
         SellersModule,
@@ -51,6 +54,8 @@ export class AppModule {
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },
         { provide: Clock, useClass: SystemClock },
+        // Order matters: rate limit first, then authentication, then roles.
+        { provide: APP_GUARD, useClass: RateLimitGuard },
         { provide: APP_GUARD, useClass: JwtAuthGuard },
         { provide: APP_GUARD, useClass: RolesGuard },
       ],

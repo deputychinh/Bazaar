@@ -17,6 +17,9 @@ import { AppConfig } from './config/app-config.js';
 import type { CatalogEnv } from './config/env.schema.js';
 import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.indicator.js';
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
+import { EventsModule } from './modules/events/events.module.js';
+import { OutboxModule } from './modules/outbox/outbox.module.js';
+import { ShopsModule } from './modules/shops/shops.module.js';
 
 @Global()
 @Module({})
@@ -41,6 +44,9 @@ export class AppModule {
         RedisModule.forRoot({ url: env.REDIS_URL }),
         PrismaModule,
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),
+        OutboxModule,
+        ShopsModule,
+        EventsModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

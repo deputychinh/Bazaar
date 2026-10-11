@@ -1,0 +1,42 @@
+import {
+  AccessTokenGuard,
+  AppLoggerModule,
+  Clock,
+  FixedClock,
+  HttpCommonModule,
+  LogLevel,
+  RolesGuard,
+  TokenVerifier,
+} from '@bazaar/nest-common';
+import type { INestApplication, Provider, Type } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { Test } from '@nestjs/testing';
+
+import { API_PREFIX } from '../../src/constants/catalog.constant.js';
+
+import { FakeTokenVerifier, NOW } from './catalog.fakes.js';
+
+/** Real HTTP layer (guards, pipes, error filter) with the given controllers and fake adapters. */
+export const createCatalogTestApp = async (
+  controllers: Type[],
+  providers: Provider[],
+): Promise<INestApplication> => {
+  const moduleRef = await Test.createTestingModule({
+    imports: [
+      AppLoggerModule.forRoot({ serviceName: 'test', level: LogLevel.Silent, pretty: false }),
+      HttpCommonModule,
+    ],
+    controllers,
+    providers: [
+      ...providers,
+      { provide: Clock, useValue: new FixedClock(NOW) },
+      { provide: TokenVerifier, useClass: FakeTokenVerifier },
+      { provide: APP_GUARD, useClass: AccessTokenGuard },
+      { provide: APP_GUARD, useClass: RolesGuard },
+    ],
+  }).compile();
+  const app = moduleRef.createNestApplication();
+  app.setGlobalPrefix(API_PREFIX);
+  await app.init();
+  return app;
+};

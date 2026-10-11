@@ -49,6 +49,8 @@ export const testConfig = (): AppConfig =>
     }),
   );
 export const NO_TRANSACTION = {} as Transaction;
+/** Internal API key the test app accepts on @Internal() routes. */
+export const TEST_INTERNAL_KEY = 'internal-test-key-0123456789abcdef';
 
 /** Tokens in tests read "ROLE:userId", e.g. "SELLER:seller-1". */
 export class FakeTokenVerifier extends TokenVerifier {
@@ -176,6 +178,10 @@ export const productFixture = (overrides: Partial<Product> = {}): Product => ({
 export class InMemoryProductsRepository extends ProductsRepository {
   public constructor(public readonly rows: Product[] = []) {
     super();
+  }
+
+  public findBySlugs(slugs: string[]): Promise<Product[]> {
+    return Promise.resolve(this.rows.filter((product) => slugs.includes(product.slug)));
   }
 
   public search(criteria: ProductSearchCriteria): Promise<ProductPage> {

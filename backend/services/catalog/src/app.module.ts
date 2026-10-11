@@ -21,6 +21,7 @@ import { CategoriesModule } from './modules/categories/categories.module.js';
 import { EventsModule } from './modules/events/events.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { ProductsModule } from './modules/products/products.module.js';
+import { QuoteModule } from './modules/quote/quote.module.js';
 import { ShopsModule } from './modules/shops/shops.module.js';
 
 @Global()
@@ -41,6 +42,7 @@ export class AppModule {
           jwksUrl: env.GATEWAY_JWKS_URL,
           issuer: env.JWT_ISSUER,
           audience: env.JWT_AUDIENCE,
+          internalApiKey: env.INTERNAL_API_KEY,
         }),
         KafkaModule.forRoot({ clientId: env.SERVICE_NAME, brokers: env.KAFKA_BROKERS }),
         RedisModule.forRoot({ url: env.REDIS_URL }),
@@ -50,6 +52,7 @@ export class AppModule {
         ShopsModule,
         CategoriesModule,
         ProductsModule,
+        QuoteModule,
         EventsModule,
       ],
       providers: [

@@ -36,6 +36,11 @@ export class PrismaProductsRepository extends ProductsRepository {
     return row === null ? null : ProductMapper.toDomain(row);
   }
 
+  public async findBySlugs(slugs: string[]): Promise<Product[]> {
+    const rows = await this.prisma.product.findMany({ where: { slug: { in: slugs } } });
+    return rows.map((row) => ProductMapper.toDomain(row));
+  }
+
   public async findById(id: string): Promise<Product | null> {
     const row = await this.prisma.product.findUnique({ where: { id } });
     return row === null ? null : ProductMapper.toDomain(row);

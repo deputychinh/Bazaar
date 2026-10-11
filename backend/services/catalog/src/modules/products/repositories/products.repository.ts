@@ -33,6 +33,9 @@ export abstract class ProductsRepository {
 
   public abstract findById(id: string): Promise<Product | null>;
 
+  /** Any status; missing slugs are simply absent from the result. */
+  public abstract findBySlugs(slugs: string[]): Promise<Product[]>;
+
   public abstract findBySeller(criteria: SellerProductsCriteria): Promise<ProductPage>;
 
   /** Throws ConflictError when a SKU is already used by another product. */

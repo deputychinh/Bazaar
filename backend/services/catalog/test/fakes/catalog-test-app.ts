@@ -4,7 +4,9 @@ import {
   Clock,
   FixedClock,
   HttpCommonModule,
+  InternalApiGuard,
   LogLevel,
+  SERVICE_AUTH_OPTIONS,
   RolesGuard,
   TokenVerifier,
 } from '@bazaar/nest-common';
@@ -14,7 +16,7 @@ import { Test } from '@nestjs/testing';
 
 import { API_PREFIX } from '../../src/constants/catalog.constant.js';
 
-import { FakeTokenVerifier, NOW } from './catalog.fakes.js';
+import { FakeTokenVerifier, NOW, TEST_INTERNAL_KEY } from './catalog.fakes.js';
 
 /** Real HTTP layer (guards, pipes, error filter) with the given controllers and fake adapters. */
 export const createCatalogTestApp = async (
@@ -31,6 +33,16 @@ export const createCatalogTestApp = async (
       ...providers,
       { provide: Clock, useValue: new FixedClock(NOW) },
       { provide: TokenVerifier, useClass: FakeTokenVerifier },
+      {
+        provide: SERVICE_AUTH_OPTIONS,
+        useValue: {
+          jwksUrl: 'http://test',
+          issuer: 'test',
+          audience: 'test',
+          internalApiKey: TEST_INTERNAL_KEY,
+        },
+      },
+      { provide: APP_GUARD, useClass: InternalApiGuard },
       { provide: APP_GUARD, useClass: AccessTokenGuard },
       { provide: APP_GUARD, useClass: RolesGuard },
     ],

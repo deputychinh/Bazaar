@@ -13,3 +13,4 @@ export * from './shop-status.enum.js';
 export * from './topic.enum.js';
 export * from './user-role.enum.js';
 export * from './user-status.enum.js';
+export * from './quote-problem.enum.js';

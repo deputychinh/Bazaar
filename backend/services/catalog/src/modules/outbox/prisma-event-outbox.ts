@@ -14,6 +14,7 @@ export class PrismaEventOutbox extends EventOutbox {
         msgKey: event.aggregateId,
         value: JSON.stringify(event),
         headers: event.traceId === null ? {} : { [TRACE_ID_HEADER]: event.traceId },
+        sentAt: null,
       },
     });
   }

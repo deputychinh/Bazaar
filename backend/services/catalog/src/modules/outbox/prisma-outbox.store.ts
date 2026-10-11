@@ -12,7 +12,8 @@ export class PrismaOutboxStore extends OutboxStore {
 
   public async fetchUnsent(limit: number): Promise<OutboxMessage[]> {
     const rows = await this.prisma.outboxMessage.findMany({
-      where: { sentAt: null },
+      // MongoDB: `sentAt: null` does not match documents where the field is missing.
+      where: { OR: [{ sentAt: null }, { sentAt: { isSet: false } }] },
       orderBy: { id: 'asc' },
       take: limit,
     });

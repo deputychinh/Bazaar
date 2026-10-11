@@ -183,7 +183,7 @@ Real payment provider and refunds, live FX rates, currencies beyond USD/VND, lan
 | Time | Stored UTC; shown in the browser's time zone, formatted per locale |
 | Auth | Gateway signs RS256 JWT (15 min access, 7-day rotating refresh in httpOnly cookie). Downstream services verify the JWT themselves with the public key (zero-trust inside the cluster). Email verification and password reset links expire after 24 h / 1 h |
 | Shipping & tax | Free shipping, no tax in the MVP |
-| Images | Uploaded straight to object storage (MinIO locally, S3 in prod) with presigned URLs; max 5 MB, JPEG/PNG/WebP |
+| Images | Uploaded straight to object storage (RustFS locally, S3 in prod) with presigned URLs; max 5 MB, JPEG/PNG/WebP |
 | Live status at scale | Each gateway pod reads `order.events` with its own consumer group and pushes SSE only to its connected shoppers |
 | Event evolution | `version` in the envelope; only additive changes inside a version; breaking change = new `v2` event published alongside until consumers move |
 
@@ -229,7 +229,7 @@ Real payment provider and refunds, live FX rates, currencies beyond USD/VND, lan
 | Kafka UI | kafbat/kafka-ui | Watch topics, messages, consumer lag | — |
 | Mailpit | axllent/mailpit | Catch emails locally | — |
 | **Redis** | redis (8.x) | Gateway rate limits shared across pods, catalog read cache (product / category pages), distributed locks for scheduled jobs (reservation timeout, outbox relay leader), idempotency keys for `POST /orders` | — |
-| MinIO | minio/minio | S3-compatible object storage for product images and backups | — |
+| Object storage | rustfs/rustfs | S3-compatible object storage for product images and backups (MinIO images are no longer published) | — |
 
 ### 3.2 Why gateway + 3 services (and not more)
 Enough to show real boundaries (two databases, async saga, fan-out consumer) without micro-service sprawl. Identity stays inside the gateway to save a hop; splitting it out later is a listed next step.
@@ -705,7 +705,7 @@ The same files are used by docker compose (init), the kind Jobs, integration tes
 
 - **Multi-stage Dockerfile** per app: `deps → build → runtime` on Node LTS Alpine (Next.js `output: 'standalone'`; admin → `nginx:alpine` serving static files). Non-root user, `HEALTHCHECK`, `.dockerignore`, service images < 200 MB.
 - **docker-compose.yml**
-  - default = infra only: `mysql`, `mongo` (single-node replica set), `redis`, `kafka` (KRaft), `kafka-init` (creates topics), `kafka-ui`, `minio` (+ bucket init), `mailpit`.
+  - default = infra only: `mysql`, `mongo` (single-node replica set), `redis`, `kafka` (KRaft), `kafka-init` (creates topics), `kafka-ui`, `storage` (RustFS, + bucket init), `mailpit`.
   - `--profile full` = infra + all 6 apps as containers.
 - Ports (chosen not to clash with relay / real-estate / preclinic):
 
@@ -721,7 +721,7 @@ The same files are used by docker compose (init), the kind Jobs, integration tes
 | Kafka UI | 8085 |
 | Mailpit UI | 8026 |
 | Redis | 6380 |
-| MinIO API / console | 9002 / 9003 |
+| Object storage API / console | 9002 / 9003 |
 
 ---
 
@@ -735,7 +735,7 @@ The same files are used by docker compose (init), the kind Jobs, integration tes
 |---|---|
 | Namespace | `bazaar` (apps), `bazaar-data` (stores), `observability` |
 | Deployment + Service | web, admin, gateway, catalog, order, notification |
-| StatefulSet + headless Service + PVC | MySQL, MongoDB, Redis, MinIO (local overlay only) |
+| StatefulSet + headless Service + PVC | MySQL, MongoDB, Redis, object storage (local overlay only) |
 | Kafka | **Strimzi operator** (Helm) + `Kafka` / `KafkaNodePool` / `KafkaTopic` resources — topics declared as code |
 | ConfigMap / Secret | env per app; Secrets from `.env` via `secretGenerator` locally (Sealed Secrets / External Secrets in prod — next step) |
 | Probes | `/health/live`, `/health/ready` (ready = DB + Kafka connected) |
@@ -781,7 +781,7 @@ This is the **prod** environment of §0.2: written, tested and reviewed like a r
 | Local images | **ECR** (one repo per app, scan on push, lifecycle rule) | |
 | Mailpit | **SES** (sandbox in dev) | |
 | Redis StatefulSet | **ElastiCache** (Valkey/Redis OSS, cluster mode off, Multi-AZ replica in prod) | TLS + AUTH token from Secrets Manager |
-| MinIO | **S3** (images bucket + backups bucket) | Same S3 API, only the endpoint/credentials change |
+| RustFS | **S3** (images bucket + backups bucket) | Same S3 API, only the endpoint/credentials change |
 | Grafana / Prometheus | **CloudWatch** (Container Insights, alarms, dashboard); optional Amazon Managed Prometheus/Grafana | |
 | — | **Route 53 + ACM**, **WAF** on CloudFront | Domain is a parameter; no domain = CloudFront default URL |
 
@@ -878,7 +878,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 |---|---|---|
 | **P0 Foundation** | Repo tooling (husky, commitlint, prettier), `backend/` workspace + Turborepo + TS/ESLint configs, `contracts`, `nest-common`, Prisma ↔ MongoDB spike, `docs/design-system.md`, `docs/backlog.md`, `CONTRIBUTING.md` (from §6A), Makefile, `.env.example`, compose infra (frontend projects are scaffolded in P3 / P6) | `make up` starts infra healthy; `make lint test` green |
 | **P1 Identity + gateway** | Register/login/refresh/roles, rate limit, OpenAPI exported to `backend/openapi/gateway.json` | Auth integration tests pass |
-| **P2 Catalog** | Shops, products, categories (EN/VI), search, seller CRUD, images on MinIO, Redis read cache, `db/catalog/schema.js` + `data.js` | Search + filters work through gateway |
+| **P2 Catalog** | Shops, products, categories (EN/VI), search, seller CRUD, images on RustFS (S3 API), Redis read cache, `db/catalog/schema.js` + `data.js` | Search + filters work through gateway |
 | **P3 Web (SSG + SSR)** | Landing pages, catalog/product SSR, ISR revalidate, SEO, cart | Lighthouse ≥ 90 perf/SEO/a11y on landing + product |
 | **P4 Orders + Kafka saga** | Order service, outbox relay, stock reservation, fake payment, timeouts, DLQ | Concurrent-order test shows zero oversell; saga tests green |
 | **P5 Notifications + live status** | Notification service, Mailpit emails, in-app list, SSE in gateway | Shopper sees status change live |
@@ -908,7 +908,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
   0008 BEM + design tokens, no CSS framework ·
   0009 AWS: EKS + managed data services, CDK in TypeScript, deploy by GitHub OIDC (Argo CD as next step) ·
   0010 MongoDB on AWS: MongoDB Atlas (not DocumentDB) ·
-  0011 Prisma for both MySQL and MongoDB
+  0011 Prisma 6.19 for both MySQL and MongoDB (spike result)
 - `docs/runbook.md`: start/stop, reset data, replay DLQ, read consumer lag, common failures, AWS deploy / rollback / destroy.
 - `docs/aws-cost.md`: monthly estimate per environment.
 
@@ -945,7 +945,7 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
 | D18 | Redis | **Required**: rate limits, cache, locks, idempotency keys (ElastiCache in prod) |
 | D19 | Delivery workflow | **Commit straight to `main`** after each finished ticket (no PRs) |
 | D20 | Schema & seed files | **`backend/db/<database>/schema.sql|js` + `data.sql|js`**; code and docs in English |
-| D14 | Toolchain versions (checked 2026-10-11) | **TypeScript 6.0.x** (TS 7 not yet supported by typescript-eslint) · **NestJS 12 — ESM-only, so the backend is ESM (`"type": "module"`, `nodenext`) and tested with Vitest, as in the official Nest 12 starter** · **Kafka client `@confluentinc/kafka-javascript`** (KafkaJS unmaintained) · **Prisma latest stable** (not the 8.0 RC; MongoDB support verified by the P0 spike) · Node 24 LTS in images, engines `>=24` |
+| D14 | Toolchain versions (checked 2026-10-11) | **TypeScript 6.0.x** (TS 7 not yet supported by typescript-eslint) · **NestJS 12 — ESM-only, so the backend is ESM (`"type": "module"`, `nodenext`) and tested with Vitest, as in the official Nest 12 starter** · **Kafka client `@confluentinc/kafka-javascript`** (KafkaJS unmaintained) · **Prisma 6.19.x in every service** (Prisma 7 cannot connect to MongoDB — no driver adapter; ADR 0011) · Node 24 LTS in images, engines `>=24` |
 | D4 | ORM | **Prisma** for both MySQL and MongoDB (risks and workarounds in §16) |
 | D5 | Kafka on k8s | **Strimzi operator** |
 | D6 | Observability | **Production-grade full stack** (§9.3): Prometheus + Alertmanager + Grafana, Loki, Tempo, OpenTelemetry, SLOs |

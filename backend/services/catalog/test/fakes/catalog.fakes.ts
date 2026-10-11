@@ -22,6 +22,7 @@ import type {
   SellerProductsCriteria,
 } from '../../src/interfaces/product.interface.js';
 import type { NewShop, Shop } from '../../src/interfaces/shop.interface.js';
+import type { StockLine, StockReservation } from '../../src/interfaces/stock.interface.js';
 import type { PresignedUpload, StoredObject } from '../../src/interfaces/storage.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
 import { CategoriesRepository } from '../../src/modules/categories/repositories/categories.repository.js';
@@ -34,6 +35,7 @@ import {
   type ShopChangesOptions,
   ShopsRepository,
 } from '../../src/modules/shops/repositories/shops.repository.js';
+import { StockRepository } from '../../src/modules/stock/repositories/stock.repository.js';
 
 export const NOW = new Date('2026-10-11T08:00:00.000Z');
 
@@ -314,5 +316,55 @@ export class FakeObjectStorage extends ObjectStorage {
     this.objects.delete(key);
     this.deleted.push(key);
     return Promise.resolve();
+  }
+}
+
+/** Variant stock and reservations in memory, with the same all-or-nothing take rule. */
+export class InMemoryStockRepository extends StockRepository {
+  public readonly stock = new Map<string, number>();
+  public readonly reservations = new Map<string, StockReservation>();
+
+  public set(productId: string, sku: string, units: number): void {
+    this.stock.set(`${productId}/${sku}`, units);
+  }
+
+  public units(productId: string, sku: string): number {
+    return this.stock.get(`${productId}/${sku}`) ?? 0;
+  }
+
+  public tryTake(line: StockLine): Promise<boolean> {
+    const left = this.units(line.productId, line.variantSku);
+    if (!this.stock.has(`${line.productId}/${line.variantSku}`) || left < line.quantity) {
+      return Promise.resolve(false);
+    }
+    this.set(line.productId, line.variantSku, left - line.quantity);
+    return Promise.resolve(true);
+  }
+
+  public giveBack(line: StockLine): Promise<void> {
+    this.set(
+      line.productId,
+      line.variantSku,
+      this.units(line.productId, line.variantSku) + line.quantity,
+    );
+    return Promise.resolve();
+  }
+
+  public available(line: StockLine): Promise<number> {
+    return Promise.resolve(this.units(line.productId, line.variantSku));
+  }
+
+  public findReservation(orderId: string): Promise<StockReservation | null> {
+    const found = this.reservations.get(orderId);
+    return Promise.resolve(found === undefined ? null : structuredClone(found));
+  }
+
+  public saveReservation(reservation: StockReservation): Promise<void> {
+    this.reservations.set(reservation.orderId, structuredClone(reservation));
+    return Promise.resolve();
+  }
+
+  public slugsOf(productIds: string[]): Promise<string[]> {
+    return Promise.resolve(productIds.map((id) => `slug-${id}`));
   }
 }

@@ -31,6 +31,14 @@ type ProductImage {
   alt LocalizedText?
 }
 
+/// A reserved order line; the reservation keeps them to release exactly what was taken.
+type ReservedLine {
+  sellerOrderId String
+  productId     String
+  variantSku    String
+  quantity      Int
+}
+
 type Rating {
   average Float
   count   Int
@@ -104,4 +112,17 @@ model ProcessedEvent {
   processedAt DateTime @default(now())
 
   @@map("processed_events")
+}
+
+/// Stock held for one order (_id = order id). Released lines are remembered so a replayed
+/// cancellation never gives stock back twice; a RELEASED tombstone blocks a late reservation.
+model StockReservation {
+  id                     String         @id @map("_id")
+  status                 String
+  lines                  ReservedLine[]
+  releasedSellerOrderIds String[]
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  @@map("stock_reservations")
 }

@@ -51,7 +51,7 @@ Size: S (< 2 h) · M (half day) · L (1 day+). Status: ☐ todo · ◐ doing · 
 | BZ-031 | FX rates in the gateway | `GET /api/v1/fx-rates`; HTTP + static providers behind `FxRateProvider`; Redis cache 1 h; stale value served when the provider fails (ADR 0012) | M | ☑ |
 | BZ-032 | `frontend-web` scaffold | Next.js 16 + React 19 + TypeScript strict; ESLint (arrow functions only, no classes, a11y, hooks), Stylelint (BEM, tokens only), Vitest + Testing Library; design tokens and base/layout CSS from `docs/design-system.md` | M | ☑ |
 | BZ-033 | Typed API client | `src/api/*.schema.ts` generated from `backend/openapi/*.json` (openapi-typescript), `openapi-fetch` clients, freshness check | S | ☑ |
-| BZ-034 | Bilingual routing | next-intl `/en` `/vi`, locale redirect, typed messages with key-parity test, error codes translated, `hreflang` | M | ☐ |
+| BZ-034 | Bilingual routing | next-intl `/en` `/vi`, locale redirect, typed messages with key-parity test, error codes translated, `hreflang` | M | ☑ |
 | BZ-035 | Layout and UI primitives | Header (locale + currency switch), footer, Button, Price (USD/VND), ProductCard, Pagination, empty/error states — BEM | M | ☐ |
 | BZ-036 | Landing pages (SSG) | Home, pricing, about, sell — statically generated in both languages | M | ☐ |
 | BZ-037 | Catalog pages (SSR) | Category and search pages with filters, sort and pagination from the URL | L | ☐ |

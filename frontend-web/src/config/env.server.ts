@@ -3,6 +3,8 @@ import { z } from 'zod';
 
 const serverEnvSchema = z.object({
   API_BASE_URL: z.url().default('http://127.0.0.1:4000'),
+  /** Public origin of this site, for canonical and hreflang URLs. */
+  SITE_URL: z.url().default('http://localhost:3100'),
 });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;

@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Bazaar — handmade goods from Vietnamese makers",
+    "description": "Shop ceramics, silk, fashion and more from independent makers across Vietnam."
+  },
+  "common": {
+    "skipToContent": "Skip to content",
+    "language": "Language",
+    "currency": "Currency",
+    "loading": "Loading…",
+    "retry": "Try again"
+  },
+  "locales": {
+    "en": "English",
+    "vi": "Tiếng Việt"
+  },
+  "home": {
+    "heading": "Handmade goods from independent Vietnamese makers",
+    "lead": "Ceramics from Bát Tràng, silk from Hà Đông, and more — straight from the people who make them."
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Please check the highlighted fields.",
+    "UNAUTHENTICATED": "Please sign in to continue.",
+    "FORBIDDEN": "You are not allowed to do this.",
+    "NOT_FOUND": "We could not find what you were looking for.",
+    "CONFLICT": "This conflicts with existing data.",
+    "RATE_LIMITED": "Too many attempts. Please wait a minute and try again.",
+    "INVALID_EVENT": "Something went wrong on our side.",
+    "EMAIL_ALREADY_REGISTERED": "This email is already registered. Try signing in instead.",
+    "INVALID_CREDENTIALS": "Email or password is incorrect.",
+    "EMAIL_NOT_VERIFIED": "Please verify your email first — check your inbox.",
+    "TOKEN_EXPIRED": "Your session has expired. Please sign in again.",
+    "INVALID_TOKEN": "This link is invalid or has expired.",
+    "ACCOUNT_SUSPENDED": "This account is suspended.",
+    "OUT_OF_STOCK": "Sorry, this item is out of stock.",
+    "INVALID_ORDER_TRANSITION": "This order can no longer be changed.",
+    "PAYMENT_FAILED": "The payment did not go through.",
+    "UPSTREAM_UNAVAILABLE": "This part of the site is temporarily unavailable. Please try again.",
+    "INTERNAL": "Something went wrong. Please try again."
+  }
+}

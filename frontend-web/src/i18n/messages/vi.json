@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Bazaar — hàng thủ công từ người làm nghề Việt Nam",
+    "description": "Mua gốm sứ, lụa, thời trang và nhiều hơn nữa từ những người làm nghề độc lập khắp Việt Nam."
+  },
+  "common": {
+    "skipToContent": "Bỏ qua đến nội dung",
+    "language": "Ngôn ngữ",
+    "currency": "Tiền tệ",
+    "loading": "Đang tải…",
+    "retry": "Thử lại"
+  },
+  "locales": {
+    "en": "English",
+    "vi": "Tiếng Việt"
+  },
+  "home": {
+    "heading": "Hàng thủ công từ những người làm nghề Việt Nam",
+    "lead": "Gốm Bát Tràng, lụa Hà Đông và nhiều hơn nữa — trực tiếp từ người làm ra chúng."
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Vui lòng kiểm tra các trường được đánh dấu.",
+    "UNAUTHENTICATED": "Vui lòng đăng nhập để tiếp tục.",
+    "FORBIDDEN": "Bạn không có quyền thực hiện thao tác này.",
+    "NOT_FOUND": "Không tìm thấy nội dung bạn cần.",
+    "CONFLICT": "Dữ liệu này bị trùng với dữ liệu đã có.",
+    "RATE_LIMITED": "Bạn thao tác quá nhiều lần. Vui lòng chờ một phút rồi thử lại.",
+    "INVALID_EVENT": "Hệ thống gặp lỗi.",
+    "EMAIL_ALREADY_REGISTERED": "Email này đã được đăng ký. Hãy thử đăng nhập.",
+    "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng.",
+    "EMAIL_NOT_VERIFIED": "Vui lòng xác thực email trước — hãy kiểm tra hộp thư.",
+    "TOKEN_EXPIRED": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "INVALID_TOKEN": "Liên kết không hợp lệ hoặc đã hết hạn.",
+    "ACCOUNT_SUSPENDED": "Tài khoản này đang bị tạm khoá.",
+    "OUT_OF_STOCK": "Rất tiếc, sản phẩm này đã hết hàng.",
+    "INVALID_ORDER_TRANSITION": "Đơn hàng này không thể thay đổi nữa.",
+    "PAYMENT_FAILED": "Thanh toán không thành công.",
+    "UPSTREAM_UNAVAILABLE": "Phần này của trang tạm thời gián đoạn. Vui lòng thử lại.",
+    "INTERNAL": "Đã có lỗi xảy ra. Vui lòng thử lại."
+  }
+}

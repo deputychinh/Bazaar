@@ -16,7 +16,18 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/api/**', 'src/app/**', 'src/**/index.ts', 'src/**/*.test.{ts,tsx}'],
+      // Route files and next-intl wiring are covered by the build and e2e; declarations hold no logic.
+      exclude: [
+        'src/api/**',
+        'src/app/**',
+        'src/proxy.ts',
+        'src/i18n/*.ts',
+        'src/**/index.ts',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.constant.ts',
+        'src/**/*.enum.ts',
+        'src/**/*.interface.ts',
+      ],
       thresholds: { lines: 80 },
     },
   },

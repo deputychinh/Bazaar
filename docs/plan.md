@@ -908,7 +908,8 @@ Give Docker at least **6 CPU / 10 GB RAM** — Kafka + MySQL + Mongo + 6 apps + 
   0008 BEM + design tokens, no CSS framework ·
   0009 AWS: EKS + managed data services, CDK in TypeScript, deploy by GitHub OIDC (Argo CD as next step) ·
   0010 MongoDB on AWS: MongoDB Atlas (not DocumentDB) ·
-  0011 Prisma 6.19 for both MySQL and MongoDB (spike result)
+  0011 Prisma 6.19 for both MySQL and MongoDB (spike result) ·
+  0012 Bilingual content and USD/VND display
 - `docs/runbook.md`: start/stop, reset data, replay DLQ, read consumer lag, common failures, AWS deploy / rollback / destroy.
 - `docs/aws-cost.md`: monthly estimate per environment.
 

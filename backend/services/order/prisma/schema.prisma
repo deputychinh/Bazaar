@@ -1,0 +1,116 @@
+// Order database (bazaar_order). Status/reason columns hold values of the enums in
+// @bazaar/contracts — the single source; mappers validate them (plan DS-01).
+// Money is always USD cents (integers); no currency or FX columns (plan §2B).
+// After changing this file: `npm run migrate:dev -- --name <change>` then `npm run db:schema-sql`.
+
+generator client {
+  provider = "prisma-client-js"
+  // Per-service output: services share node_modules, so the default location would collide.
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("ORDER_DATABASE_URL")
+  shadowDatabaseUrl = env("ORDER_SHADOW_DATABASE_URL")
+}
+
+/// One checkout = one order = one payment (plan §2B). Split into one SellerOrder per seller.
+model Order {
+  id             String        @id @default(uuid(7)) @db.Char(36)
+  shopperId      String        @map("shopper_id") @db.Char(36)
+  status         String        @db.VarChar(16)
+  totalUsdCents  Int           @map("total_usd_cents")
+  cancelReason   String?       @map("cancel_reason") @db.VarChar(32)
+  /// Client-chosen key: a retried checkout returns the same order instead of a second one.
+  idempotencyKey String        @map("idempotency_key") @db.VarChar(64)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.DateTime(3)
+  sellerOrders   SellerOrder[]
+  payment        Payment?
+
+  @@unique([shopperId, idempotencyKey])
+  @@index([shopperId, createdAt])
+  @@index([status, createdAt])
+  @@map("orders")
+}
+
+/// The part of an order one seller fulfils: CONFIRMED → SHIPPED → DELIVERED, or CANCELLED.
+model SellerOrder {
+  id               String      @id @default(uuid(7)) @db.Char(36)
+  orderId          String      @map("order_id") @db.Char(36)
+  sellerId         String      @map("seller_id") @db.Char(36)
+  shopId           String      @map("shop_id") @db.VarChar(36)
+  shopName         String      @map("shop_name") @db.VarChar(80)
+  status           String      @db.VarChar(16)
+  subtotalUsdCents Int         @map("subtotal_usd_cents")
+  cancelReason     String?     @map("cancel_reason") @db.VarChar(32)
+  shippedAt        DateTime?   @map("shipped_at") @db.DateTime(3)
+  deliveredAt      DateTime?   @map("delivered_at") @db.DateTime(3)
+  cancelledAt      DateTime?   @map("cancelled_at") @db.DateTime(3)
+  createdAt        DateTime    @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt        DateTime    @updatedAt @map("updated_at") @db.DateTime(3)
+  order            Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  items            OrderItem[]
+
+  @@index([orderId])
+  @@index([sellerId, status, id])
+  @@map("seller_orders")
+}
+
+/// A purchased variant; title, label and image are snapshots so history never changes.
+model OrderItem {
+  id                String      @id @default(uuid(7)) @db.Char(36)
+  sellerOrderId     String      @map("seller_order_id") @db.Char(36)
+  productId         String      @map("product_id") @db.VarChar(36)
+  productSlug       String      @map("product_slug") @db.VarChar(160)
+  variantSku        String      @map("variant_sku") @db.VarChar(64)
+  titleSnapshot     Json        @map("title_snapshot")
+  variantLabel      String      @map("variant_label") @db.VarChar(120)
+  imageUrl          String?     @map("image_url") @db.VarChar(512)
+  quantity          Int
+  unitPriceUsdCents Int         @map("unit_price_usd_cents")
+  sellerOrder       SellerOrder @relation(fields: [sellerOrderId], references: [id], onDelete: Cascade)
+
+  @@index([sellerOrderId])
+  @@map("order_items")
+}
+
+/// Charged once per order with a provider token; the card number itself is never stored.
+model Payment {
+  id             String   @id @default(uuid(7)) @db.Char(36)
+  orderId        String   @unique @map("order_id") @db.Char(36)
+  status         String   @db.VarChar(16)
+  providerToken  String   @map("provider_token") @db.VarChar(64)
+  providerRef    String?  @map("provider_ref") @db.VarChar(64)
+  cardLast4      String   @map("card_last4") @db.Char(4)
+  amountUsdCents Int      @map("amount_usd_cents")
+  failureReason  String?  @map("failure_reason") @db.VarChar(64)
+  createdAt      DateTime @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.DateTime(3)
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+/// Transactional outbox (plan DS-04): written in the same transaction as the change it announces.
+model OutboxMessage {
+  id        String    @id @default(uuid(7)) @db.Char(36)
+  topic     String    @db.VarChar(128)
+  msgKey    String    @map("msg_key") @db.VarChar(128)
+  value     String    @db.Text
+  headers   Json
+  createdAt DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  sentAt    DateTime? @map("sent_at") @db.DateTime(3)
+
+  @@index([sentAt, id])
+  @@map("outbox")
+}
+
+/// Idempotency for consumed events (plan DS-05).
+model ProcessedEvent {
+  eventId     String   @id @map("event_id") @db.Char(36)
+  processedAt DateTime @default(now()) @map("processed_at") @db.DateTime(3)
+
+  @@map("processed_events")
+}

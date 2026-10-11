@@ -79,8 +79,8 @@ test-int: ## Integration tests (needs `make up`)
 build: ## Build every backend package
 	$(BACKEND) npm run build
 
-openapi: ## Regenerate backend/openapi/*.json and db/identity/schema.sql
-	$(BACKEND) npm run build && npm run openapi -w @bazaar/gateway && npm run openapi -w @bazaar/catalog && npm run db:schema-sql -w @bazaar/gateway
+openapi: ## Regenerate backend/openapi/*.json and db/*/schema.sql
+	$(BACKEND) npm run build && npm run openapi -w @bazaar/gateway && npm run openapi -w @bazaar/catalog && npm run openapi -w @bazaar/order && npm run db:schema-sql -w @bazaar/gateway && npm run db:schema-sql -w @bazaar/order
 
 ci: lint typecheck test build ## Run the CI pipeline locally
 
@@ -93,4 +93,7 @@ dev-gateway: keys ## Run the gateway with reload on :4000
 dev-catalog: ## Run the catalog service with reload on :4010
 	$(BACKEND) npm run dev -w @bazaar/catalog
 
-.PHONY: help env install keys dev-gateway dev-catalog up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format
+dev-order: ## Run the order service with reload on :4020
+	$(BACKEND) npm run dev -w @bazaar/order
+
+.PHONY: help env install keys dev-gateway dev-catalog dev-order up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format

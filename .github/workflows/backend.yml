@@ -37,7 +37,9 @@ jobs:
         run: |
           npm run openapi -w @bazaar/gateway
           npm run openapi -w @bazaar/catalog
+          npm run openapi -w @bazaar/order
           npm run db:schema-sql -w @bazaar/gateway
+          npm run db:schema-sql -w @bazaar/order
           git diff --exit-code -- openapi db
       - run: npm audit --omit=dev --audit-level=high
 

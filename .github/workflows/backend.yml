@@ -65,6 +65,7 @@ jobs:
           npm ci && npm run build
           set -a && source ../.env && set +a
           npm run migrate --workspaces --if-present
+          ./db/scripts/apply.sh schema
           npm run test:int
       - name: Infrastructure logs on failure
         if: failure()

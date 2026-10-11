@@ -1,0 +1,101 @@
+// Identity database (bazaar_identity). Status/role/locale columns hold values of the
+// enums in @bazaar/contracts — the single source; mappers validate them (plan DS-01).
+// After changing this file: `npm run migrate:dev -- --name <change>` then `npm run db:schema-sql`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("IDENTITY_DATABASE_URL")
+  shadowDatabaseUrl = env("IDENTITY_SHADOW_DATABASE_URL")
+}
+
+model User {
+  id                 String              @id @default(uuid(7)) @db.Char(36)
+  email              String              @unique @db.VarChar(254)
+  passwordHash       String              @map("password_hash") @db.VarChar(255)
+  role               String              @db.VarChar(16)
+  status             String              @db.VarChar(32)
+  preferredLocale    String              @map("preferred_locale") @db.VarChar(8)
+  emailVerifiedAt    DateTime?           @map("email_verified_at") @db.DateTime(3)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt          DateTime            @updatedAt @map("updated_at") @db.DateTime(3)
+  refreshTokens      RefreshToken[]
+  userTokens         UserToken[]
+  sellerApplications SellerApplication[]
+
+  @@map("users")
+}
+
+/// Rotating refresh tokens; a reused (already rotated) token revokes its whole family.
+model RefreshToken {
+  id           String    @id @default(uuid(7)) @db.Char(36)
+  userId       String    @map("user_id") @db.Char(36)
+  tokenHash    String    @unique @map("token_hash") @db.Char(64)
+  familyId     String    @map("family_id") @db.Char(36)
+  expiresAt    DateTime  @map("expires_at") @db.DateTime(3)
+  revokedAt    DateTime? @map("revoked_at") @db.DateTime(3)
+  replacedById String?   @map("replaced_by_id") @db.Char(36)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+/// One-time tokens for email verification and password reset (only the SHA-256 hash is stored).
+model UserToken {
+  id        String    @id @default(uuid(7)) @db.Char(36)
+  userId    String    @map("user_id") @db.Char(36)
+  purpose   String    @db.VarChar(32)
+  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime  @map("expires_at") @db.DateTime(3)
+  usedAt    DateTime? @map("used_at") @db.DateTime(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@map("user_tokens")
+}
+
+model SellerApplication {
+  id              String    @id @default(uuid(7)) @db.Char(36)
+  userId          String    @map("user_id") @db.Char(36)
+  shopName        String    @map("shop_name") @db.VarChar(80)
+  status          String    @db.VarChar(16)
+  reviewedBy      String?   @map("reviewed_by") @db.Char(36)
+  reviewedAt      DateTime? @map("reviewed_at") @db.DateTime(3)
+  rejectionReason String?   @map("rejection_reason") @db.VarChar(500)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.DateTime(3)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, id])
+  @@index([userId])
+  @@map("seller_applications")
+}
+
+/// Transactional outbox (plan DS-04): written in the same transaction as the change it announces.
+model OutboxMessage {
+  id        String    @id @default(uuid(7)) @db.Char(36)
+  topic     String    @db.VarChar(128)
+  msgKey    String    @map("msg_key") @db.VarChar(128)
+  value     String    @db.Text
+  headers   Json
+  createdAt DateTime  @default(now()) @map("created_at") @db.DateTime(3)
+  sentAt    DateTime? @map("sent_at") @db.DateTime(3)
+
+  @@index([sentAt, id])
+  @@map("outbox")
+}
+
+/// Idempotency for consumed events (plan DS-05).
+model ProcessedEvent {
+  eventId     String   @id @map("event_id") @db.Char(36)
+  processedAt DateTime @default(now()) @map("processed_at") @db.DateTime(3)
+
+  @@map("processed_events")
+}

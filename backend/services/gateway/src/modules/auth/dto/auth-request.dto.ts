@@ -1,4 +1,4 @@
-import { Locale, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@bazaar/contracts';
+import { Locale, localeSchema, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '@bazaar/contracts';
 import { z } from 'zod';
 
 // Normalise first (people paste emails with spaces or capitals), then validate.
@@ -9,7 +9,7 @@ const token = z.string().min(20).max(200);
 export const registerSchema = z.object({
   email,
   password,
-  preferredLocale: z.enum(Locale).default(Locale.En),
+  preferredLocale: localeSchema.default(Locale.En),
 });
 export type RegisterDto = z.infer<typeof registerSchema>;
 

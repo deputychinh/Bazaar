@@ -1,4 +1,4 @@
-import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, SellerApplicationStatus } from '@bazaar/contracts';
+import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, sellerApplicationStatusSchema } from '@bazaar/contracts';
 import { z } from 'zod';
 
 export const applySchema = z.object({ shopName: z.string().trim().min(3).max(80) });
@@ -8,7 +8,7 @@ export const rejectSchema = z.object({ reason: z.string().trim().min(3).max(500)
 export type RejectDto = z.infer<typeof rejectSchema>;
 
 export const listApplicationsQuerySchema = z.object({
-  status: z.enum(SellerApplicationStatus).optional(),
+  status: sellerApplicationStatusSchema.optional(),
   cursor: z.string().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
 });
@@ -18,7 +18,7 @@ export const sellerApplicationResponseSchema = z.object({
   id: z.string(),
   userId: z.string(),
   shopName: z.string(),
-  status: z.enum(SellerApplicationStatus),
+  status: sellerApplicationStatusSchema,
   rejectionReason: z.string().nullable(),
   reviewedAt: z.iso.datetime().nullable(),
   createdAt: z.iso.datetime(),

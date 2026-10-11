@@ -1,12 +1,12 @@
-import { Locale, UserRole, UserStatus } from '@bazaar/contracts';
+import { localeSchema, userRoleSchema, userStatusSchema } from '@bazaar/contracts';
 import { z } from 'zod';
 
 export const userResponseSchema = z.object({
   id: z.string(),
   email: z.email(),
-  role: z.enum(UserRole),
-  status: z.enum(UserStatus),
-  preferredLocale: z.enum(Locale),
+  role: userRoleSchema,
+  status: userStatusSchema,
+  preferredLocale: localeSchema,
   createdAt: z.iso.datetime(),
 });
 

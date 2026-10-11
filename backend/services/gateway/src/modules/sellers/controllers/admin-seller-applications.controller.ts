@@ -1,6 +1,7 @@
 import { UserRole } from '@bazaar/contracts';
 import {
   ApiZodBody,
+  ApiZodQuery,
   ApiZodResponse,
   type AuthenticatedUser,
   CurrentUser,
@@ -31,6 +32,7 @@ export class AdminSellerApplicationsController {
   public constructor(private readonly service: SellerApplicationsService) {}
 
   @Get()
+  @ApiZodQuery(listApplicationsQuerySchema)
   @ApiZodResponse(HttpStatus.OK, sellerApplicationPageSchema)
   public async list(
     @Query(new ZodValidationPipe(listApplicationsQuerySchema)) query: ListApplicationsQuery,

@@ -1,4 +1,4 @@
-import { ShopStatus } from '@bazaar/contracts';
+import { shopStatusSchema } from '@bazaar/contracts';
 import { z } from 'zod';
 
 export const localizedTextSchema = z.object({
@@ -21,7 +21,7 @@ export const shopResponseSchema = z.object({
   slug: z.string(),
   name: z.string(),
   description: z.object({ en: z.string(), vi: z.string().optional() }).nullable(),
-  status: z.enum(ShopStatus),
+  status: shopStatusSchema,
   createdAt: z.iso.datetime(),
 });
 export type ShopResponse = z.infer<typeof shopResponseSchema>;

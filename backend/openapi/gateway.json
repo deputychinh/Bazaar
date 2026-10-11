@@ -64,10 +64,10 @@
                   },
                   "preferredLocale": {
                     "default": "en",
-                    "type": "string",
-                    "enum": [
-                      "en",
-                      "vi"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Locale"
+                      }
                     ]
                   }
                 },
@@ -96,27 +96,13 @@
                       "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
                     },
                     "role": {
-                      "type": "string",
-                      "enum": [
-                        "SHOPPER",
-                        "SELLER",
-                        "ADMIN"
-                      ]
+                      "$ref": "#/components/schemas/UserRole"
                     },
                     "status": {
-                      "type": "string",
-                      "enum": [
-                        "PENDING_VERIFICATION",
-                        "ACTIVE",
-                        "SUSPENDED"
-                      ]
+                      "$ref": "#/components/schemas/UserStatus"
                     },
                     "preferredLocale": {
-                      "type": "string",
-                      "enum": [
-                        "en",
-                        "vi"
-                      ]
+                      "$ref": "#/components/schemas/Locale"
                     },
                     "createdAt": {
                       "type": "string",
@@ -265,27 +251,13 @@
                           "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
                         },
                         "role": {
-                          "type": "string",
-                          "enum": [
-                            "SHOPPER",
-                            "SELLER",
-                            "ADMIN"
-                          ]
+                          "$ref": "#/components/schemas/UserRole"
                         },
                         "status": {
-                          "type": "string",
-                          "enum": [
-                            "PENDING_VERIFICATION",
-                            "ACTIVE",
-                            "SUSPENDED"
-                          ]
+                          "$ref": "#/components/schemas/UserStatus"
                         },
                         "preferredLocale": {
-                          "type": "string",
-                          "enum": [
-                            "en",
-                            "vi"
-                          ]
+                          "$ref": "#/components/schemas/Locale"
                         },
                         "createdAt": {
                           "type": "string",
@@ -352,27 +324,13 @@
                           "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
                         },
                         "role": {
-                          "type": "string",
-                          "enum": [
-                            "SHOPPER",
-                            "SELLER",
-                            "ADMIN"
-                          ]
+                          "$ref": "#/components/schemas/UserRole"
                         },
                         "status": {
-                          "type": "string",
-                          "enum": [
-                            "PENDING_VERIFICATION",
-                            "ACTIVE",
-                            "SUSPENDED"
-                          ]
+                          "$ref": "#/components/schemas/UserStatus"
                         },
                         "preferredLocale": {
-                          "type": "string",
-                          "enum": [
-                            "en",
-                            "vi"
-                          ]
+                          "$ref": "#/components/schemas/Locale"
                         },
                         "createdAt": {
                           "type": "string",
@@ -514,27 +472,13 @@
                       "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
                     },
                     "role": {
-                      "type": "string",
-                      "enum": [
-                        "SHOPPER",
-                        "SELLER",
-                        "ADMIN"
-                      ]
+                      "$ref": "#/components/schemas/UserRole"
                     },
                     "status": {
-                      "type": "string",
-                      "enum": [
-                        "PENDING_VERIFICATION",
-                        "ACTIVE",
-                        "SUSPENDED"
-                      ]
+                      "$ref": "#/components/schemas/UserStatus"
                     },
                     "preferredLocale": {
-                      "type": "string",
-                      "enum": [
-                        "en",
-                        "vi"
-                      ]
+                      "$ref": "#/components/schemas/Locale"
                     },
                     "createdAt": {
                       "type": "string",
@@ -608,12 +552,7 @@
                       "type": "string"
                     },
                     "status": {
-                      "type": "string",
-                      "enum": [
-                        "PENDING",
-                        "APPROVED",
-                        "REJECTED"
-                      ]
+                      "$ref": "#/components/schemas/SellerApplicationStatus"
                     },
                     "rejectionReason": {
                       "nullable": true,
@@ -680,12 +619,7 @@
                         "type": "string"
                       },
                       "status": {
-                        "type": "string",
-                        "enum": [
-                          "PENDING",
-                          "APPROVED",
-                          "REJECTED"
-                        ]
+                        "$ref": "#/components/schemas/SellerApplicationStatus"
                       },
                       "rejectionReason": {
                         "nullable": true,
@@ -732,7 +666,40 @@
     "/api/v1/admin/seller-applications": {
       "get": {
         "operationId": "AdminSellerApplicationsController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/SellerApplicationStatus"
+                }
+              ]
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -756,12 +723,7 @@
                             "type": "string"
                           },
                           "status": {
-                            "type": "string",
-                            "enum": [
-                              "PENDING",
-                              "APPROVED",
-                              "REJECTED"
-                            ]
+                            "$ref": "#/components/schemas/SellerApplicationStatus"
                           },
                           "rejectionReason": {
                             "nullable": true,
@@ -847,12 +809,7 @@
                       "type": "string"
                     },
                     "status": {
-                      "type": "string",
-                      "enum": [
-                        "PENDING",
-                        "APPROVED",
-                        "REJECTED"
-                      ]
+                      "$ref": "#/components/schemas/SellerApplicationStatus"
                     },
                     "rejectionReason": {
                       "nullable": true,
@@ -946,12 +903,7 @@
                       "type": "string"
                     },
                     "status": {
-                      "type": "string",
-                      "enum": [
-                        "PENDING",
-                        "APPROVED",
-                        "REJECTED"
-                      ]
+                      "$ref": "#/components/schemas/SellerApplicationStatus"
                     },
                     "rejectionReason": {
                       "nullable": true,
@@ -1072,6 +1024,38 @@
         "name": "bazaar_refresh"
       }
     },
-    "schemas": {}
+    "schemas": {
+      "Locale": {
+        "type": "string",
+        "enum": [
+          "en",
+          "vi"
+        ]
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "SHOPPER",
+          "SELLER",
+          "ADMIN"
+        ]
+      },
+      "UserStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING_VERIFICATION",
+          "ACTIVE",
+          "SUSPENDED"
+        ]
+      },
+      "SellerApplicationStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "APPROVED",
+          "REJECTED"
+        ]
+      }
+    }
   }
 }

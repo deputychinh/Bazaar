@@ -1,4 +1,4 @@
-import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, ProductStatus } from '@bazaar/contracts';
+import { DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, productStatusSchema } from '@bazaar/contracts';
 import { z } from 'zod';
 
 import {
@@ -54,7 +54,7 @@ export const updateProductSchema = z
 export type UpdateProductDto = z.infer<typeof updateProductSchema>;
 
 export const sellerProductsQuerySchema = z.object({
-  status: z.enum(ProductStatus).optional(),
+  status: productStatusSchema.optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
 });

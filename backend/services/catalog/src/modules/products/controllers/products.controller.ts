@@ -1,4 +1,4 @@
-import { ApiZodResponse, Public, ZodValidationPipe } from '@bazaar/nest-common';
+import { ApiZodQuery, ApiZodResponse, Public, ZodValidationPipe } from '@bazaar/nest-common';
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -23,6 +23,7 @@ export class ProductsController {
   ) {}
 
   @Get()
+  @ApiZodQuery(listProductsQuerySchema)
   @ApiZodResponse(HttpStatus.OK, productPageSchema)
   public async list(
     @Query(new ZodValidationPipe(listProductsQuerySchema)) query: ListProductsQuery,

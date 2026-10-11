@@ -4,7 +4,7 @@ import { MAX_IMAGE_BYTES } from '../../../constants/image.constant.js';
 import { ImageContentType } from '../../../enums/image-content-type.enum.js';
 
 export const uploadRequestSchema = z.object({
-  contentType: z.enum(ImageContentType),
+  contentType: z.enum(ImageContentType).meta({ id: 'ImageContentType' }),
   sizeBytes: z.number().int().min(1).max(MAX_IMAGE_BYTES),
 });
 export type UploadRequestDto = z.infer<typeof uploadRequestSchema>;

@@ -1,6 +1,7 @@
 import { UserRole } from '@bazaar/contracts';
 import {
   ApiZodBody,
+  ApiZodQuery,
   ApiZodResponse,
   type AuthenticatedUser,
   CurrentUser,
@@ -46,6 +47,7 @@ export class SellerProductsController {
   ) {}
 
   @Get()
+  @ApiZodQuery(sellerProductsQuerySchema)
   @ApiZodResponse(HttpStatus.OK, sellerProductPageSchema)
   public async list(
     @CurrentUser() seller: AuthenticatedUser,

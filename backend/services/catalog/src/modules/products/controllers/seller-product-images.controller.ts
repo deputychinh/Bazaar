@@ -1,6 +1,7 @@
 import { UserRole } from '@bazaar/contracts';
 import {
   ApiZodBody,
+  ApiZodQuery,
   ApiZodResponse,
   type AuthenticatedUser,
   CurrentUser,
@@ -63,6 +64,7 @@ export class SellerProductImagesController {
   }
 
   @Delete()
+  @ApiZodQuery(removeImageQuerySchema)
   @ApiZodResponse(HttpStatus.OK, sellerProductSchema)
   public async remove(
     @CurrentUser() seller: AuthenticatedUser,

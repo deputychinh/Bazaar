@@ -1,4 +1,4 @@
-import { MAX_PAGE_SIZE, ProductStatus } from '@bazaar/contracts';
+import { MAX_PAGE_SIZE, productStatusSchema } from '@bazaar/contracts';
 import { z } from 'zod';
 
 import {
@@ -18,7 +18,7 @@ export const listProductsQuerySchema = z
     minPrice: cents.optional(),
     maxPrice: cents.optional(),
     minRating: z.coerce.number().min(0).max(5).optional(),
-    sort: z.enum(ProductSort).optional(),
+    sort: z.enum(ProductSort).meta({ id: 'ProductSort' }).optional(),
     page: z.coerce.number().int().min(1).max(MAX_PRODUCT_PAGE).default(1),
     pageSize: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PRODUCT_PAGE_SIZE),
   })
@@ -50,7 +50,7 @@ export type ProductPageResponse = z.infer<typeof productPageSchema>;
 export const productDetailSchema = productSummarySchema.extend({
   description: localized,
   categoryId: z.string(),
-  status: z.enum(ProductStatus),
+  status: productStatusSchema,
   attributes: z.record(z.string(), z.unknown()).nullable(),
   variants: z.array(
     z.object({

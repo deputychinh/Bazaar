@@ -1,9 +1,9 @@
 import { Locale, UserRole, UserStatus } from '@bazaar/contracts';
+import { EnumUtil } from '@bazaar/nest-common';
 
 import type { User as UserRow } from '#prisma';
 
 import type { User } from '../../../interfaces/user.interface.js';
-import { EnumUtil } from '../../../utils/enum.util.js';
 import type { UserResponse } from '../dto/user-response.dto.js';
 
 export class UserMapper {

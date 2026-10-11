@@ -1,9 +1,9 @@
 import { SellerApplicationStatus } from '@bazaar/contracts';
+import { EnumUtil } from '@bazaar/nest-common';
 
 import type { SellerApplication as SellerApplicationRow } from '#prisma';
 
 import type { SellerApplication } from '../../../interfaces/seller-application.interface.js';
-import { EnumUtil } from '../../../utils/enum.util.js';
 import type { SellerApplicationResponse } from '../dto/seller-application.dto.js';
 
 export class SellerApplicationMapper {

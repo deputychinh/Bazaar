@@ -2,6 +2,7 @@ import { ACCESS_TOKEN_TTL_SECONDS, UserRole } from '@bazaar/contracts';
 import {
   type AuthenticatedUser,
   Clock,
+  EnumUtil,
   TokenVerifier,
   UnauthenticatedError,
 } from '@bazaar/nest-common';
@@ -11,7 +12,6 @@ import { jwtVerify, SignJWT } from 'jose';
 import { AppConfig } from '../../../config/app-config.js';
 import { JWT_ALGORITHM, JWT_KEY_ID } from '../../../constants/auth.constant.js';
 import type { IssuedAccessToken } from '../../../interfaces/token.interface.js';
-import { EnumUtil } from '../../../utils/enum.util.js';
 
 import { KeyStore } from './key-store.js';
 

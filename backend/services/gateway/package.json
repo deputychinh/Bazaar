@@ -4,6 +4,12 @@
   "private": true,
   "description": "API gateway (BFF) and identity: auth, roles, rate limits, seller applications.",
   "type": "module",
+  "imports": {
+    "#prisma": {
+      "types": "./generated/prisma/index.d.ts",
+      "default": "./generated/prisma/index.js"
+    }
+  },
   "scripts": {
     "generate": "prisma generate",
     "build": "tsc -p tsconfig.build.json",

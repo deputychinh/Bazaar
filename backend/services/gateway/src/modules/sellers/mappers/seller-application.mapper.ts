@@ -1,5 +1,6 @@
 import { SellerApplicationStatus } from '@bazaar/contracts';
-import type { SellerApplication as SellerApplicationRow } from '@prisma/client';
+
+import type { SellerApplication as SellerApplicationRow } from '#prisma';
 
 import type { SellerApplication } from '../../../interfaces/seller-application.interface.js';
 import { EnumUtil } from '../../../utils/enum.util.js';

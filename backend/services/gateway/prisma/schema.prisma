@@ -4,6 +4,8 @@
 
 generator client {
   provider = "prisma-client-js"
+  // Per-service output: services share node_modules, so the default location would collide.
+  output   = "../generated/prisma"
 }
 
 datasource db {

@@ -1,5 +1,6 @@
 import { Locale, UserRole, UserStatus } from '@bazaar/contracts';
-import type { User as UserRow } from '@prisma/client';
+
+import type { User as UserRow } from '#prisma';
 
 import type { User } from '../../../interfaces/user.interface.js';
 import { EnumUtil } from '../../../utils/enum.util.js';

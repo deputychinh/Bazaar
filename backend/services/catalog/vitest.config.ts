@@ -13,6 +13,7 @@ export default mergeConfig(shared, {
         'src/app.setup.ts',
         'src/infrastructure/**',
         'src/**/prisma-*.ts',
+        'src/common/storage/s3-object-storage.ts',
       ],
     },
   },

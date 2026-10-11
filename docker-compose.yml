@@ -123,7 +123,9 @@ services:
       STORAGE_BUCKET_IMAGES: ${STORAGE_BUCKET_IMAGES}
       STORAGE_BUCKET_BACKUPS: ${STORAGE_BUCKET_BACKUPS}
     entrypoint: ['/bin/sh', '/create-buckets.sh']
-    volumes: ['./infra/docker/storage/create-buckets.sh:/create-buckets.sh:ro']
+    volumes:
+      - ./infra/docker/storage/create-buckets.sh:/create-buckets.sh:ro
+      - ./infra/docker/storage/placeholders:/placeholders:ro
     restart: 'no'
 
   mailpit:

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Electronics">
+  <rect width="800" height="800" fill="#FAFAF9"/>
+  <rect x="40" y="40" width="720" height="720" rx="48" fill="#1D4ED8" opacity="0.08"/>
+  <circle cx="400" cy="330" r="120" fill="#1D4ED8" opacity="0.9"/>
+  <text x="400" y="540" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="52" font-weight="600" fill="#1C1917">Electronics</text>
+  <text x="400" y="610" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="36" fill="#57534E">Điện tử</text>
+</svg>

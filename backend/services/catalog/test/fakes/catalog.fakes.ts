@@ -8,6 +8,7 @@ import {
   UnauthenticatedError,
 } from '@bazaar/nest-common';
 
+import { ObjectStorage } from '../../src/common/storage/object-storage.js';
 import { TransactionManager } from '../../src/common/transaction/transaction-manager.js';
 import { AppConfig } from '../../src/config/app-config.js';
 import { catalogEnvSchema } from '../../src/config/env.schema.js';
@@ -21,6 +22,7 @@ import type {
   SellerProductsCriteria,
 } from '../../src/interfaces/product.interface.js';
 import type { NewShop, Shop } from '../../src/interfaces/shop.interface.js';
+import type { PresignedUpload, StoredObject } from '../../src/interfaces/storage.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
 import { CategoriesRepository } from '../../src/modules/categories/repositories/categories.repository.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
@@ -282,5 +284,29 @@ export class InMemoryProductsRepository extends ProductsRepository {
     if (clash) {
       throw new ConflictError('A SKU or slug in this product is already used by another product');
     }
+  }
+}
+
+export class FakeObjectStorage extends ObjectStorage {
+  public readonly objects = new Map<string, StoredObject>();
+  public readonly deleted: string[] = [];
+
+  public presignUpload(key: string, contentType: string): Promise<PresignedUpload> {
+    return Promise.resolve({
+      uploadUrl: `https://storage.test/${key}?signed`,
+      key,
+      expiresInSeconds: 300,
+      headers: { 'content-type': contentType },
+    });
+  }
+
+  public head(key: string): Promise<StoredObject | null> {
+    return Promise.resolve(this.objects.get(key) ?? null);
+  }
+
+  public delete(key: string): Promise<void> {
+    this.objects.delete(key);
+    this.deleted.push(key);
+    return Promise.resolve();
   }
 }

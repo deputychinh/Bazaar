@@ -26,10 +26,11 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
+      # Type-aware lint and typecheck read the built .d.ts of workspace packages.
+      - run: npm run build
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
-      - run: npm run build
       - name: Kafka topics match contracts
         run: node ../scripts/check-topics.mjs
       - run: npm audit --omit=dev --audit-level=high

@@ -16,7 +16,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:int": "turbo run test:int",
-    "lint": "eslint . --max-warnings 0",
+    "lint": "turbo run build --output-logs=errors-only && eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix"
   },
   "devDependencies": {

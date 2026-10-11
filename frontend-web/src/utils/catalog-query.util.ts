@@ -45,9 +45,13 @@ export const parseCatalogQuery = (searchParams: SearchParams): CatalogQuery => {
 export const catalogHref = (pathname: string, query: CatalogQuery): string => {
   const params = new URLSearchParams();
   for (const [name, value] of Object.entries(query)) {
-    const isDefault =
-      (name === 'page' && value === 1) || name === 'pageSize' || name === 'category';
-    if (value !== undefined && value !== '' && !isDefault) params.set(name, String(value));
+    // category and shop are already in the path (/c/<slug>, /s/<slug>).
+    const isImplied =
+      (name === 'page' && value === 1) ||
+      name === 'pageSize' ||
+      name === 'category' ||
+      name === 'shop';
+    if (value !== undefined && value !== '' && !isImplied) params.set(name, String(value));
   }
   const search = params.toString();
   return search === '' ? pathname : `${pathname}?${search}`;

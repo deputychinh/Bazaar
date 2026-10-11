@@ -50,5 +50,6 @@ describe('catalogHref', () => {
       '/c/silk?page=2&sort=newest',
     );
     expect(catalogHref('/search', {})).toBe('/search');
+    expect(catalogHref('/s/gom-hoa', { shop: 'gom-hoa', page: 2 })).toBe('/s/gom-hoa?page=2');
   });
 });

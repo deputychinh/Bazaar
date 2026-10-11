@@ -66,7 +66,8 @@
     "label": "Main",
     "shop": "Shop",
     "sell": "Sell on Bazaar",
-    "cart": "Cart"
+    "cart": "Cart",
+    "home": "Home"
   },
   "currency": {
     "label": "Currency",
@@ -83,7 +84,16 @@
   },
   "product": {
     "outOfStock": "Out of stock",
-    "ratingLabel": "Rated {average} out of 5 by {count} buyers"
+    "ratingLabel": "Rated {average} out of 5 by {count} buyers",
+    "gallery": "Product images",
+    "showImage": "Show image {index} of {total}",
+    "unavailable": "This product is not available right now.",
+    "variant": "Option",
+    "inStock": "In stock",
+    "lowStock": "Only {count} left",
+    "soldBy": "Sold by <shop></shop>",
+    "description": "Description",
+    "breadcrumbs": "Breadcrumb"
   },
   "pagination": {
     "label": "Pages",
@@ -176,5 +186,8 @@
     "results": "{count, plural, one {# product} other {# products}}",
     "noResults": "No products found",
     "noResultsHint": "Try fewer filters or another word."
+  },
+  "shop": {
+    "notFound": "Shop not found"
   }
 }

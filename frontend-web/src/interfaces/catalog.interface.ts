@@ -12,3 +12,9 @@ export type Category = components['schemas']['CategoryResponse'];
 export type CatalogQuery = NonNullable<
   operations['ProductsController_list']['parameters']['query']
 >;
+export type ProductDetail =
+  paths['/api/v1/products/{slug}']['get']['responses'][200]['content']['application/json'];
+export type ProductVariant = ProductDetail['variants'][number];
+export type ProductImage = ProductDetail['images'][number];
+export type Shop =
+  paths['/api/v1/shops/{slug}']['get']['responses'][200]['content']['application/json'];

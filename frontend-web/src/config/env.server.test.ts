@@ -17,5 +17,6 @@ describe('parseServerEnv', () => {
   it('fails fast with the variable name when a URL is invalid', () => {
     expect(() => parseServerEnv({ API_BASE_URL: 'not a url' })).toThrow(/API_BASE_URL/);
     expect(() => parseServerEnv({ SITE_URL: 'nope' })).toThrow(/SITE_URL/);
+    expect(() => parseServerEnv({ REVALIDATE_SECRET: 'short' })).toThrow(/REVALIDATE_SECRET/);
   });
 });

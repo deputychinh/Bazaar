@@ -6,3 +6,8 @@ export const FEATURED_CATEGORY_SLUGS = ['crafts', 'fashion', 'home-kitchen', 'be
 export const CATALOG_PAGE_SIZE = 24;
 /** Above-the-fold product images loaded with priority (LCP). */
 export const PRIORITY_IMAGE_COUNT = 4;
+/** Product pages are cached and regenerated at most this often (ISR, seconds). */
+export const PRODUCT_REVALIDATE_SECONDS = 300;
+export const PRODUCT_GALLERY_SIZES = '(min-width: 1024px) 50vw, 100vw';
+/** Stock at or below this shows a "only N left" hint. */
+export const LOW_STOCK_THRESHOLD = 5;

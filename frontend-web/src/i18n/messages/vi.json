@@ -66,7 +66,8 @@
     "label": "Chính",
     "shop": "Mua sắm",
     "sell": "Bán hàng trên Bazaar",
-    "cart": "Giỏ hàng"
+    "cart": "Giỏ hàng",
+    "home": "Trang chủ"
   },
   "currency": {
     "label": "Tiền tệ",
@@ -83,7 +84,16 @@
   },
   "product": {
     "outOfStock": "Hết hàng",
-    "ratingLabel": "Được {count} người mua đánh giá {average} trên 5"
+    "ratingLabel": "Được {count} người mua đánh giá {average} trên 5",
+    "gallery": "Ảnh sản phẩm",
+    "showImage": "Xem ảnh {index} trên {total}",
+    "unavailable": "Sản phẩm này hiện không có sẵn.",
+    "variant": "Phân loại",
+    "inStock": "Còn hàng",
+    "lowStock": "Chỉ còn {count}",
+    "soldBy": "Bán bởi <shop></shop>",
+    "description": "Mô tả",
+    "breadcrumbs": "Đường dẫn"
   },
   "pagination": {
     "label": "Phân trang",
@@ -176,5 +186,8 @@
     "results": "{count} sản phẩm",
     "noResults": "Không tìm thấy sản phẩm",
     "noResultsHint": "Hãy bớt bộ lọc hoặc thử từ khoá khác."
+  },
+  "shop": {
+    "notFound": "Không tìm thấy cửa hàng"
   }
 }

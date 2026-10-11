@@ -58,6 +58,7 @@ export default tseslint.config(
       '**/*.js',
       '**/*.mjs',
       '**/vitest.config.ts',
+      '**/vitest.int.config.ts',
       'vitest.shared.ts',
     ],
   },
@@ -130,6 +131,7 @@ export default tseslint.config(
     rules: {
       'no-restricted-syntax': 'off',
       'max-lines': 'off',
+      'no-restricted-properties': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/unbound-method': 'off',
       // `expect.any()` / `expect.objectContaining()` are typed as any by design.

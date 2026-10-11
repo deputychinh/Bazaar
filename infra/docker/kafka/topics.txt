@@ -1,0 +1,14 @@
+# <topic> <partitions> [retention.ms]  — must match TopicUtil.allTopicNames() (checked by a test)
+# identity.* carries one-time links: 1 day retention.
+identity.events 3 86400000
+identity.events.retry 3 86400000
+identity.events.dlq 1 86400000
+order.events 3
+order.events.retry 3
+order.events.dlq 1
+inventory.events 3
+inventory.events.retry 3
+inventory.events.dlq 1
+catalog.events 3
+catalog.events.retry 3
+catalog.events.dlq 1

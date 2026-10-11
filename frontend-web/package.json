@@ -11,7 +11,7 @@
     "dev": "next dev -p 3100",
     "build": "next build",
     "start": "next start -p 3100",
-    "lint": "eslint . --max-warnings 0 && stylelint \"src/**/*.css\"",
+    "lint": "next typegen && eslint . --max-warnings 0 && stylelint \"src/**/*.css\"",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run --coverage",
     "gen:api": "openapi-typescript ../backend/openapi/gateway.json -o src/api/gateway.schema.ts --enum && openapi-typescript ../backend/openapi/catalog.json -o src/api/catalog.schema.ts --enum"

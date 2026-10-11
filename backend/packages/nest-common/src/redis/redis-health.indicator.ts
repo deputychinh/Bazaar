@@ -1,5 +1,6 @@
-import { HealthIndicator } from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
+
+import { HealthIndicator } from '../health/health-indicator.js';
 
 import { RedisService } from './redis.service.js';
 

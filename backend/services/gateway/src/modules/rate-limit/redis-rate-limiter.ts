@@ -1,6 +1,6 @@
+import { RedisService } from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
 
-import { RedisService } from '../../infrastructure/redis/redis.service.js';
 import type { RateLimitResult, RateLimitRule } from '../../interfaces/rate-limit.interface.js';
 
 import { RateLimiter } from './rate-limiter.js';

@@ -7,6 +7,8 @@ import {
   HttpCommonModule,
   KafkaHealthIndicator,
   KafkaModule,
+  RedisHealthIndicator,
+  RedisModule,
   RolesGuard,
   SystemClock,
 } from '@bazaar/nest-common';
@@ -18,8 +20,6 @@ import { AppConfig } from './config/app-config.js';
 import type { GatewayEnv } from './config/env.schema.js';
 import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.indicator.js';
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
-import { RedisHealthIndicator } from './infrastructure/redis/redis-health.indicator.js';
-import { RedisModule } from './infrastructure/redis/redis.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
@@ -42,7 +42,7 @@ export class AppModule {
         HttpCommonModule,
         KafkaModule.forRoot({ clientId: env.SERVICE_NAME, brokers: env.KAFKA_BROKERS }),
         PrismaModule,
-        RedisModule,
+        RedisModule.forRoot({ url: env.REDIS_URL }),
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),
         OutboxModule,
         RateLimitModule,

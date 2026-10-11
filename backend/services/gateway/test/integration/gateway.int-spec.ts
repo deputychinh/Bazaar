@@ -1,7 +1,7 @@
 import type { Server } from 'node:http';
 
 import { EventType, UserRole } from '@bazaar/contracts';
-import { AppConfigLoader, OutboxRelay } from '@bazaar/nest-common';
+import { AppConfigLoader, OutboxRelay, RedisService } from '@bazaar/nest-common';
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -12,7 +12,6 @@ import { gatewayEnvSchema } from '../../src/config/env.schema.js';
 import { RATE_LIMIT_KEY_PREFIX } from '../../src/constants/rate-limit.constant.js';
 import { Argon2PasswordHasher } from '../../src/infrastructure/crypto/argon2-password-hasher.js';
 import { PrismaService } from '../../src/infrastructure/prisma/prisma.service.js';
-import { RedisService } from '../../src/infrastructure/redis/redis.service.js';
 
 const PASSWORD = 'Correct-Horse-9';
 const runId = Date.now().toString(36);

@@ -1,8 +1,8 @@
+import { Public } from '@bazaar/nest-common';
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import type { JWK } from 'jose';
 
-import { Public } from '../../../common/decorators/public.decorator.js';
 import { JWKS_PATH } from '../../../constants/auth.constant.js';
 import { KeyStore } from '../services/key-store.js';
 

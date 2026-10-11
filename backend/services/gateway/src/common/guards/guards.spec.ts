@@ -1,10 +1,10 @@
 import { UserRole } from '@bazaar/contracts';
-import { ForbiddenError, UnauthenticatedError } from '@bazaar/nest-common';
+import { ForbiddenError, IS_PUBLIC_KEY, UnauthenticatedError } from '@bazaar/nest-common';
 import type { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 import { buildAccessTokenService } from '../../../test/fakes/auth.fakes.js';
-import { IS_PUBLIC_KEY, ROLES_KEY } from '../../constants/metadata.constant.js';
+import { ROLES_KEY } from '../../constants/metadata.constant.js';
 
 import { JwtAuthGuard } from './jwt-auth.guard.js';
 import { RolesGuard } from './roles.guard.js';

@@ -1,11 +1,10 @@
 import { REFRESH_TOKEN_TTL_DAYS } from '@bazaar/contracts';
-import { ApiZodBody, ApiZodResponse, ZodValidationPipe } from '@bazaar/nest-common';
+import { ApiZodBody, ApiZodResponse, ZodValidationPipe, Public } from '@bazaar/nest-common';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import { Public } from '../../../common/decorators/public.decorator.js';
 import { RateLimit } from '../../../common/decorators/rate-limit.decorator.js';
 import { AppConfig } from '../../../config/app-config.js';
 import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../../constants/auth.constant.js';

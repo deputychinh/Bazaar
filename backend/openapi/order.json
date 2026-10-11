@@ -113,6 +113,7 @@
           "INVALID_TOKEN",
           "ACCOUNT_SUSPENDED",
           "OUT_OF_STOCK",
+          "CART_CHANGED",
           "INVALID_ORDER_TRANSITION",
           "PAYMENT_FAILED",
           "UPSTREAM_UNAVAILABLE",

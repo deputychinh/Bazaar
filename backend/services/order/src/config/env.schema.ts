@@ -1,5 +1,5 @@
 import { JWT_DEFAULT_AUDIENCE, JWT_DEFAULT_ISSUER } from '@bazaar/contracts';
-import { baseEnvSchema } from '@bazaar/nest-common';
+import { baseEnvSchema, INTERNAL_API_KEY_MIN_LENGTH } from '@bazaar/nest-common';
 import { z } from 'zod';
 
 import { ORDER_DEFAULT_PORT, ORDER_SERVICE_NAME } from '../constants/order.constant.js';
@@ -13,6 +13,8 @@ export const orderEnvSchema = baseEnvSchema.extend({
   GATEWAY_JWKS_URL: z.url().default('http://127.0.0.1:4000/.well-known/jwks.json'),
   JWT_ISSUER: z.string().min(1).default(JWT_DEFAULT_ISSUER),
   JWT_AUDIENCE: z.string().min(1).default(JWT_DEFAULT_AUDIENCE),
+  /** Shared with the gateway for /internal routes; when unset they always answer 403. */
+  INTERNAL_API_KEY: z.string().min(INTERNAL_API_KEY_MIN_LENGTH).optional(),
 });
 
 export type OrderEnv = z.infer<typeof orderEnvSchema>;

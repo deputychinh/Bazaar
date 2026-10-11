@@ -276,6 +276,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CheckoutController_place"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/fx-rates": {
         parameters: {
             query?: never;
@@ -315,6 +331,71 @@ export interface components {
         UserStatus: UserStatus;
         /** @enum {string} */
         SellerApplicationStatus: SellerApplicationStatus;
+        CheckoutRequest: {
+            lines: {
+                productSlug: string;
+                variantSku: string;
+                quantity: number;
+            }[];
+            card: {
+                number: string;
+            };
+        };
+        Order: {
+            id: string;
+            status: components["schemas"]["OrderStatus"];
+            totalUsdCents: number;
+            cancelReason: components["schemas"]["CancelReason"] | null;
+            payment: {
+                status: components["schemas"]["PaymentStatus"];
+                cardLast4: string;
+            } | null;
+            sellerOrders: components["schemas"]["SellerOrder"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /** @enum {string} */
+        OrderStatus: OrderStatus;
+        /** @enum {string} */
+        CancelReason: CancelReason;
+        /** @enum {string} */
+        PaymentStatus: PaymentStatus;
+        SellerOrder: {
+            id: string;
+            orderId: string;
+            sellerId: string;
+            shop: {
+                id: string;
+                name: string;
+            };
+            status: components["schemas"]["SellerOrderStatus"];
+            subtotalUsdCents: number;
+            cancelReason: components["schemas"]["CancelReason"] | null;
+            /** Format: date-time */
+            shippedAt: string | null;
+            /** Format: date-time */
+            deliveredAt: string | null;
+            /** Format: date-time */
+            cancelledAt: string | null;
+            items: {
+                id: string;
+                productId: string;
+                productSlug: string;
+                variantSku: string;
+                title: {
+                    en: string;
+                    vi?: string;
+                };
+                variantLabel: string;
+                imageUrl: string | null;
+                quantity: number;
+                unitPriceUsdCents: number;
+            }[];
+        };
+        /** @enum {string} */
+        SellerOrderStatus: SellerOrderStatus;
         /** @enum {string} */
         DisplayCurrency: DisplayCurrency;
     };
@@ -947,6 +1028,51 @@ export interface operations {
             };
         };
     };
+    CheckoutController_place: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description 8–64 letters, digits, _ or -; one order per key and shopper */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutRequest"];
+            };
+        };
+        responses: {
+            /** @description Replay of an earlier request with the same key */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+            /** @description Order placed (PENDING); the saga takes over */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Order"];
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
     FxRatesController_current: {
         parameters: {
             query?: never;
@@ -1001,6 +1127,7 @@ export enum ErrorCode {
     INVALID_TOKEN = "INVALID_TOKEN",
     ACCOUNT_SUSPENDED = "ACCOUNT_SUSPENDED",
     OUT_OF_STOCK = "OUT_OF_STOCK",
+    CART_CHANGED = "CART_CHANGED",
     INVALID_ORDER_TRANSITION = "INVALID_ORDER_TRANSITION",
     PAYMENT_FAILED = "PAYMENT_FAILED",
     UPSTREAM_UNAVAILABLE = "UPSTREAM_UNAVAILABLE",
@@ -1024,6 +1151,33 @@ export enum SellerApplicationStatus {
     PENDING = "PENDING",
     APPROVED = "APPROVED",
     REJECTED = "REJECTED"
+}
+export enum OrderStatus {
+    PENDING = "PENDING",
+    RESERVED = "RESERVED",
+    PAID = "PAID",
+    CONFIRMED = "CONFIRMED",
+    COMPLETED = "COMPLETED",
+    CANCELLED = "CANCELLED"
+}
+export enum CancelReason {
+    OUT_OF_STOCK = "OUT_OF_STOCK",
+    PAYMENT_FAILED = "PAYMENT_FAILED",
+    RESERVATION_TIMEOUT = "RESERVATION_TIMEOUT",
+    SHOPPER_CANCELLED = "SHOPPER_CANCELLED"
+}
+export enum PaymentStatus {
+    PENDING = "PENDING",
+    SUCCEEDED = "SUCCEEDED",
+    FAILED = "FAILED",
+    REFUND_PENDING = "REFUND_PENDING"
+}
+export enum SellerOrderStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    SHIPPED = "SHIPPED",
+    DELIVERED = "DELIVERED",
+    CANCELLED = "CANCELLED"
 }
 export enum DisplayCurrency {
     USD = "USD",

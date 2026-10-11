@@ -17,6 +17,7 @@ export const ERROR_HTTP_STATUS: Readonly<Record<ErrorCode, HttpStatus>> = {
   [ErrorCode.InvalidToken]: HttpStatus.BAD_REQUEST,
   [ErrorCode.AccountSuspended]: HttpStatus.FORBIDDEN,
   [ErrorCode.OutOfStock]: HttpStatus.CONFLICT,
+  [ErrorCode.CartChanged]: HttpStatus.CONFLICT,
   [ErrorCode.InvalidOrderTransition]: HttpStatus.CONFLICT,
   [ErrorCode.PaymentFailed]: HttpStatus.PAYMENT_REQUIRED,
   [ErrorCode.UpstreamUnavailable]: HttpStatus.BAD_GATEWAY,

@@ -13,6 +13,8 @@ export enum ErrorCode {
   InvalidToken = 'INVALID_TOKEN',
   AccountSuspended = 'ACCOUNT_SUSPENDED',
   OutOfStock = 'OUT_OF_STOCK',
+  /** Checkout: some cart lines changed (gone, unpublished, not enough stock); see details.lines. */
+  CartChanged = 'CART_CHANGED',
   InvalidOrderTransition = 'INVALID_ORDER_TRANSITION',
   PaymentFailed = 'PAYMENT_FAILED',
   UpstreamUnavailable = 'UPSTREAM_UNAVAILABLE',

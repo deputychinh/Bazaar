@@ -3,6 +3,9 @@ export const GATEWAY_DEFAULT_PORT = 4000;
 export const API_PREFIX = 'api/v1';
 export const API_DOCS_PATH = 'api/docs';
 export const UPSTREAM_TIMEOUT_MS = 10_000;
+/** Service-to-service routes used by checkout; never proxied (plan §P4). */
+export const INTERNAL_QUOTE_PATH = '/api/v1/internal/quote';
+export const INTERNAL_ORDERS_PATH = '/api/v1/internal/orders';
 /** Request headers passed to internal services; everything else stays at the edge. */
 export const FORWARDED_REQUEST_HEADERS = [
   'authorization',

@@ -57,6 +57,7 @@
     "INVALID_TOKEN": "This link is invalid or has expired.",
     "ACCOUNT_SUSPENDED": "This account is suspended.",
     "OUT_OF_STOCK": "Sorry, this item is out of stock.",
+    "CART_CHANGED": "Some items in your cart changed. Please review them and try again.",
     "INVALID_ORDER_TRANSITION": "This order can no longer be changed.",
     "PAYMENT_FAILED": "The payment did not go through.",
     "UPSTREAM_UNAVAILABLE": "This part of the site is temporarily unavailable. Please try again.",

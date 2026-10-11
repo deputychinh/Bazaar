@@ -1,5 +1,5 @@
 import { JWT_DEFAULT_AUDIENCE, JWT_DEFAULT_ISSUER } from '@bazaar/contracts';
-import { baseEnvSchema } from '@bazaar/nest-common';
+import { baseEnvSchema, INTERNAL_API_KEY_MIN_LENGTH } from '@bazaar/nest-common';
 import { z } from 'zod';
 
 import { GATEWAY_DEFAULT_PORT, GATEWAY_SERVICE_NAME } from '../constants/gateway.constant.js';
@@ -32,6 +32,9 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
    */
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   CATALOG_SERVICE_URL: z.url().default('http://127.0.0.1:4010'),
+  ORDER_SERVICE_URL: z.url().default('http://127.0.0.1:4020'),
+  /** Shared key for /internal routes of the catalog and order services (checkout). */
+  INTERNAL_API_KEY: z.string().min(INTERNAL_API_KEY_MIN_LENGTH).optional(),
   FX_PROVIDER: z.enum(FxProviderKind).default(FxProviderKind.Http),
   FX_API_URL: z.url().default('https://open.er-api.com/v6/latest/USD'),
   /** VND per USD used by the static provider and as the last-resort fallback. */

@@ -20,7 +20,9 @@ import type { OrderEnv } from './config/env.schema.js';
 import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.indicator.js';
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
 import { EventsModule } from './modules/events/events.module.js';
+import { OrdersModule } from './modules/orders/orders.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
+import { PaymentsModule } from './modules/payments/payments.module.js';
 
 @Global()
 @Module({})
@@ -40,6 +42,7 @@ export class AppModule {
           jwksUrl: env.GATEWAY_JWKS_URL,
           issuer: env.JWT_ISSUER,
           audience: env.JWT_AUDIENCE,
+          internalApiKey: env.INTERNAL_API_KEY,
         }),
         KafkaModule.forRoot({ clientId: env.SERVICE_NAME, brokers: env.KAFKA_BROKERS }),
         RedisModule.forRoot({ url: env.REDIS_URL }),
@@ -47,6 +50,8 @@ export class AppModule {
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),
         OutboxModule,
         EventsModule,
+        PaymentsModule,
+        OrdersModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

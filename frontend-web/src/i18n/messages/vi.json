@@ -57,6 +57,7 @@
     "INVALID_TOKEN": "Liên kết không hợp lệ hoặc đã hết hạn.",
     "ACCOUNT_SUSPENDED": "Tài khoản này đang bị tạm khoá.",
     "OUT_OF_STOCK": "Rất tiếc, sản phẩm này đã hết hàng.",
+    "CART_CHANGED": "Một số sản phẩm trong giỏ đã thay đổi. Vui lòng kiểm tra lại rồi thử lại.",
     "INVALID_ORDER_TRANSITION": "Đơn hàng này không thể thay đổi nữa.",
     "PAYMENT_FAILED": "Thanh toán không thành công.",
     "UPSTREAM_UNAVAILABLE": "Phần này của trang tạm thời gián đoạn. Vui lòng thử lại.",

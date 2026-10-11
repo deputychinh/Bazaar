@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 import { MAX_ITEMS_PER_ORDER, MAX_QUANTITY_PER_ITEM } from '../constants/order.constant.js';
-import { QuoteProblem } from '../enums/quote-problem.enum.js';
+
+import { quoteProblemSchema } from './enum.schema.js';
 
 const text = z.string().min(1);
 const localizedText = z.object({ en: z.string(), vi: z.string().optional() });
@@ -32,7 +33,7 @@ const pricedLineSchema = quoteLineRequestSchema.extend({
 
 const unavailableLineSchema = quoteLineRequestSchema.extend({
   available: z.literal(false),
-  problem: z.enum(QuoteProblem),
+  problem: quoteProblemSchema,
   /** Units left when the problem is INSUFFICIENT_STOCK. */
   stock: z.number().int().nonnegative().nullable(),
 });

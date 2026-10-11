@@ -18,8 +18,9 @@ export class RedisModule {
         { provide: REDIS_MODULE_OPTIONS, useValue: options },
         RedisService,
         RedisHealthIndicator,
+        { provide: CacheStore, useClass: RedisCacheStore },
       ],
-      exports: [RedisService, RedisHealthIndicator],
+      exports: [RedisService, RedisHealthIndicator, CacheStore],
     };
   }
 }

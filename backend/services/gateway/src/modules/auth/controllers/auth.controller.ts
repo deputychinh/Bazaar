@@ -1,15 +1,20 @@
 import { REFRESH_TOKEN_TTL_DAYS } from '@bazaar/contracts';
-import { ApiZodBody, ApiZodResponse, ZodValidationPipe, Public } from '@bazaar/nest-common';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+  type AuthenticatedUser,
+  CurrentUser,
+  Public,
+  ZodValidationPipe,
+} from '@bazaar/nest-common';
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
 import { RateLimit } from '../../../common/decorators/rate-limit.decorator.js';
 import { AppConfig } from '../../../config/app-config.js';
 import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from '../../../constants/auth.constant.js';
 import { RateLimitPolicy } from '../../../enums/rate-limit-policy.enum.js';
-import type { AuthenticatedUser } from '../../../interfaces/authenticated-user.interface.js';
 import type { IssuedSession } from '../../../interfaces/session.interface.js';
 import { type UserResponse, userResponseSchema } from '../../users/dto/user-response.dto.js';
 import { UserMapper } from '../../users/mappers/user.mapper.js';

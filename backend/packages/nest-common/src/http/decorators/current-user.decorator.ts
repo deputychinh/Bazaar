@@ -1,7 +1,7 @@
-import { UnauthenticatedError } from '@bazaar/nest-common';
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
 
+import { UnauthenticatedError } from '../../errors/unauthenticated.error.js';
 import type { AuthenticatedUser } from '../../interfaces/authenticated-user.interface.js';
 
 /** Injects the caller of an authenticated route. */

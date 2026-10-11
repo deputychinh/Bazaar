@@ -1,16 +1,18 @@
-import { IS_PUBLIC_KEY, UnauthenticatedError } from '@bazaar/nest-common';
 import { type CanActivate, type ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 
-import { AccessTokenService } from '../../modules/tokens/services/access-token.service.js';
+import { IS_PUBLIC_KEY } from '../constants/metadata.constant.js';
+import { UnauthenticatedError } from '../errors/unauthenticated.error.js';
+
+import { TokenVerifier } from './token-verifier.js';
 
 /** Global guard: every route needs a valid Bearer token unless marked @Public(). */
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class AccessTokenGuard implements CanActivate {
   public constructor(
     private readonly reflector: Reflector,
-    private readonly accessTokens: AccessTokenService,
+    private readonly verifier: TokenVerifier,
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -26,7 +28,7 @@ export class JwtAuthGuard implements CanActivate {
     if (scheme !== 'Bearer' || token === undefined || token.length === 0) {
       throw new UnauthenticatedError('Missing bearer token');
     }
-    request.user = await this.accessTokens.verify(token);
+    request.user = await this.verifier.verify(token);
     return true;
   }
 }

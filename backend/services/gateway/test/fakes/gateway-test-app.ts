@@ -1,19 +1,20 @@
 import type { UserRole } from '@bazaar/contracts';
 import {
+  AccessTokenGuard,
   AppLoggerModule,
   Clock,
   FixedClock,
   HttpCommonModule,
   LogLevel,
+  RolesGuard,
+  TokenVerifier,
 } from '@bazaar/nest-common';
 import type { INestApplication } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
 
-import { JwtAuthGuard } from '../../src/common/guards/jwt-auth.guard.js';
 import { RateLimitGuard } from '../../src/common/guards/rate-limit.guard.js';
-import { RolesGuard } from '../../src/common/guards/roles.guard.js';
 import { TransactionManager } from '../../src/common/transaction/transaction-manager.js';
 import { AppConfig } from '../../src/config/app-config.js';
 import { API_PREFIX } from '../../src/constants/gateway.constant.js';
@@ -90,6 +91,7 @@ export const createGatewayTestApp = async (): Promise<GatewayTestApp> => {
       { provide: Clock, useValue: clock },
       { provide: KeyStore, useValue: tokens.keys },
       { provide: AccessTokenService, useValue: tokens.service },
+      { provide: TokenVerifier, useValue: tokens.service },
       { provide: UsersRepository, useValue: users },
       { provide: UserTokensRepository, useValue: new InMemoryUserTokensRepository() },
       { provide: RefreshTokensRepository, useValue: refreshTokens },
@@ -98,7 +100,7 @@ export const createGatewayTestApp = async (): Promise<GatewayTestApp> => {
       { provide: TransactionManager, useValue: new ImmediateTransactionManager() },
       { provide: RateLimiter, useValue: new InMemoryRateLimiter() },
       { provide: APP_GUARD, useClass: RateLimitGuard },
-      { provide: APP_GUARD, useClass: JwtAuthGuard },
+      { provide: APP_GUARD, useClass: AccessTokenGuard },
       { provide: APP_GUARD, useClass: RolesGuard },
     ],
   }).compile();

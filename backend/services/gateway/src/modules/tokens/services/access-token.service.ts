@@ -1,11 +1,15 @@
 import { ACCESS_TOKEN_TTL_SECONDS, UserRole } from '@bazaar/contracts';
-import { Clock, UnauthenticatedError } from '@bazaar/nest-common';
+import {
+  type AuthenticatedUser,
+  Clock,
+  TokenVerifier,
+  UnauthenticatedError,
+} from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
 import { jwtVerify, SignJWT } from 'jose';
 
 import { AppConfig } from '../../../config/app-config.js';
 import { JWT_ALGORITHM, JWT_KEY_ID } from '../../../constants/auth.constant.js';
-import type { AuthenticatedUser } from '../../../interfaces/authenticated-user.interface.js';
 import type { IssuedAccessToken } from '../../../interfaces/token.interface.js';
 import { EnumUtil } from '../../../utils/enum.util.js';
 
@@ -13,12 +17,14 @@ import { KeyStore } from './key-store.js';
 
 /** Signs and verifies short-lived RS256 access tokens (plan §2B Auth). */
 @Injectable()
-export class AccessTokenService {
+export class AccessTokenService extends TokenVerifier {
   public constructor(
     private readonly keys: KeyStore,
     private readonly config: AppConfig,
     private readonly clock: Clock,
-  ) {}
+  ) {
+    super();
+  }
 
   public async sign(user: AuthenticatedUser): Promise<IssuedAccessToken> {
     const issuedAt = Math.floor(this.clock.now().getTime() / 1000);

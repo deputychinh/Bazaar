@@ -1,11 +1,15 @@
 import { UserRole } from '@bazaar/contracts';
-import { ApiZodBody, ApiZodResponse, ZodValidationPipe } from '@bazaar/nest-common';
+import {
+  ApiZodBody,
+  ApiZodResponse,
+  type AuthenticatedUser,
+  CurrentUser,
+  Roles,
+  ZodValidationPipe,
+} from '@bazaar/nest-common';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import { Roles } from '../../../common/decorators/roles.decorator.js';
-import type { AuthenticatedUser } from '../../../interfaces/authenticated-user.interface.js';
 import {
   type ListApplicationsQuery,
   listApplicationsQuerySchema,

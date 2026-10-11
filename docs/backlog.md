@@ -78,5 +78,20 @@ and need the shared `INTERNAL_API_KEY` plus the shopper's JWT.
 | BZ-049 | Web checkout + my orders | Checkout page (test card), order page with status (polling until P5 SSE), orders list; cart cleared after order; EN/VI | M | ☑ |
 | BZ-050 | Saga quality | Integration tests: happy path, out of stock, payment declined, timeout; concurrent orders on the last items never oversell; poison message lands in DLQ | M | ☑ |
 
-## P5 — Notifications + live status · P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
+## P5 — Notifications + live status
+The notification service (MongoDB) consumes every topic: it keeps the event log, a contact book of
+users (email + language, from identity events; seeded users come from `db/notification/data.js`),
+sends emails through SMTP (Mailpit locally) and stores in-app notifications. The gateway pushes
+order changes to the shopper over SSE.
+
+| Id | Ticket | Acceptance criteria | Size | Status |
+|---|---|---|---|---|
+| BZ-051 | Notification service scaffold | NestJS on :4030, Prisma on MongoDB `bazaar_notification` (contacts, notifications with 180-day TTL, event_log, processed_events), `db/notification/schema.js` + `data.js`, consumer of identity/order/inventory/catalog events, every event appended to the log once, health | M | ☐ |
+| BZ-052 | Emails | `EmailSender` port + SMTP adapter; EN/VI templates in the user's language: verify email, reset password, order confirmed/cancelled, seller order shipped/delivered (shopper), new order (seller); VND shown as approximate; sent once per event | M | ☐ |
+| BZ-053 | In-app notifications | Notification per order event for shopper and seller; `GET /notifications` (mine, unread count), mark one / all read; proxied by the gateway; web bell with unread badge | M | ☐ |
+| BZ-054 | Live order status (SSE) | Gateway reads `order.events` with a per-pod consumer group and streams the signed-in shopper's order changes (`GET /api/v1/orders/stream`); order page updates live, polling only as fallback | M | ☐ |
+| BZ-055 | Reviews | Catalog learns deliveries from `SellerOrderDelivered`; shopper reviews a delivered product once; rating summary recomputed with `RatingUpdated`; product page lists reviews and offers the form when allowed | L | ☐ |
+| BZ-056 | Event log + ISR hook | Admin `GET /admin/events` (filter by type / aggregate); product changes and new ratings revalidate the product page on the web (shared secret) | S | ☐ |
+
+## P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
 Detailed tickets are written at the start of each phase (plan §13).

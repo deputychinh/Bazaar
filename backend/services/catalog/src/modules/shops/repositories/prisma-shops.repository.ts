@@ -13,6 +13,11 @@ export class PrismaShopsRepository extends ShopsRepository {
     super();
   }
 
+  public async findById(id: string): Promise<Shop | null> {
+    const row = await this.prisma.shop.findUnique({ where: { id } });
+    return row === null ? null : ShopMapper.toDomain(row);
+  }
+
   public async findBySlug(slug: string): Promise<Shop | null> {
     const row = await this.prisma.shop.findUnique({ where: { slug } });
     return row === null ? null : ShopMapper.toDomain(row);

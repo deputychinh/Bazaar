@@ -17,8 +17,10 @@ import { AppConfig } from './config/app-config.js';
 import type { CatalogEnv } from './config/env.schema.js';
 import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.indicator.js';
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
+import { CategoriesModule } from './modules/categories/categories.module.js';
 import { EventsModule } from './modules/events/events.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
+import { ProductsModule } from './modules/products/products.module.js';
 import { ShopsModule } from './modules/shops/shops.module.js';
 
 @Global()
@@ -46,6 +48,8 @@ export class AppModule {
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),
         OutboxModule,
         ShopsModule,
+        CategoriesModule,
+        ProductsModule,
         EventsModule,
       ],
       providers: [

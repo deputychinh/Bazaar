@@ -1,4 +1,4 @@
-import { type AnyEventEnvelope, UserRole } from '@bazaar/contracts';
+import { type AnyEventEnvelope, ProductStatus, UserRole } from '@bazaar/contracts';
 import {
   type AuthenticatedUser,
   EnumUtil,
@@ -8,9 +8,18 @@ import {
 } from '@bazaar/nest-common';
 
 import { TransactionManager } from '../../src/common/transaction/transaction-manager.js';
+import { ProductSort } from '../../src/enums/product-sort.enum.js';
+import type { Category } from '../../src/interfaces/category.interface.js';
+import type {
+  Product,
+  ProductPage,
+  ProductSearchCriteria,
+} from '../../src/interfaces/product.interface.js';
 import type { NewShop, Shop } from '../../src/interfaces/shop.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
+import { CategoriesRepository } from '../../src/modules/categories/repositories/categories.repository.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
+import { ProductsRepository } from '../../src/modules/products/repositories/products.repository.js';
 import {
   type ShopChangesOptions,
   ShopsRepository,
@@ -55,6 +64,10 @@ export class InMemoryProcessedEvents extends ProcessedEventStore<Transaction> {
 export class InMemoryShopsRepository extends ShopsRepository {
   public readonly rows: Shop[] = [];
 
+  public findById(id: string): Promise<Shop | null> {
+    return Promise.resolve(this.rows.find((shop) => shop.id === id) ?? null);
+  }
+
   public findBySlug(slug: string): Promise<Shop | null> {
     return Promise.resolve(this.rows.find((shop) => shop.slug === slug) ?? null);
   }
@@ -93,5 +106,95 @@ export class RecordingOutbox extends EventOutbox {
 export class ImmediateTransactionManager extends TransactionManager {
   public run<T>(work: (transaction: Transaction) => Promise<T>): Promise<T> {
     return work(NO_TRANSACTION);
+  }
+}
+
+export const category = (
+  overrides: Partial<Category> & Pick<Category, 'id' | 'slug' | 'path'>,
+): Category => ({
+  name: { en: overrides.slug, vi: overrides.slug },
+  parentId: null,
+  sortOrder: 0,
+  ...overrides,
+});
+
+export class InMemoryCategoriesRepository extends CategoriesRepository {
+  public constructor(public readonly rows: Category[] = []) {
+    super();
+  }
+
+  public findAll(): Promise<Category[]> {
+    return Promise.resolve([...this.rows]);
+  }
+}
+
+export const productFixture = (overrides: Partial<Product> = {}): Product => ({
+  id: 'p1',
+  shopId: 'shop-1',
+  sellerId: 'seller-1',
+  slug: 'ceramic-vase-1',
+  title: { en: 'Ceramic vase', vi: 'Bình hoa gốm' },
+  description: { en: 'Hand-made', vi: 'Thủ công' },
+  categoryId: 'cat-ceramics',
+  attributes: null,
+  variants: [{ sku: 'BZ-0001-1', priceUsdCents: 1500, stock: 3, attributes: null }],
+  images: [{ key: 'products/p1/a.webp', alt: null }],
+  status: ProductStatus.Published,
+  minPriceUsdCents: 1500,
+  totalStock: 3,
+  rating: { average: 4.5, count: 10 },
+  hiddenReason: null,
+  publishedAt: NOW,
+  createdAt: NOW,
+  updatedAt: NOW,
+  ...overrides,
+});
+
+/** Mirrors the public search rules in memory (published only, filters, sort, pages). */
+export class InMemoryProductsRepository extends ProductsRepository {
+  public constructor(public readonly rows: Product[] = []) {
+    super();
+  }
+
+  public search(criteria: ProductSearchCriteria): Promise<ProductPage> {
+    const text = criteria.text?.toLowerCase();
+    const matches = this.rows
+      .filter((product) => product.status === ProductStatus.Published)
+      .filter(
+        (product) =>
+          text === undefined ||
+          `${product.title.en} ${product.title.vi ?? ''}`.toLowerCase().includes(text),
+      )
+      .filter(
+        (product) =>
+          criteria.categoryIds === undefined || criteria.categoryIds.includes(product.categoryId),
+      )
+      .filter((product) => criteria.shopId === undefined || product.shopId === criteria.shopId)
+      .filter((product) => product.minPriceUsdCents >= (criteria.minPriceUsdCents ?? 0))
+      .filter(
+        (product) =>
+          product.minPriceUsdCents <= (criteria.maxPriceUsdCents ?? Number.MAX_SAFE_INTEGER),
+      )
+      .filter((product) => product.rating.average >= (criteria.minRating ?? 0));
+    const sorted = [...matches].sort((a, b) =>
+      criteria.sort === ProductSort.PriceAsc
+        ? a.minPriceUsdCents - b.minPriceUsdCents
+        : criteria.sort === ProductSort.PriceDesc
+          ? b.minPriceUsdCents - a.minPriceUsdCents
+          : criteria.sort === ProductSort.Rating
+            ? b.rating.average - a.rating.average
+            : 0,
+    );
+    const start = (criteria.page - 1) * criteria.pageSize;
+    return Promise.resolve({
+      items: sorted.slice(start, start + criteria.pageSize),
+      total: sorted.length,
+      page: criteria.page,
+      pageSize: criteria.pageSize,
+    });
+  }
+
+  public findBySlug(slug: string): Promise<Product | null> {
+    return Promise.resolve(this.rows.find((product) => product.slug === slug) ?? null);
   }
 }

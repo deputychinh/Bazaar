@@ -9,6 +9,8 @@ export interface ShopChangesOptions {
 }
 
 export abstract class ShopsRepository {
+  public abstract findById(id: string): Promise<Shop | null>;
+
   public abstract findBySlug(slug: string): Promise<Shop | null>;
 
   public abstract findBySellerId(sellerId: string, transaction?: Transaction): Promise<Shop | null>;

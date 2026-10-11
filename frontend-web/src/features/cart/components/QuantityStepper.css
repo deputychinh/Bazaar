@@ -1,0 +1,25 @@
+.quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+}
+
+.quantity-stepper__button {
+  min-inline-size: var(--space-8);
+  padding: var(--padding-control-sm);
+  font-size: var(--text-md);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.quantity-stepper__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quantity-stepper__value {
+  min-inline-size: var(--space-8);
+  text-align: center;
+}

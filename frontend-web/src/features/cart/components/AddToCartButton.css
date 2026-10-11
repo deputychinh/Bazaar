@@ -1,0 +1,11 @@
+.add-to-cart-button {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.add-to-cart-button__status {
+  min-block-size: var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-on-success-subtle);
+}

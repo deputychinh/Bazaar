@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import type { ReactElement } from 'react';
 
+import { CartLink } from '@/features/cart/components/CartLink';
 import { CurrencySwitcher } from '@/features/currency/components/CurrencySwitcher';
 import { LocaleSwitcher } from '@/features/locale/components/LocaleSwitcher';
 import { Link } from '@/i18n/navigation';
@@ -26,9 +27,7 @@ export const Header = async (): Promise<ReactElement> => {
         <div className="header__tools">
           <LocaleSwitcher />
           <CurrencySwitcher />
-          <Link className="header__link" href="/cart">
-            {t('cart')}
-          </Link>
+          <CartLink />
         </div>
       </div>
     </header>

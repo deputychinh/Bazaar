@@ -1,10 +1,12 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState, type ReactElement, type ReactNode } from 'react';
+import { useState, type ReactElement } from 'react';
 
 import { LOW_STOCK_THRESHOLD } from '@/constants/catalog.constant';
+import { AddToCartButton } from '@/features/cart/components/AddToCartButton';
 import { Price } from '@/features/currency/components/Price';
+import type { CartProduct } from '@/interfaces/cart.interface';
 import type { ProductVariant } from '@/interfaces/catalog.interface';
 import { cx } from '@/utils/cx.util';
 import { defaultVariant, variantLabel } from '@/utils/product.util';
@@ -12,13 +14,12 @@ import { defaultVariant, variantLabel } from '@/utils/product.util';
 import './ProductPurchase.css';
 
 interface ProductPurchaseProps {
+  product: CartProduct;
   variants: readonly ProductVariant[];
-  /** Rendered under the price with the chosen variant, e.g. the add-to-cart button. */
-  renderAction?: (variant: ProductVariant) => ReactNode;
 }
 
-/** Variant choice, price and stock of the chosen variant. */
-export const ProductPurchase = ({ variants, renderAction }: ProductPurchaseProps): ReactElement => {
+/** Variant choice, then price, stock and add-to-cart for the chosen variant. */
+export const ProductPurchase = ({ product, variants }: ProductPurchaseProps): ReactElement => {
   const t = useTranslations('product');
   const [sku, setSku] = useState(() => defaultVariant(variants)?.sku);
   const variant = variants.find((candidate) => candidate.sku === sku);
@@ -55,7 +56,7 @@ export const ProductPurchase = ({ variants, renderAction }: ProductPurchaseProps
             ? t('lowStock', { count: variant.stock })
             : t('inStock')}
       </p>
-      {renderAction?.(variant)}
+      <AddToCartButton product={product} variant={variant} />
     </div>
   );
 };

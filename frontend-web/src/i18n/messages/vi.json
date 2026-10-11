@@ -67,7 +67,8 @@
     "shop": "Mua sắm",
     "sell": "Bán hàng trên Bazaar",
     "cart": "Giỏ hàng",
-    "home": "Trang chủ"
+    "home": "Trang chủ",
+    "cartWithCount": "{count, plural, =0 {Giỏ hàng, trống} other {Giỏ hàng, # sản phẩm}}"
   },
   "currency": {
     "label": "Tiền tệ",
@@ -189,5 +190,25 @@
   },
   "shop": {
     "notFound": "Không tìm thấy cửa hàng"
+  },
+  "cart": {
+    "title": "Giỏ hàng của bạn",
+    "add": "Thêm vào giỏ",
+    "soldOut": "Hết hàng",
+    "added": "Đã thêm vào giỏ.",
+    "view": "Xem giỏ hàng",
+    "loading": "Đang tải giỏ hàng…",
+    "empty": "Giỏ hàng đang trống",
+    "emptyHint": "Hãy tìm một món đồ thủ công bạn thích.",
+    "browse": "Xem sản phẩm",
+    "quantityOf": "Số lượng {name}",
+    "decrease": "Giảm số lượng",
+    "increase": "Tăng số lượng",
+    "remove": "Xoá",
+    "removeItem": "Xoá {name} khỏi giỏ",
+    "shopSubtotal": "Tạm tính của shop",
+    "subtotal": "Tạm tính",
+    "summary": "Tóm tắt đơn hàng",
+    "pricesConfirmed": "Giá và tồn kho được xác nhận khi thanh toán. Phí vận chuyển tính theo từng shop."
   }
 }

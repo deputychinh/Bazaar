@@ -67,7 +67,8 @@
     "shop": "Shop",
     "sell": "Sell on Bazaar",
     "cart": "Cart",
-    "home": "Home"
+    "home": "Home",
+    "cartWithCount": "{count, plural, =0 {Cart, empty} one {Cart, # item} other {Cart, # items}}"
   },
   "currency": {
     "label": "Currency",
@@ -189,5 +190,25 @@
   },
   "shop": {
     "notFound": "Shop not found"
+  },
+  "cart": {
+    "title": "Your cart",
+    "add": "Add to cart",
+    "soldOut": "Sold out",
+    "added": "Added to your cart.",
+    "view": "View cart",
+    "loading": "Loading your cart…",
+    "empty": "Your cart is empty",
+    "emptyHint": "Find something handmade you love.",
+    "browse": "Browse products",
+    "quantityOf": "Quantity of {name}",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "remove": "Remove",
+    "removeItem": "Remove {name} from cart",
+    "shopSubtotal": "Shop subtotal",
+    "subtotal": "Subtotal",
+    "summary": "Order summary",
+    "pricesConfirmed": "Prices and stock are confirmed at checkout. Shipping is calculated per shop."
   }
 }

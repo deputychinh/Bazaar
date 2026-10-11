@@ -6,3 +6,4 @@ export * from './localized-text.util';
 export * from './money.util';
 export * from './product.util';
 export * from './product-json-ld.util';
+export * from './cart.util';

@@ -12,6 +12,7 @@ import type { Locale } from '@/api/gateway.schema';
 import { Footer } from '@/components/Footer/Footer';
 import { Header } from '@/components/Header/Header';
 import { serverEnv } from '@/config/env.server';
+import { CartProvider } from '@/features/cart/CartProvider';
 import { CurrencyProvider } from '@/features/currency/CurrencyProvider';
 import { pageLocale } from '@/i18n/page-locale';
 import { routing } from '@/i18n/routing';
@@ -50,9 +51,11 @@ const LocaleLayout = async ({
         </a>
         <NextIntlClientProvider>
           <CurrencyProvider locale={locale} usdToVnd={usdToVnd}>
-            <Header />
-            {children}
-            <Footer />
+            <CartProvider>
+              <Header />
+              {children}
+              <Footer />
+            </CartProvider>
           </CurrencyProvider>
         </NextIntlClientProvider>
       </body>

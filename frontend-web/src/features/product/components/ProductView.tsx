@@ -56,7 +56,15 @@ export const ProductView = ({ product, category }: ProductViewProps): ReactEleme
               {t('ratingLabel', { average: product.rating.average, count: product.rating.count })}
             </p>
           )}
-          <ProductPurchase variants={product.variants} />
+          <ProductPurchase
+            product={{
+              productSlug: product.slug,
+              title: product.title,
+              imageUrl: product.imageUrl,
+              shop: product.shop,
+            }}
+            variants={product.variants}
+          />
           <section className="product-view__description">
             <h2 className="product-view__heading">{t('description')}</h2>
             <p>{pickLocalized(product.description, locale)}</p>

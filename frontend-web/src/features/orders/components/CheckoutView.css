@@ -1,0 +1,59 @@
+.checkout-view {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.checkout-view__summary,
+.checkout-view__payment {
+  padding: var(--padding-card);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.checkout-view__heading {
+  font-size: var(--text-lg);
+  margin-block-end: var(--space-4);
+}
+
+.checkout-view__shop + .checkout-view__shop {
+  margin-block-start: var(--space-4);
+}
+
+.checkout-view__shop-name {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+}
+
+.checkout-view__lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-0);
+  list-style: none;
+  margin-block-start: var(--space-2);
+}
+
+.checkout-view__line,
+.checkout-view__total {
+  display: flex;
+  gap: var(--gap-inline);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.checkout-view__total {
+  font-weight: var(--weight-semibold);
+  margin-block-start: var(--space-4);
+}
+
+.checkout-view__note {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+@media (--bp-lg) {
+  .checkout-view {
+    grid-template-columns: minmax(0, 1fr) 380px;
+  }
+}

@@ -27,3 +27,8 @@ beforeEach(async () => {
   const { mockGateway } = await import('@/test-utils/gateway-mock');
   mockGateway();
 });
+
+// Each test starts signed out (renderSignedIn sets the session hint again).
+afterEach(() => {
+  if (typeof document !== 'undefined') document.cookie = 'bazaar_session=; path=/; max-age=0';
+});

@@ -156,7 +156,24 @@
     "/api/v1/orders/{id}/seller-orders/{sellerOrderId}/cancel": {
       "post": {
         "operationId": "OrdersController_cancelPart",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sellerOrderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",

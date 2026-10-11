@@ -75,7 +75,7 @@ and need the shared `INTERNAL_API_KEY` plus the shopper's JWT.
 | BZ-046 | Payment + confirmation | Order consumes `StockReserved` → RESERVED → fake provider charge (test cards: decline, timeout, success) → PAID → CONFIRMED (+ seller orders CONFIRMED) or CANCELLED(PAYMENT_FAILED); `StockRejected` → CANCELLED(OUT_OF_STOCK); state machine unit-tested | M | ☑ |
 | BZ-047 | Reservation timeout | Scheduled job in order (single runner via Redis lock) cancels orders still PENDING/RESERVED after 15 min with RESERVATION_TIMEOUT | S | ☑ |
 | BZ-048 | Orders API + fulfilment | Shopper: list/detail own orders, cancel a seller order before SHIPPED. Seller: list own seller orders, ship, deliver. Order COMPLETED when every seller order is final; events for each change | M | ☑ |
-| BZ-049 | Web checkout + my orders | Checkout page (test card), order page with status (polling until P5 SSE), orders list; cart cleared after order; EN/VI | M | ☐ |
+| BZ-049 | Web checkout + my orders | Checkout page (test card), order page with status (polling until P5 SSE), orders list; cart cleared after order; EN/VI | M | ☑ |
 | BZ-050 | Saga quality | Integration tests: happy path, out of stock, payment declined, timeout; concurrent orders on the last items never oversell; poison message lands in DLQ | M | ☐ |
 
 ## P5 — Notifications + live status · P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish

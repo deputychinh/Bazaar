@@ -210,7 +210,8 @@
     "shopSubtotal": "Tạm tính của shop",
     "subtotal": "Tạm tính",
     "summary": "Tóm tắt đơn hàng",
-    "pricesConfirmed": "Giá và tồn kho được xác nhận khi thanh toán. Phí vận chuyển tính theo từng shop."
+    "pricesConfirmed": "Giá và tồn kho được xác nhận khi thanh toán. Phí vận chuyển tính theo từng shop.",
+    "checkout": "Thanh toán"
   },
   "auth": {
     "signInTitle": "Đăng nhập",
@@ -242,6 +243,71 @@
     "verifying": "Đang xác minh email…",
     "verified": "Email đã được xác minh. Bạn có thể đăng nhập ngay.",
     "loading": "Đang tải…",
-    "memberSince": "Thành viên từ"
+    "memberSince": "Thành viên từ",
+    "myOrders": "Đơn hàng của tôi"
+  },
+  "checkout": {
+    "title": "Thanh toán",
+    "loading": "Đang tải giỏ hàng…",
+    "empty": "Giỏ hàng đang trống",
+    "browse": "Xem sản phẩm",
+    "summary": "Tóm tắt đơn hàng",
+    "total": "Tổng cộng",
+    "chargedInUsd": "Bạn được tính tiền bằng USD. Số tiền VND chỉ là ước tính.",
+    "payment": "Thanh toán",
+    "cardNumber": "Số thẻ",
+    "testCards": "Thẻ thử — thành công {success} · bị từ chối {decline} · không phản hồi {timeout}",
+    "placeOrder": "Đặt hàng",
+    "placing": "Đang đặt hàng…",
+    "backToCart": "Xem lại giỏ hàng",
+    "problems": {
+      "NOT_FOUND": "không còn tồn tại",
+      "NOT_PUBLISHED": "đã ngừng bán",
+      "INSUFFICIENT_STOCK": "chỉ còn {stock}"
+    }
+  },
+  "orders": {
+    "title": "Đơn hàng của tôi",
+    "detailTitle": "Chi tiết đơn hàng",
+    "loading": "Đang tải…",
+    "none": "Bạn chưa có đơn hàng nào",
+    "startShopping": "Bắt đầu mua sắm",
+    "items": "{count} sản phẩm",
+    "placedOn": "Đặt lúc {date}",
+    "reference": "Đơn #{id}",
+    "subtotal": "Tạm tính",
+    "total": "Tổng cộng",
+    "cancelPart": "Huỷ các sản phẩm này",
+    "paidWith": "Thẻ đuôi {last4}",
+    "status": {
+      "PENDING": "Đã đặt",
+      "RESERVED": "Đã giữ hàng",
+      "PAID": "Đã thanh toán",
+      "CONFIRMED": "Đã xác nhận",
+      "SHIPPED": "Đang giao",
+      "DELIVERED": "Đã giao",
+      "COMPLETED": "Hoàn tất",
+      "CANCELLED": "Đã huỷ"
+    },
+    "explain": {
+      "PENDING": "Đang giữ hàng cho bạn…",
+      "RESERVED": "Đã giữ hàng. Đang trừ tiền thẻ…",
+      "PAID": "Đã nhận thanh toán. Đang xác nhận…",
+      "CONFIRMED": "Đã xác nhận. Các shop đang chuẩn bị hàng.",
+      "COMPLETED": "Hoàn tất. Cảm ơn bạn đã mua sắm tại Bazaar!",
+      "CANCELLED": "Đơn hàng này đã bị huỷ."
+    },
+    "cancelReason": {
+      "OUT_OF_STOCK": "Đã huỷ: một số sản phẩm đã hết trước khi kịp giữ. Bạn không bị trừ tiền.",
+      "PAYMENT_FAILED": "Đã huỷ: thanh toán không thành công. Bạn không bị trừ tiền.",
+      "RESERVATION_TIMEOUT": "Đã huỷ: đơn không thể hoàn tất kịp thời. Bạn không bị trừ tiền.",
+      "SHOPPER_CANCELLED": "Bạn đã huỷ đơn này. Số tiền đã trả sẽ được hoàn lại."
+    },
+    "payment": {
+      "PENDING": "chờ thanh toán",
+      "SUCCEEDED": "đã thanh toán",
+      "FAILED": "không bị trừ tiền",
+      "REFUND_PENDING": "đang chờ hoàn tiền"
+    }
   }
 }

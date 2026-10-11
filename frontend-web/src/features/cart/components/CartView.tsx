@@ -98,6 +98,9 @@ export const CartView = (): ReactElement => {
         <p className="cart-view__total">
           {t('subtotal')} <Price usdCents={subtotalUsdCents} isLarge />
         </p>
+        <Link className="button button--primary button--full-width" href="/checkout">
+          {t('checkout')}
+        </Link>
         <p className="cart-view__note">{t('pricesConfirmed')}</p>
         <p className="cart-view__note">{tCurrency('approximate')}</p>
       </aside>

@@ -1,5 +1,6 @@
 import {
   type CheckoutRequest,
+  cartChangedProblemSchema,
   checkoutRequestSchema,
   IDEMPOTENCY_KEY_HEADER,
   idempotencyKeySchema,
@@ -38,6 +39,7 @@ export class CheckoutController {
     'Order placed (PENDING); the saga takes over',
   )
   @ApiZodResponse(HttpStatus.OK, orderViewSchema, 'Replay of an earlier request with the same key')
+  @ApiZodResponse(HttpStatus.CONFLICT, cartChangedProblemSchema, 'Cart lines to fix (CART_CHANGED)')
   public async place(
     @Body(new ZodValidationPipe(checkoutRequestSchema)) body: CheckoutRequest,
     @Req() request: Request,

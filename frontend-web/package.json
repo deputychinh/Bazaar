@@ -14,7 +14,7 @@
     "lint": "next typegen && eslint . --max-warnings 0 && stylelint \"src/**/*.css\"",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run --coverage",
-    "gen:api": "openapi-typescript ../backend/openapi/gateway.json -o src/api/gateway.schema.ts --enum && openapi-typescript ../backend/openapi/catalog.json -o src/api/catalog.schema.ts --enum"
+    "gen:api": "openapi-typescript ../backend/openapi/gateway.json -o src/api/gateway.schema.ts --enum && openapi-typescript ../backend/openapi/catalog.json -o src/api/catalog.schema.ts --enum && openapi-typescript ../backend/openapi/order.json -o src/api/order.schema.ts --enum"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",

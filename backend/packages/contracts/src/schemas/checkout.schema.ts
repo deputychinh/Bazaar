@@ -4,6 +4,7 @@ import { MAX_ITEMS_PER_ORDER } from '../constants/order.constant.js';
 
 import {
   cancelReasonSchema,
+  errorCodeSchema,
   orderStatusSchema,
   paymentStatusSchema,
   sellerOrderStatusSchema,
@@ -103,6 +104,17 @@ export const orderViewSchema = z
 export const cartChangedDetailsSchema = z.object({
   lines: quoteResponseSchema.shape.lines,
 });
+
+/** The 409 answer of checkout, so clients get typed `details.lines`. */
+export const cartChangedProblemSchema = z
+  .object({
+    code: errorCodeSchema,
+    message: z.string(),
+    status: z.number().int(),
+    details: cartChangedDetailsSchema,
+    traceId: z.string().optional(),
+  })
+  .meta({ id: 'CartChangedProblem' });
 
 export type Card = z.infer<typeof cardSchema>;
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;

@@ -54,13 +54,10 @@ export class OrdersController {
   @ApiZodResponse(HttpStatus.OK, orderViewSchema)
   public async cancelPart(
     @CurrentUser() shopper: AuthenticatedUser,
-    @Param() params: { id: string; sellerOrderId: string },
+    @Param('id') id: string,
+    @Param('sellerOrderId') sellerOrderId: string,
   ): Promise<OrderView> {
-    const order = await this.fulfilment.cancelByShopper(
-      shopper.id,
-      params.id,
-      params.sellerOrderId,
-    );
+    const order = await this.fulfilment.cancelByShopper(shopper.id, id, sellerOrderId);
     return OrderMapper.toView(order);
   }
 }

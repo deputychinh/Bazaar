@@ -1,0 +1,27 @@
+.order-status-badge {
+  display: inline-block;
+  padding: var(--padding-control-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-full);
+}
+
+.order-status-badge--info {
+  color: var(--color-on-info-subtle);
+  background: var(--color-info-subtle);
+}
+
+.order-status-badge--success {
+  color: var(--color-on-success-subtle);
+  background: var(--color-success-subtle);
+}
+
+.order-status-badge--warning {
+  color: var(--color-on-warning-subtle);
+  background: var(--color-warning-subtle);
+}
+
+.order-status-badge--danger {
+  color: var(--color-on-danger-subtle);
+  background: var(--color-danger-subtle);
+}

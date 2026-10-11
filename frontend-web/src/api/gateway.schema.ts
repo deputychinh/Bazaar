@@ -401,6 +401,46 @@ export interface components {
         };
         /** @enum {string} */
         SellerOrderStatus: SellerOrderStatus;
+        CartChangedProblem: {
+            code: components["schemas"]["ErrorCode"];
+            message: string;
+            status: number;
+            details: {
+                lines: ({
+                    productSlug: string;
+                    variantSku: string;
+                    quantity: number;
+                    /** @enum {boolean} */
+                    available: true;
+                    productId: string;
+                    sellerId: string;
+                    shopId: string;
+                    shopName: string;
+                    title: {
+                        en: string;
+                        vi?: string;
+                    };
+                    variantLabel: {
+                        en: string;
+                        vi?: string;
+                    };
+                    imageUrl: string | null;
+                    unitPriceUsdCents: number;
+                    stock: number;
+                } | {
+                    productSlug: string;
+                    variantSku: string;
+                    quantity: number;
+                    /** @enum {boolean} */
+                    available: false;
+                    problem: components["schemas"]["QuoteProblem"];
+                    stock: number | null;
+                })[];
+            };
+            traceId?: string;
+        };
+        /** @enum {string} */
+        QuoteProblem: QuoteProblem;
         /** @enum {string} */
         DisplayCurrency: DisplayCurrency;
     };
@@ -1067,6 +1107,15 @@ export interface operations {
                     "application/json": components["schemas"]["Order"];
                 };
             };
+            /** @description Cart lines to fix (CART_CHANGED) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartChangedProblem"];
+                };
+            };
             /** @description Error (problem details). Translate `code`; `message` is for developers. */
             default: {
                 headers: {
@@ -1183,6 +1232,11 @@ export enum SellerOrderStatus {
     SHIPPED = "SHIPPED",
     DELIVERED = "DELIVERED",
     CANCELLED = "CANCELLED"
+}
+export enum QuoteProblem {
+    NOT_FOUND = "NOT_FOUND",
+    NOT_PUBLISHED = "NOT_PUBLISHED",
+    INSUFFICIENT_STOCK = "INSUFFICIENT_STOCK"
 }
 export enum DisplayCurrency {
     USD = "USD",

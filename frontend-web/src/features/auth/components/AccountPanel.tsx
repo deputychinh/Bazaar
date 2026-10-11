@@ -6,7 +6,7 @@ import { useEffect, type ReactElement } from 'react';
 import { Button } from '@/components/Button/Button';
 import { AuthStatus } from '@/enums/auth-status.enum';
 import { ButtonVariant } from '@/enums/button-variant.enum';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 
 import { useAuth } from '../useAuth';
 
@@ -33,6 +33,7 @@ export const AccountPanel = (): ReactElement => {
           <dd>{new Date(user.createdAt).toLocaleDateString()}</dd>
         </div>
       </dl>
+      <Link href="/orders">{t('myOrders')}</Link>
       <Button variant={ButtonVariant.Secondary} onClick={() => void logout()}>
         {t('signOut')}
       </Button>

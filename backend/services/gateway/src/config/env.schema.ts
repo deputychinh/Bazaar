@@ -1,3 +1,4 @@
+import { JWT_DEFAULT_AUDIENCE, JWT_DEFAULT_ISSUER } from '@bazaar/contracts';
 import { baseEnvSchema } from '@bazaar/nest-common';
 import { z } from 'zod';
 
@@ -18,8 +19,8 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
   REDIS_URL: z.string().startsWith('redis://'),
   JWT_PRIVATE_KEY_FILE: z.string().min(1).default('.secrets/jwt-private.pem'),
   JWT_PUBLIC_KEY_FILE: z.string().min(1).default('.secrets/jwt-public.pem'),
-  JWT_ISSUER: z.string().min(1).default('bazaar-gateway'),
-  JWT_AUDIENCE: z.string().min(1).default('bazaar'),
+  JWT_ISSUER: z.string().min(1).default(JWT_DEFAULT_ISSUER),
+  JWT_AUDIENCE: z.string().min(1).default(JWT_DEFAULT_AUDIENCE),
   WEB_APP_URL: z.url().default('http://localhost:3100'),
   CORS_ORIGINS: commaList.default(['http://localhost:3100', 'http://localhost:3200']),
   COOKIE_SECURE: z.stringbool().default(false),

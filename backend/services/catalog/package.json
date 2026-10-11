@@ -1,0 +1,51 @@
+{
+  "name": "@bazaar/catalog",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Catalog service: shops, categories, products, stock, search (MongoDB).",
+  "type": "module",
+  "imports": {
+    "#prisma": {
+      "types": "./generated/prisma/index.d.ts",
+      "default": "./generated/prisma/index.js"
+    }
+  },
+  "scripts": {
+    "generate": "prisma generate",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "dev": "nest start --watch --exec \"node --env-file=../../../.env --enable-source-maps\"",
+    "start": "node --enable-source-maps dist/main.js",
+    "test": "vitest run --coverage",
+    "test:int": "vitest run --config vitest.int.config.ts",
+    "openapi": "node dist/openapi.js ../../openapi/catalog.json"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "12.0.8",
+    "@nestjs/testing": "12.1.2",
+    "@types/express": "5.0.6",
+    "@types/supertest": "7.2.1",
+    "jose": "6.2.12",
+    "pino-pretty": "13.2.0",
+    "prisma": "6.19.3",
+    "supertest": "7.2.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1149.0",
+    "@aws-sdk/s3-request-presigner": "3.1149.0",
+    "@bazaar/contracts": "*",
+    "@bazaar/nest-common": "*",
+    "@nestjs/common": "12.1.2",
+    "@nestjs/core": "12.1.2",
+    "@nestjs/platform-express": "12.1.2",
+    "@nestjs/swagger": "12.0.2",
+    "@prisma/client": "6.19.3",
+    "helmet": "8.3.0",
+    "nestjs-pino": "5.3.1",
+    "pino": "10.4.0",
+    "pino-http": "11.0.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "zod": "4.6.5"
+  }
+}

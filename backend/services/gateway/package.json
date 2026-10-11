@@ -15,7 +15,7 @@
     "migrate:dev": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "db:schema-sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > ../../db/identity/schema.sql",
-    "openapi": "node --env-file-if-exists=../../../.env dist/openapi.js ../../openapi/gateway.json"
+    "openapi": "node dist/openapi.js ../../openapi/gateway.json"
   },
   "devDependencies": {
     "@nestjs/cli": "12.0.8",

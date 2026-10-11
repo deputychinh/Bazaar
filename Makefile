@@ -50,7 +50,7 @@ urls: ## Print the local tool URLs
 
 # --- databases ---------------------------------------------------------------
 migrate: ## Apply Prisma migrations to the MySQL databases (services added from P1)
-	$(BACKEND) npm run migrate --workspaces --if-present
+	set -a && source .env && set +a && cd backend && npm run migrate --workspaces --if-present
 
 db-schema: ## Apply MongoDB schema files (collections, validators, indexes)
 	backend/db/scripts/apply.sh schema
@@ -79,6 +79,9 @@ test-int: ## Integration tests (needs `make up`)
 build: ## Build every backend package
 	$(BACKEND) npm run build
 
+openapi: ## Regenerate backend/openapi/gateway.json and db/identity/schema.sql
+	$(BACKEND) npm run build && npm run openapi -w @bazaar/gateway && npm run db:schema-sql -w @bazaar/gateway
+
 ci: lint typecheck test build ## Run the CI pipeline locally
 
 format: ## Format every file with Prettier
@@ -87,4 +90,4 @@ format: ## Format every file with Prettier
 dev-gateway: keys ## Run the gateway with reload on :4000
 	$(BACKEND) npm run dev -w @bazaar/gateway
 
-.PHONY: help env install keys dev-gateway up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build ci format
+.PHONY: help env install keys dev-gateway up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format

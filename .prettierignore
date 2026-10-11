@@ -7,3 +7,5 @@ coverage
 cdk.out
 package-lock.json
 *.md
+# Generated files: compared byte-for-byte in CI, never reformatted.
+backend/openapi

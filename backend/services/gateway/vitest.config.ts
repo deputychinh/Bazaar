@@ -9,6 +9,7 @@ export default mergeConfig(shared, {
       exclude: [
         'src/**/*.module.ts',
         'src/openapi.ts',
+        'src/app.setup.ts',
         'src/infrastructure/**',
         'src/**/prisma-*.ts',
       ],

@@ -33,6 +33,11 @@ jobs:
       - run: npm test
       - name: Kafka topics match contracts
         run: node ../scripts/check-topics.mjs
+      - name: Generated files are up to date (OpenAPI, schema.sql)
+        run: |
+          npm run openapi -w @bazaar/gateway
+          npm run db:schema-sql -w @bazaar/gateway
+          git diff --exit-code -- openapi db
       - run: npm audit --omit=dev --audit-level=high
 
   integration:
@@ -49,11 +54,17 @@ jobs:
       - name: Start infrastructure
         run: |
           cp .env.example .env
+          make keys
           docker compose up -d --wait --wait-timeout 300 mysql mongo redis kafka storage
           docker compose run --rm --no-deps kafka-init
           docker compose run --rm --no-deps storage-init
-      - run: npm ci && npm run build && npm run test:int
+      - name: Migrate and run integration tests
         working-directory: backend
+        run: |
+          npm ci && npm run build
+          set -a && source ../.env && set +a
+          npm run migrate --workspaces --if-present
+          npm run test:int
       - name: Infrastructure logs on failure
         if: failure()
         run: docker compose logs --tail 200

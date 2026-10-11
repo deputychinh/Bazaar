@@ -44,4 +44,10 @@ describe('ApiZodBody / ApiZodResponse', () => {
     });
     await app.close();
   });
+
+  it('rejects a recursive schema without an id, since its definition name would collide', () => {
+    const tree: z.ZodType = z.lazy(() => z.object({ children: z.array(tree) }));
+
+    expect(() => ApiZodResponse(200, tree)).toThrow(/meta\(\{ id/);
+  });
 });

@@ -299,48 +299,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/__schema0"
-                  },
-                  "definitions": {
-                    "__schema0": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "slug": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "object",
-                          "properties": {
-                            "en": {
-                              "type": "string"
-                            },
-                            "vi": {
-                              "type": "string"
-                            }
-                          },
-                          "required": [
-                            "en"
-                          ],
-                          "additionalProperties": false
-                        },
-                        "children": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/definitions/__schema0"
-                          }
-                        }
-                      },
-                      "required": [
-                        "id",
-                        "slug",
-                        "name",
-                        "children"
-                      ],
-                      "additionalProperties": false
-                    }
+                    "$ref": "#/components/schemas/CategoryResponse"
                   }
                 }
               }
@@ -3511,6 +3470,46 @@
         "type": "http"
       }
     },
-    "schemas": {}
+    "schemas": {
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "properties": {
+              "en": {
+                "type": "string"
+              },
+              "vi": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "en"
+            ],
+            "additionalProperties": false
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryResponse"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "children"
+        ],
+        "additionalProperties": false
+      }
+    }
   }
 }

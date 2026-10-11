@@ -7,8 +7,12 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { ReactElement } from 'react';
 
+import { getUsdToVnd } from '@/api/fx.server';
 import type { Locale } from '@/api/gateway.schema';
+import { Footer } from '@/components/Footer/Footer';
+import { Header } from '@/components/Header/Header';
 import { serverEnv } from '@/config/env.server';
+import { CurrencyProvider } from '@/features/currency/CurrencyProvider';
 import { pageLocale } from '@/i18n/page-locale';
 import { routing } from '@/i18n/routing';
 import { localizedAlternates } from '@/utils/alternates.util';
@@ -34,14 +38,23 @@ const LocaleLayout = async ({
   params,
 }: LayoutProps<'/[locale]'>): Promise<ReactElement> => {
   const locale = await pageLocale(params);
-  const t = await getTranslations({ locale, namespace: 'common' });
+  const [t, usdToVnd] = await Promise.all([
+    getTranslations({ locale, namespace: 'common' }),
+    getUsdToVnd(),
+  ]);
   return (
     <html lang={locale}>
       <body>
         <a className="skip-link" href="#main">
           {t('skipToContent')}
         </a>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <CurrencyProvider locale={locale} usdToVnd={usdToVnd}>
+            <Header />
+            {children}
+            <Footer />
+          </CurrencyProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

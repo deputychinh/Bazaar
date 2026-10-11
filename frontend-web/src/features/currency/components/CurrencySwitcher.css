@@ -1,0 +1,9 @@
+.currency-switcher__select {
+  min-block-size: var(--size-touch-target);
+  padding: var(--padding-control-sm);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-md);
+}

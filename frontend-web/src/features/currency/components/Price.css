@@ -1,0 +1,9 @@
+.price {
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.price--large {
+  font-size: var(--text-2xl);
+}

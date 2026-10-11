@@ -37,5 +37,34 @@
     "PAYMENT_FAILED": "The payment did not go through.",
     "UPSTREAM_UNAVAILABLE": "This part of the site is temporarily unavailable. Please try again.",
     "INTERNAL": "Something went wrong. Please try again."
+  },
+  "nav": {
+    "label": "Main",
+    "shop": "Shop",
+    "sell": "Sell on Bazaar",
+    "cart": "Cart"
+  },
+  "currency": {
+    "label": "Currency",
+    "USD": "USD ($)",
+    "VND": "VND (₫)",
+    "approximate": "VND prices are approximate; you are charged in USD."
+  },
+  "footer": {
+    "label": "Footer",
+    "about": "About",
+    "pricing": "Pricing",
+    "sell": "Sell on Bazaar",
+    "note": "Prices in VND are indicative. Every order is charged in USD."
+  },
+  "product": {
+    "outOfStock": "Out of stock",
+    "ratingLabel": "Rated {average} out of 5 by {count} buyers"
+  },
+  "pagination": {
+    "label": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {number}"
   }
 }

@@ -37,5 +37,34 @@
     "PAYMENT_FAILED": "Thanh toán không thành công.",
     "UPSTREAM_UNAVAILABLE": "Phần này của trang tạm thời gián đoạn. Vui lòng thử lại.",
     "INTERNAL": "Đã có lỗi xảy ra. Vui lòng thử lại."
+  },
+  "nav": {
+    "label": "Chính",
+    "shop": "Mua sắm",
+    "sell": "Bán hàng trên Bazaar",
+    "cart": "Giỏ hàng"
+  },
+  "currency": {
+    "label": "Tiền tệ",
+    "USD": "USD ($)",
+    "VND": "VND (₫)",
+    "approximate": "Giá VND là giá quy đổi tham khảo; bạn được tính tiền bằng USD."
+  },
+  "footer": {
+    "label": "Chân trang",
+    "about": "Giới thiệu",
+    "pricing": "Bảng phí",
+    "sell": "Bán hàng trên Bazaar",
+    "note": "Giá VND chỉ mang tính tham khảo. Mọi đơn hàng được tính bằng USD."
+  },
+  "product": {
+    "outOfStock": "Hết hàng",
+    "ratingLabel": "Được {count} người mua đánh giá {average} trên 5"
+  },
+  "pagination": {
+    "label": "Phân trang",
+    "previous": "Trang trước",
+    "next": "Trang sau",
+    "page": "Trang {number}"
   }
 }

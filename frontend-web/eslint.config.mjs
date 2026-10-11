@@ -123,7 +123,7 @@ export default defineConfig(
     rules: { 'no-restricted-syntax': restrictAllExcept('interface', 'typeAlias') },
   },
   { files: ['**/*.constant.ts'], rules: { 'no-restricted-syntax': restrictAllExcept('constant') } },
-  { files: ['src/config/**/*.ts'], rules: { 'no-restricted-properties': 'off' } },
+  { files: ['src/config/**/*.ts', 'next.config.ts'], rules: { 'no-restricted-properties': 'off' } },
   {
     files: ['**/*.test.{ts,tsx}', 'vitest.*.ts'],
     rules: {

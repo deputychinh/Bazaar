@@ -1,0 +1,27 @@
+.footer {
+  background: var(--color-surface);
+  border-block-start: 1px solid var(--color-border);
+  margin-block-start: var(--space-16);
+}
+
+.footer__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-stack);
+  padding-block: var(--space-8);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.footer__link {
+  color: var(--color-text-muted);
+}
+
+.footer__note {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

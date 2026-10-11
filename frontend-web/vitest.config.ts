@@ -27,6 +27,7 @@ export default defineConfig({
         'src/**/*.constant.ts',
         'src/**/*.enum.ts',
         'src/**/*.interface.ts',
+        'src/test-utils/**',
       ],
       thresholds: { lines: 80 },
     },

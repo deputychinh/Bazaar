@@ -4,7 +4,7 @@ A production-style fullstack project run entirely on a laptop: **React with thre
 (SSG · SSR · SPA)**, **NestJS services talking over Kafka**, **MySQL + MongoDB + Redis**, shipped with
 **Docker** and **Kubernetes** (kind), with the AWS production environment written in **CDK**.
 
-> Status: **P1 Identity + gateway done** · next: P2 Catalog. Full plan: [`docs/plan.md`](docs/plan.md) ·
+> Status: **P2 Catalog done** · next: P3 Customer site (Next.js). Full plan: [`docs/plan.md`](docs/plan.md) ·
 > backlog: [`docs/backlog.md`](docs/backlog.md).
 
 ## Stack
@@ -43,10 +43,12 @@ make up          # MySQL, MongoDB, Redis, Kafka (+ topics), Kafka UI, object sto
 make ci          # lint, typecheck, unit tests, build
 make test-int    # integration tests against the running infrastructure
 make dev-gateway # gateway on http://localhost:4000 (API docs: /api/docs)
+make dev-catalog # catalog on http://localhost:4010, also reachable through the gateway
 make help        # every command
 ```
 
-Demo accounts (after `make migrate seed`), password **`Bazaar@2026!`**: `admin@bazaar.test`,
+Demo data: `make migrate db-schema seed` loads 7 accounts, 13 categories, 3 shops and 1,000 bilingual products.
+Demo accounts, password **`Bazaar@2026!`**: `admin@bazaar.test`,
 `seller.minh@bazaar.test`, `seller.anna@bazaar.test`, `shopper.linh@bazaar.test`, `shopper.tom@bazaar.test`.
 
 | Local tool | URL |

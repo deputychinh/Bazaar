@@ -1,4 +1,4 @@
-import { OpenApiDefinitionsUtil } from '@bazaar/nest-common';
+import { OpenApiDefinitionsUtil, OpenApiProblemDetailsUtil } from '@bazaar/nest-common';
 import type { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, type OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 
@@ -13,6 +13,8 @@ export class ApiDocumentFactory {
       .setVersion('1')
       .addBearerAuth()
       .build();
-    return OpenApiDefinitionsUtil.hoist(SwaggerModule.createDocument(app, config));
+    return OpenApiDefinitionsUtil.hoist(
+      OpenApiProblemDetailsUtil.attach(SwaggerModule.createDocument(app, config)),
+    );
   }
 }

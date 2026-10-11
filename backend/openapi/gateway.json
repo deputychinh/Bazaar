@@ -8,6 +8,16 @@
         "responses": {
           "200": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -22,6 +32,16 @@
         "responses": {
           "200": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -36,6 +56,16 @@
         "responses": {
           "200": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -122,6 +152,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -156,6 +196,16 @@
         "responses": {
           "204": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -188,6 +238,16 @@
         "responses": {
           "202": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -285,6 +345,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -358,6 +428,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -372,6 +452,16 @@
         "responses": {
           "204": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -404,6 +494,16 @@
         "responses": {
           "202": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -444,6 +544,16 @@
         "responses": {
           "204": {
             "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -495,6 +605,16 @@
                     "createdAt"
                   ],
                   "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -583,6 +703,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -648,6 +778,16 @@
                     ],
                     "additionalProperties": false
                   }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -766,6 +906,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -837,6 +987,16 @@
                     "createdAt"
                   ],
                   "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -934,6 +1094,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -995,6 +1165,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1025,6 +1205,58 @@
       }
     },
     "schemas": {
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "traceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "VALIDATION_FAILED",
+          "UNAUTHENTICATED",
+          "FORBIDDEN",
+          "NOT_FOUND",
+          "CONFLICT",
+          "RATE_LIMITED",
+          "INVALID_EVENT",
+          "EMAIL_ALREADY_REGISTERED",
+          "INVALID_CREDENTIALS",
+          "EMAIL_NOT_VERIFIED",
+          "TOKEN_EXPIRED",
+          "INVALID_TOKEN",
+          "ACCOUNT_SUSPENDED",
+          "OUT_OF_STOCK",
+          "INVALID_ORDER_TRANSITION",
+          "PAYMENT_FAILED",
+          "UPSTREAM_UNAVAILABLE",
+          "INTERNAL"
+        ]
+      },
       "Locale": {
         "type": "string",
         "enum": [

@@ -296,6 +296,17 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ProblemDetails: {
+            code: components["schemas"]["ErrorCode"];
+            message: string;
+            status: number;
+            details?: {
+                [key: string]: unknown;
+            };
+            traceId?: string;
+        };
+        /** @enum {string} */
+        ErrorCode: ErrorCode;
         /** @enum {string} */
         Locale: Locale;
         /** @enum {string} */
@@ -328,6 +339,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     HealthController_ready: {
@@ -345,6 +365,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     JwksController_jwks: {
@@ -361,6 +390,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };
@@ -400,6 +438,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     AuthController_verifyEmail: {
@@ -423,6 +470,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     AuthController_resendVerification: {
@@ -445,6 +501,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };
@@ -486,6 +551,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     AuthController_refresh: {
@@ -519,6 +593,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     AuthController_logout: {
@@ -535,6 +618,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };
@@ -559,6 +651,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     AuthController_resetPassword: {
@@ -582,6 +683,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
             };
         };
     };
@@ -609,6 +719,15 @@ export interface operations {
                         /** Format: date-time */
                         createdAt: string;
                     };
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -646,6 +765,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     SellerApplicationsController_mine: {
@@ -673,6 +801,15 @@ export interface operations {
                         /** Format: date-time */
                         createdAt: string;
                     }[];
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -711,6 +848,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     AdminSellerApplicationsController_approve: {
@@ -740,6 +886,15 @@ export interface operations {
                         /** Format: date-time */
                         createdAt: string;
                     };
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
                 };
             };
         };
@@ -779,6 +934,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
     FxRatesController_current: {
@@ -808,11 +972,40 @@ export interface operations {
                     };
                 };
             };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
         };
     };
 }
 export enum PathsApiV1FxRatesGetResponses200ContentApplicationJsonBase {
     USD = "USD"
+}
+export enum ErrorCode {
+    VALIDATION_FAILED = "VALIDATION_FAILED",
+    UNAUTHENTICATED = "UNAUTHENTICATED",
+    FORBIDDEN = "FORBIDDEN",
+    NOT_FOUND = "NOT_FOUND",
+    CONFLICT = "CONFLICT",
+    RATE_LIMITED = "RATE_LIMITED",
+    INVALID_EVENT = "INVALID_EVENT",
+    EMAIL_ALREADY_REGISTERED = "EMAIL_ALREADY_REGISTERED",
+    INVALID_CREDENTIALS = "INVALID_CREDENTIALS",
+    EMAIL_NOT_VERIFIED = "EMAIL_NOT_VERIFIED",
+    TOKEN_EXPIRED = "TOKEN_EXPIRED",
+    INVALID_TOKEN = "INVALID_TOKEN",
+    ACCOUNT_SUSPENDED = "ACCOUNT_SUSPENDED",
+    OUT_OF_STOCK = "OUT_OF_STOCK",
+    INVALID_ORDER_TRANSITION = "INVALID_ORDER_TRANSITION",
+    PAYMENT_FAILED = "PAYMENT_FAILED",
+    UPSTREAM_UNAVAILABLE = "UPSTREAM_UNAVAILABLE",
+    INTERNAL = "INTERNAL"
 }
 export enum Locale {
     en = "en",

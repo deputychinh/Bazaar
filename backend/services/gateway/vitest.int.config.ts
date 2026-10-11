@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     ...shared.test,
     include: ['test/integration/**/*.int-spec.ts'],
+    setupFiles: ['test/integration/load-env.ts'],
     coverage: { enabled: false },
     testTimeout: 120_000,
     hookTimeout: 60_000,

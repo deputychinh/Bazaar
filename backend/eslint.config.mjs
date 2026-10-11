@@ -136,7 +136,7 @@ export default tseslint.config(
   },
   { files: ['**/*.constant.ts'], rules: { 'no-restricted-syntax': restrictAllExcept('constant') } },
   {
-    files: ['**/main.ts', '**/decorators/**/*.ts'],
+    files: ['**/main.ts', '**/openapi.ts', '**/decorators/**/*.ts'],
     rules: { 'no-restricted-syntax': restrictAllExcept('functionDeclaration', 'arrowFunction') },
   },
   { files: ['**/config/**/*.ts'], rules: { 'no-restricted-properties': 'off' } },
@@ -151,6 +151,8 @@ export default tseslint.config(
       // `expect.any()` matchers and supertest's `response.body` are typed as any by design.
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
     },
   },

@@ -80,7 +80,7 @@ build: ## Build every backend package
 	$(BACKEND) npm run build
 
 openapi: ## Regenerate backend/openapi/*.json and db/*/schema.sql
-	$(BACKEND) npm run build && npm run openapi -w @bazaar/gateway && npm run openapi -w @bazaar/catalog && npm run openapi -w @bazaar/order && npm run db:schema-sql -w @bazaar/gateway && npm run db:schema-sql -w @bazaar/order
+	$(BACKEND) npm run build && npm run openapi -w @bazaar/gateway && npm run openapi -w @bazaar/catalog && npm run openapi -w @bazaar/order && npm run openapi -w @bazaar/notification && npm run db:schema-sql -w @bazaar/gateway && npm run db:schema-sql -w @bazaar/order
 
 ci: lint typecheck test build ## Run the CI pipeline locally
 
@@ -96,4 +96,7 @@ dev-catalog: ## Run the catalog service with reload on :4010
 dev-order: ## Run the order service with reload on :4020
 	$(BACKEND) npm run dev -w @bazaar/order
 
-.PHONY: help env install keys dev-gateway dev-catalog dev-order up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format
+dev-notification: ## Run the notification service with reload on :4030
+	$(BACKEND) npm run dev -w @bazaar/notification
+
+.PHONY: help env install keys dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format

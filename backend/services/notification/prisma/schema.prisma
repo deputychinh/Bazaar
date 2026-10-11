@@ -1,0 +1,57 @@
+// Notification database (bazaar_notification, MongoDB). Collections, validators and indexes
+// (TTL, unique) are defined in backend/db/notification/schema.js — Prisma cannot create them.
+
+generator client {
+  provider = "prisma-client-js"
+  // Per-service output: services share node_modules, so the default location would collide.
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("NOTIFICATION_DATABASE_URL")
+}
+
+/// Who to write to and in which language; kept from identity events (_id = user id).
+model Contact {
+  id              String   @id @map("_id")
+  email           String
+  preferredLocale String
+  updatedAt       DateTime @updatedAt
+
+  @@map("contacts")
+}
+
+/// One message in a user's in-app list; removed after 180 days (TTL index).
+model Notification {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  kind      String
+  orderId   String?
+  data      Json
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("notifications")
+}
+
+/// Every event this service saw, once (_id = event id) — the admin event log (plan F12).
+model EventLogEntry {
+  id          String   @id @map("_id")
+  type        String
+  topic       String
+  aggregateId String
+  occurredAt  DateTime
+  payload     Json
+  recordedAt  DateTime @default(now())
+
+  @@map("event_log")
+}
+
+/// Idempotency for consumed events (plan DS-05); _id is the event id.
+model ProcessedEvent {
+  id          String   @id @map("_id")
+  processedAt DateTime @default(now())
+
+  @@map("processed_events")
+}

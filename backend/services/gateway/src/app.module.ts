@@ -22,6 +22,7 @@ import { RedisModule } from './infrastructure/redis/redis.module.js';
 import './interfaces/express-request.interface.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
+import { SellersModule } from './modules/sellers/sellers.module.js';
 import { TokensModule } from './modules/tokens/tokens.module.js';
 
 @Global()
@@ -45,6 +46,7 @@ export class AppModule {
         OutboxModule,
         TokensModule,
         AuthModule,
+        SellersModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

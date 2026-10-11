@@ -1,6 +1,13 @@
 import { randomUUID } from 'node:crypto';
 
-import { type AnyEventEnvelope, Locale, UserRole, UserStatus } from '@bazaar/contracts';
+import {
+  type AnyEventEnvelope,
+  Locale,
+  type Page,
+  type SellerApplicationStatus,
+  UserRole,
+  UserStatus,
+} from '@bazaar/contracts';
 import { FixedClock } from '@bazaar/nest-common';
 import { exportPKCS8, exportSPKI, generateKeyPair } from 'jose';
 
@@ -8,6 +15,7 @@ import { TransactionManager } from '../../src/common/transaction/transaction-man
 import { AppConfig } from '../../src/config/app-config.js';
 import { gatewayEnvSchema } from '../../src/config/env.schema.js';
 import type { UserTokenPurpose } from '../../src/enums/user-token-purpose.enum.js';
+import type { SellerApplication } from '../../src/interfaces/seller-application.interface.js';
 import type { StoredRefreshToken, StoredUserToken } from '../../src/interfaces/token.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
 import type { NewUser, User } from '../../src/interfaces/user.interface.js';
@@ -21,6 +29,11 @@ import {
   UserTokensRepository,
 } from '../../src/modules/auth/repositories/user-tokens.repository.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
+import {
+  type ListApplicationsOptions,
+  type ReviewOptions,
+  SellerApplicationsRepository,
+} from '../../src/modules/sellers/repositories/seller-applications.repository.js';
 import { AccessTokenService } from '../../src/modules/tokens/services/access-token.service.js';
 import { KeyStore } from '../../src/modules/tokens/services/key-store.js';
 import {
@@ -176,3 +189,53 @@ export const tokenFromLink = (event: AnyEventEnvelope | undefined): string => {
   const link = event !== undefined && 'link' in event.payload ? event.payload.link : '';
   return new URL(link).searchParams.get('token') ?? '';
 };
+
+export class InMemorySellerApplicationsRepository extends SellerApplicationsRepository {
+  public readonly rows: SellerApplication[] = [];
+
+  public create(
+    userId: string,
+    shopName: string,
+    status: SellerApplicationStatus,
+  ): Promise<SellerApplication> {
+    const row: SellerApplication = {
+      // Zero-padded counter keeps ids sortable like UUID v7.
+      id: `app-${String(this.rows.length).padStart(4, '0')}`,
+      userId,
+      shopName,
+      status,
+      reviewedBy: null,
+      reviewedAt: null,
+      rejectionReason: null,
+      createdAt: NOW,
+    };
+    this.rows.push(row);
+    return Promise.resolve(row);
+  }
+
+  public findById(id: string): Promise<SellerApplication | null> {
+    return Promise.resolve(this.rows.find((row) => row.id === id) ?? null);
+  }
+
+  public findByUser(userId: string): Promise<SellerApplication[]> {
+    return Promise.resolve(this.rows.filter((row) => row.userId === userId));
+  }
+
+  public list(options: ListApplicationsOptions): Promise<Page<SellerApplication>> {
+    const matching = [...this.rows]
+      .reverse()
+      .filter((row) => options.status === undefined || row.status === options.status)
+      .filter((row) => options.cursor === undefined || row.id < options.cursor);
+    const items = matching.slice(0, options.limit);
+    return Promise.resolve({
+      items,
+      nextCursor: matching.length > options.limit ? (items.at(-1)?.id ?? null) : null,
+    });
+  }
+
+  public review(id: string, review: ReviewOptions): Promise<SellerApplication> {
+    const row = this.rows.find((application) => application.id === id)!;
+    Object.assign(row, { rejectionReason: null, ...review });
+    return Promise.resolve(row);
+  }
+}

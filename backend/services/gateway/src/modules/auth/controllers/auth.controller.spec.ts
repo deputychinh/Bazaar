@@ -3,17 +3,20 @@ import type { Server } from 'node:http';
 import { ErrorCode, UserStatus } from '@bazaar/contracts';
 import request from 'supertest';
 
-import { type AuthTestApp, createAuthTestApp } from '../../../../test/fakes/auth-test-app.js';
 import { tokenFromLink } from '../../../../test/fakes/auth.fakes.js';
+import {
+  createGatewayTestApp,
+  type GatewayTestApp,
+} from '../../../../test/fakes/gateway-test-app.js';
 
 const PASSWORD = 'Correct-Horse-9';
 
 describe('AuthController (HTTP)', () => {
-  let ctx: AuthTestApp;
+  let ctx: GatewayTestApp;
   let http: () => ReturnType<typeof request>;
 
   beforeEach(async () => {
-    ctx = await createAuthTestApp();
+    ctx = await createGatewayTestApp();
     http = () => request(ctx.app.getHttpServer() as Server);
   });
 

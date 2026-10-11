@@ -1,3 +1,4 @@
+import type { UserRole } from '@bazaar/contracts';
 import {
   AppLoggerModule,
   Clock,
@@ -24,6 +25,10 @@ import { PasswordResetService } from '../../src/modules/auth/services/password-r
 import { RegistrationService } from '../../src/modules/auth/services/registration.service.js';
 import { SessionService } from '../../src/modules/auth/services/session.service.js';
 import { EventOutbox } from '../../src/modules/outbox/event-outbox.js';
+import { AdminSellerApplicationsController } from '../../src/modules/sellers/controllers/admin-seller-applications.controller.js';
+import { SellerApplicationsController } from '../../src/modules/sellers/controllers/seller-applications.controller.js';
+import { SellerApplicationsRepository } from '../../src/modules/sellers/repositories/seller-applications.repository.js';
+import { SellerApplicationsService } from '../../src/modules/sellers/services/seller-applications.service.js';
 import { JwksController } from '../../src/modules/tokens/controllers/jwks.controller.js';
 import { AccessTokenService } from '../../src/modules/tokens/services/access-token.service.js';
 import { KeyStore } from '../../src/modules/tokens/services/key-store.js';
@@ -34,6 +39,7 @@ import {
   FakePasswordHasher,
   ImmediateTransactionManager,
   InMemoryRefreshTokensRepository,
+  InMemorySellerApplicationsRepository,
   InMemoryUsersRepository,
   InMemoryUserTokensRepository,
   NOW,
@@ -41,18 +47,22 @@ import {
   testConfig,
 } from './auth.fakes.js';
 
-export interface AuthTestApp {
+export interface GatewayTestApp {
   app: INestApplication;
   users: InMemoryUsersRepository;
   outbox: RecordingOutbox;
   refreshTokens: InMemoryRefreshTokensRepository;
+  applications: InMemorySellerApplicationsRepository;
+  /** Signs in a seeded user and returns an Authorization header value. */
+  bearerFor: (user: { id: string; email: string; role: UserRole }) => Promise<string>;
 }
 
 /** The real HTTP layer (controllers, guards, pipes, error filter) over in-memory adapters. */
-export const createAuthTestApp = async (): Promise<AuthTestApp> => {
+export const createGatewayTestApp = async (): Promise<GatewayTestApp> => {
   const users = new InMemoryUsersRepository();
   const outbox = new RecordingOutbox();
   const refreshTokens = new InMemoryRefreshTokensRepository();
+  const applications = new InMemorySellerApplicationsRepository();
   const clock = new FixedClock(NOW);
   const tokens = await buildAccessTokenService(clock);
   const moduleRef = await Test.createTestingModule({
@@ -60,12 +70,19 @@ export const createAuthTestApp = async (): Promise<AuthTestApp> => {
       AppLoggerModule.forRoot({ serviceName: 'test', level: LogLevel.Silent, pretty: false }),
       HttpCommonModule,
     ],
-    controllers: [AuthController, JwksController],
+    controllers: [
+      AuthController,
+      JwksController,
+      SellerApplicationsController,
+      AdminSellerApplicationsController,
+    ],
     providers: [
       RegistrationService,
       SessionService,
       PasswordResetService,
       AuthLinkBuilder,
+      SellerApplicationsService,
+      { provide: SellerApplicationsRepository, useValue: applications },
       { provide: AppConfig, useValue: testConfig() },
       { provide: Clock, useValue: clock },
       { provide: KeyStore, useValue: tokens.keys },
@@ -84,5 +101,7 @@ export const createAuthTestApp = async (): Promise<AuthTestApp> => {
   app.use(cookieParser());
   app.setGlobalPrefix(API_PREFIX, { exclude: ['.well-known/jwks.json'] });
   await app.init();
-  return { app, users, outbox, refreshTokens };
+  const bearerFor = async (user: { id: string; email: string; role: UserRole }): Promise<string> =>
+    `Bearer ${(await tokens.service.sign(user)).accessToken}`;
+  return { app, users, outbox, refreshTokens, applications, bearerFor };
 };

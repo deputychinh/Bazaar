@@ -58,7 +58,7 @@ Size: S (< 2 h) · M (half day) · L (1 day+). Status: ☐ todo · ◐ doing · 
 | BZ-038 | Product page (SSR + ISR) | Variants, gallery, stock, shop link, metadata + JSON-LD, revalidate endpoint protected by a secret | M | ☐ |
 | BZ-039 | Cart | Client cart (context + localStorage), cart page with totals in USD cents converted once | M | ☐ |
 | BZ-040 | Account pages | Register, verify email, login, forgot/reset password; access token in memory, refresh cookie same-origin through a rewrite | L | ☐ |
-| BZ-041 | Quality gates | `web.yml` CI (lint, types, tests, build, schema freshness), `check-tokens.mjs`, Lighthouse ≥ 90 on landing and product pages | M | ☐ |
+| BZ-041 | Quality gates | `web.yml` CI (lint, types, tests, build, schema freshness), `check-tokens.mjs`, Lighthouse ≥ 90 on landing and product pages | M | ◐ |
 
 ## P4 — Orders + saga · P5 — Notifications + live status · P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
 Detailed tickets are written at the start of each phase (plan §13).

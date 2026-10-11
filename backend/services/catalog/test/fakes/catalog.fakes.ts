@@ -201,11 +201,11 @@ export class InMemoryProductsRepository extends ProductsRepository {
   }
 
   public findBySlug(slug: string): Promise<Product | null> {
-    return Promise.resolve(this.rows.find((product) => product.slug === slug) ?? null);
+    return Promise.resolve(this.snapshot(this.rows.find((product) => product.slug === slug)));
   }
 
   public findById(id: string): Promise<Product | null> {
-    return Promise.resolve(this.rows.find((product) => product.id === id) ?? null);
+    return Promise.resolve(this.snapshot(this.rows.find((product) => product.id === id)));
   }
 
   public findBySeller(criteria: SellerProductsCriteria): Promise<ProductPage> {
@@ -253,6 +253,10 @@ export class InMemoryProductsRepository extends ProductsRepository {
     Object.assign(row, changes);
     // Like a real database: callers get a snapshot, not the stored object.
     return Promise.resolve({ ...row });
+  }
+
+  private snapshot(product: Product | undefined): Product | null {
+    return product === undefined ? null : { ...product };
   }
 
   /** Same rule as the unique index on variants.sku. */

@@ -1,0 +1,14 @@
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-inline);
+  align-items: center;
+}
+
+.cluster--between {
+  justify-content: space-between;
+}
+
+.cluster--loose {
+  gap: var(--space-4);
+}

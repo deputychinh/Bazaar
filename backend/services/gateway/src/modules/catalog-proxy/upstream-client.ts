@@ -44,7 +44,7 @@ export class UpstreamClient {
         'upstream unavailable',
       );
       throw new UpstreamUnavailableError(
-        'The catalog is temporarily unavailable, please try again',
+        'This part of Bazaar is temporarily unavailable, please try again',
       );
     }
     const forwardedHeaders: Record<string, string> = {};

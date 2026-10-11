@@ -8,7 +8,8 @@ import type {
   OrderTransition,
   SellerOrderTransition,
 } from '../../../interfaces/order-transition.interface.js';
-import type { NewOrder, Order } from '../../../interfaces/order.interface.js';
+import type { NewOrder, Order, SellerOrder } from '../../../interfaces/order.interface.js';
+import type { PageRequest } from '../../../interfaces/page-request.interface.js';
 import type { Transaction } from '../../../interfaces/transaction.interface.js';
 import { OrderStateMachine } from '../domain/order-state-machine.js';
 import { DuplicateIdempotencyKeyError } from '../errors/duplicate-idempotency-key.error.js';
@@ -149,6 +150,58 @@ export class PrismaOrdersRepository extends OrdersRepository {
     transaction: Transaction,
   ): Promise<void> {
     await transaction.payment.update({ where: { orderId }, data: payment });
+  }
+
+  public async findByShopper(
+    shopperId: string,
+    page: PageRequest,
+  ): Promise<{ items: Order[]; total: number }> {
+    const where = { shopperId };
+    const [rows, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page.page - 1) * page.pageSize,
+        take: page.pageSize,
+        include: WITH_DETAILS,
+      }),
+      this.prisma.order.count({ where }),
+    ]);
+    return { items: rows.map((row) => OrderMapper.toDomain(row)), total };
+  }
+
+  public async findBySellerOrderId(sellerOrderId: string): Promise<Order | null> {
+    const row = await this.prisma.order.findFirst({
+      where: { sellerOrders: { some: { id: sellerOrderId } } },
+      include: WITH_DETAILS,
+    });
+    return row === null ? null : OrderMapper.toDomain(row);
+  }
+
+  public async findSellerOrders(
+    sellerId: string,
+    filter: { status?: SellerOrderStatus } & PageRequest,
+  ): Promise<{ items: SellerOrder[]; total: number }> {
+    // Seller orders appear once the order is confirmed (PENDING ones are not the seller's yet).
+    const where: Prisma.SellerOrderWhereInput = {
+      sellerId,
+      status: filter.status ?? { not: SellerOrderStatus.Pending },
+    };
+    const [rows, total] = await Promise.all([
+      this.prisma.sellerOrder.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (filter.page - 1) * filter.pageSize,
+        take: filter.pageSize,
+        include: { items: true, order: { include: WITH_DETAILS } },
+      }),
+      this.prisma.sellerOrder.count({ where }),
+    ]);
+    const items = rows.map((row) => {
+      const order = OrderMapper.toDomain(row.order);
+      return order.sellerOrders.find((sellerOrder) => sellerOrder.id === row.id) as SellerOrder;
+    });
+    return { items, total };
   }
 
   public async findStale(statuses: OrderStatus[], before: Date, limit: number): Promise<Order[]> {

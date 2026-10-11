@@ -80,6 +80,7 @@ export const sellerOrderViewSchema = z
     shippedAt: timestamp.nullable(),
     deliveredAt: timestamp.nullable(),
     cancelledAt: timestamp.nullable(),
+    createdAt: timestamp,
     items: z.array(orderItemViewSchema),
   })
   .meta({ id: 'SellerOrder' });

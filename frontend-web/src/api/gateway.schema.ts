@@ -379,6 +379,8 @@ export interface components {
             deliveredAt: string | null;
             /** Format: date-time */
             cancelledAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
             items: {
                 id: string;
                 productId: string;

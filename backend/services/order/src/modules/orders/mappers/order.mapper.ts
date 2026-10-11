@@ -2,6 +2,7 @@ import {
   CancelReason,
   type LocalizedText,
   type OrderView,
+  type SellerOrderView,
   OrderStatus,
   PaymentStatus,
   SellerOrderStatus,
@@ -9,7 +10,7 @@ import {
 import { EnumUtil } from '@bazaar/nest-common';
 
 import type { OrderRow } from '../../../interfaces/order-row.interface.js';
-import type { Order } from '../../../interfaces/order.interface.js';
+import type { Order, SellerOrder } from '../../../interfaces/order.interface.js';
 
 /** Database rows ⇄ domain ⇄ API view; enum columns are validated on the way in (DS-01). */
 export class OrderMapper {
@@ -47,6 +48,7 @@ export class OrderMapper {
         shippedAt: sellerOrder.shippedAt,
         deliveredAt: sellerOrder.deliveredAt,
         cancelledAt: sellerOrder.cancelledAt,
+        createdAt: sellerOrder.createdAt,
         items: sellerOrder.items.map((item) => ({
           id: item.id,
           productId: item.productId,
@@ -73,21 +75,29 @@ export class OrderMapper {
         order.payment === null
           ? null
           : { status: order.payment.status, cardLast4: order.payment.cardLast4 },
-      sellerOrders: order.sellerOrders.map((sellerOrder) => ({
-        id: sellerOrder.id,
-        orderId: sellerOrder.orderId,
-        sellerId: sellerOrder.sellerId,
-        shop: { id: sellerOrder.shopId, name: sellerOrder.shopName },
-        status: sellerOrder.status,
-        subtotalUsdCents: sellerOrder.subtotalUsdCents,
-        cancelReason: sellerOrder.cancelReason,
-        shippedAt: sellerOrder.shippedAt?.toISOString() ?? null,
-        deliveredAt: sellerOrder.deliveredAt?.toISOString() ?? null,
-        cancelledAt: sellerOrder.cancelledAt?.toISOString() ?? null,
-        items: sellerOrder.items.map((item) => ({ ...item })),
-      })),
+      sellerOrders: order.sellerOrders.map((sellerOrder) =>
+        OrderMapper.toSellerOrderView(sellerOrder),
+      ),
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),
+    };
+  }
+
+  /** One seller's part, as both the shopper and that seller see it. */
+  public static toSellerOrderView(sellerOrder: SellerOrder): SellerOrderView {
+    return {
+      id: sellerOrder.id,
+      orderId: sellerOrder.orderId,
+      sellerId: sellerOrder.sellerId,
+      shop: { id: sellerOrder.shopId, name: sellerOrder.shopName },
+      status: sellerOrder.status,
+      subtotalUsdCents: sellerOrder.subtotalUsdCents,
+      cancelReason: sellerOrder.cancelReason,
+      shippedAt: sellerOrder.shippedAt?.toISOString() ?? null,
+      deliveredAt: sellerOrder.deliveredAt?.toISOString() ?? null,
+      cancelledAt: sellerOrder.cancelledAt?.toISOString() ?? null,
+      createdAt: sellerOrder.createdAt.toISOString(),
+      items: sellerOrder.items.map((item) => ({ ...item })),
     };
   }
 

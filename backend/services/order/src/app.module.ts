@@ -20,6 +20,7 @@ import type { OrderEnv } from './config/env.schema.js';
 import { PrismaHealthIndicator } from './infrastructure/prisma/prisma-health.indicator.js';
 import { PrismaModule } from './infrastructure/prisma/prisma.module.js';
 import { EventsModule } from './modules/events/events.module.js';
+import { FulfilmentModule } from './modules/fulfilment/fulfilment.module.js';
 import { OrdersModule } from './modules/orders/orders.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { PaymentsModule } from './modules/payments/payments.module.js';
@@ -54,6 +55,7 @@ export class AppModule {
         PaymentsModule,
         OrdersModule,
         SagaModule,
+        FulfilmentModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

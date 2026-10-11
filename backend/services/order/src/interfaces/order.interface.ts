@@ -30,6 +30,7 @@ export interface SellerOrder {
   shippedAt: Date | null;
   deliveredAt: Date | null;
   cancelledAt: Date | null;
+  createdAt: Date;
   items: OrderItem[];
 }
 

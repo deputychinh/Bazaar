@@ -1,10 +1,11 @@
-import type { OrderStatus } from '@bazaar/contracts';
+import type { OrderStatus, SellerOrderStatus } from '@bazaar/contracts';
 
 import type {
   OrderTransition,
   SellerOrderTransition,
 } from '../../../interfaces/order-transition.interface.js';
-import type { NewOrder, Order } from '../../../interfaces/order.interface.js';
+import type { NewOrder, Order, SellerOrder } from '../../../interfaces/order.interface.js';
+import type { PageRequest } from '../../../interfaces/page-request.interface.js';
 import type { Transaction } from '../../../interfaces/transaction.interface.js';
 
 export abstract class OrdersRepository {
@@ -17,6 +18,19 @@ export abstract class OrdersRepository {
   public abstract findById(id: string, transaction?: Transaction): Promise<Order | null>;
 
   public abstract findByIdempotencyKey(shopperId: string, key: string): Promise<Order | null>;
+
+  public abstract findByShopper(
+    shopperId: string,
+    page: PageRequest,
+  ): Promise<{ items: Order[]; total: number }>;
+
+  /** The order that contains this seller order. */
+  public abstract findBySellerOrderId(sellerOrderId: string): Promise<Order | null>;
+
+  public abstract findSellerOrders(
+    sellerId: string,
+    filter: { status?: SellerOrderStatus } & PageRequest,
+  ): Promise<{ items: SellerOrder[]; total: number }>;
 
   /** False when the order already left every allowed source status (someone else moved it). */
   public abstract transition(change: OrderTransition, transaction: Transaction): Promise<boolean>;

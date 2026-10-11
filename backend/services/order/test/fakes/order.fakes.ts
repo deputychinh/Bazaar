@@ -22,7 +22,8 @@ import type {
   OrderTransition,
   SellerOrderTransition,
 } from '../../src/interfaces/order-transition.interface.js';
-import type { NewOrder, Order } from '../../src/interfaces/order.interface.js';
+import type { NewOrder, Order, SellerOrder } from '../../src/interfaces/order.interface.js';
+import type { PageRequest } from '../../src/interfaces/page-request.interface.js';
 import type { Transaction } from '../../src/interfaces/transaction.interface.js';
 import { OrderStateMachine } from '../../src/modules/orders/domain/order-state-machine.js';
 import { DuplicateIdempotencyKeyError } from '../../src/modules/orders/errors/duplicate-idempotency-key.error.js';
@@ -133,6 +134,7 @@ export class InMemoryOrdersRepository extends OrdersRepository {
         shippedAt: null,
         deliveredAt: null,
         cancelledAt: null,
+        createdAt: NOW,
         items: sellerOrder.items.map((item) => ({ ...item, id: randomUUID() })),
       })),
     };
@@ -213,5 +215,45 @@ export class InMemoryOrdersRepository extends OrdersRepository {
   public force(orderId: string, status: OrderStatus): void {
     const order = this.rows.find((row) => row.id === orderId);
     if (order !== undefined) order.status = status;
+  }
+
+  public findByShopper(
+    shopperId: string,
+    page: PageRequest,
+  ): Promise<{ items: Order[]; total: number }> {
+    const mine = this.rows.filter((row) => row.shopperId === shopperId).reverse();
+    const start = (page.page - 1) * page.pageSize;
+    return Promise.resolve({
+      items: mine.slice(start, start + page.pageSize).map((row) => structuredClone(row)),
+      total: mine.length,
+    });
+  }
+
+  public findBySellerOrderId(sellerOrderId: string): Promise<Order | null> {
+    const row = this.rows.find((candidate) =>
+      candidate.sellerOrders.some((sellerOrder) => sellerOrder.id === sellerOrderId),
+    );
+    return Promise.resolve(row === undefined ? null : structuredClone(row));
+  }
+
+  public findSellerOrders(
+    sellerId: string,
+    filter: { status?: SellerOrderStatus } & PageRequest,
+  ): Promise<{ items: SellerOrder[]; total: number }> {
+    const matching = this.rows
+      .flatMap((row) => row.sellerOrders)
+      .filter((sellerOrder) => sellerOrder.sellerId === sellerId)
+      .filter((sellerOrder) =>
+        filter.status === undefined
+          ? sellerOrder.status !== SellerOrderStatus.Pending
+          : sellerOrder.status === filter.status,
+      );
+    const start = (filter.page - 1) * filter.pageSize;
+    return Promise.resolve({
+      items: matching
+        .slice(start, start + filter.pageSize)
+        .map((sellerOrder) => structuredClone(sellerOrder)),
+      total: matching.length,
+    });
   }
 }

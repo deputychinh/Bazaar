@@ -13,7 +13,7 @@ set -a; source "$ROOT/.env"; set +a
 MYSQL_DATABASES=(identity order)
 MONGO_DATABASES=(catalog notification)
 
-mysql_exec() { "${COMPOSE[@]}" exec -T mysql mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$@"; }
+mysql_exec() { "${COMPOSE[@]}" exec -T -e MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql mysql -uroot "$@"; }
 mongo_exec() { "${COMPOSE[@]}" exec -T mongo mongosh --quiet "$@"; }
 
 case "${1:-}" in

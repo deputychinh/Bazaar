@@ -21,3 +21,9 @@ vi.mock('@/i18n/navigation', () => ({
   usePathname: () => '/p/non-la',
   useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
 }));
+
+// No test reaches the network: the default gateway answers 401 (anonymous visitor).
+beforeEach(async () => {
+  const { mockGateway } = await import('@/test-utils/gateway-mock');
+  mockGateway();
+});

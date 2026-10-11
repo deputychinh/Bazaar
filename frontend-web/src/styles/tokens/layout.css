@@ -3,4 +3,7 @@
   --container-narrow: 720px;
   --header-height: 64px;
   --sidebar-width: 248px;
+
+  /* WCAG 2.2 target size (AAA 44px) for buttons and inputs. */
+  --size-touch-target: 44px;
 }

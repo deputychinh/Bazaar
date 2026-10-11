@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import type { ReactElement } from 'react';
 
 import { Locale } from '@/api/gateway.schema';
+import { AuthProvider } from '@/features/auth/AuthProvider';
 import { CartProvider } from '@/features/cart/CartProvider';
 import { CurrencyProvider } from '@/features/currency/CurrencyProvider';
 import en from '@/i18n/messages/en.json';
@@ -25,7 +26,9 @@ export const renderWithProviders = (
       timeZone="Asia/Ho_Chi_Minh"
     >
       <CurrencyProvider locale={locale} usdToVnd={usdToVnd}>
-        <CartProvider>{ui}</CartProvider>
+        <AuthProvider>
+          <CartProvider>{ui}</CartProvider>
+        </AuthProvider>
       </CurrencyProvider>
     </NextIntlClientProvider>,
   );

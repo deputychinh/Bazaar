@@ -25,6 +25,12 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
   WEB_APP_URL: z.url().default('http://localhost:3100'),
   CORS_ORIGINS: commaList.default(['http://localhost:3100', 'http://localhost:3200']),
   COOKIE_SECURE: z.stringbool().default(false),
+  /**
+   * Proxy hops whose X-Forwarded-For is trusted (Express "trust proxy"); 0 = socket address.
+   * Count only proxies that append the client IP (ingress-nginx). The Next rewrite does not — it
+   * passes a client-sent header through — so it must not be counted, or clients could spoof IPs.
+   */
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   CATALOG_SERVICE_URL: z.url().default('http://127.0.0.1:4010'),
   FX_PROVIDER: z.enum(FxProviderKind).default(FxProviderKind.Http),
   FX_API_URL: z.url().default('https://open.er-api.com/v6/latest/USD'),

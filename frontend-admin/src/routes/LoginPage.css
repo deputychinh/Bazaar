@@ -1,0 +1,19 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--space-16);
+}
+
+.login-page__card {
+  inline-size: 100%;
+  max-inline-size: 400px;
+  padding: var(--padding-card);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.login-page__title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+}

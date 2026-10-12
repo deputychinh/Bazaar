@@ -6,3 +6,12 @@ import { server } from '@/test-utils/msw-server';
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+// Every test starts with a fresh, signed-out session store.
+afterEach(async () => {
+  const { resetAuthStore } = await import('@/features/auth/auth-store');
+  const { signOutEverywhere } = await import('@/test-utils/session');
+  resetAuthStore();
+  signOutEverywhere();
+  window.localStorage.clear();
+});

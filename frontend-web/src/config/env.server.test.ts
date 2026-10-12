@@ -18,5 +18,6 @@ describe('parseServerEnv', () => {
     expect(() => parseServerEnv({ API_BASE_URL: 'not a url' })).toThrow(/API_BASE_URL/);
     expect(() => parseServerEnv({ SITE_URL: 'nope' })).toThrow(/SITE_URL/);
     expect(() => parseServerEnv({ REVALIDATE_SECRET: 'short' })).toThrow(/REVALIDATE_SECRET/);
+    expect(parseServerEnv({ REVALIDATE_SECRET: '' }).REVALIDATE_SECRET).toBeUndefined();
   });
 });

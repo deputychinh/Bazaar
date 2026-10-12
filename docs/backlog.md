@@ -91,7 +91,7 @@ order changes to the shopper over SSE.
 | BZ-053 | In-app notifications | Notification per order event for shopper and seller; `GET /notifications` (mine, unread count), mark one / all read; proxied by the gateway; web bell with unread badge | M | ☑ |
 | BZ-054 | Live order status (SSE) | Gateway reads `order.events` with a per-pod consumer group and streams the signed-in shopper's order changes (`GET /api/v1/orders/stream`); order page updates live, polling only as fallback | M | ☑ |
 | BZ-055 | Reviews | Catalog learns deliveries from `SellerOrderDelivered`; shopper reviews a delivered product once; rating summary recomputed with `RatingUpdated`; product page lists reviews and offers the form when allowed | L | ☑ |
-| BZ-056 | Event log + ISR hook | Admin `GET /admin/events` (filter by type / aggregate); product changes and new ratings revalidate the product page on the web (shared secret) | S | ☐ |
+| BZ-056 | Event log + ISR hook | Admin `GET /admin/events` (filter by type / aggregate); product changes and new ratings revalidate the product page on the web (shared secret) | S | ☑ |
 
 ## P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
 Detailed tickets are written at the start of each phase (plan §13).

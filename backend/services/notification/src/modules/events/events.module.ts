@@ -10,6 +10,7 @@ import { EmailSender } from '../emails/senders/email-sender.js';
 import { SmtpEmailSender } from '../emails/senders/smtp-email-sender.js';
 import { EmailRelayService } from '../emails/services/email-relay.service.js';
 import { EmailReaction } from '../emails/services/email.reaction.js';
+import { AdminEventsController } from '../event-log/controllers/admin-events.controller.js';
 import { EventLogRepository } from '../event-log/repositories/event-log.repository.js';
 import { PrismaEventLogRepository } from '../event-log/repositories/prisma-event-log.repository.js';
 import { EventLogReaction } from '../event-log/services/event-log.reaction.js';
@@ -20,6 +21,9 @@ import { InAppReaction } from '../in-app/services/in-app.reaction.js';
 import { OrderSummariesRepository } from '../order-summaries/repositories/order-summaries.repository.js';
 import { PrismaOrderSummariesRepository } from '../order-summaries/repositories/prisma-order-summaries.repository.js';
 import { OrderSummaryReaction } from '../order-summaries/services/order-summary.reaction.js';
+import { HttpWebRevalidator } from '../revalidation/http-web-revalidator.js';
+import { RevalidationReaction } from '../revalidation/revalidation.reaction.js';
+import { WebRevalidator } from '../revalidation/web-revalidator.js';
 
 import { AllEventReactions } from './all-event-reactions.js';
 import { EventConsumerRunner } from './event-consumer.runner.js';
@@ -28,9 +32,11 @@ import { PrismaProcessedEventStore } from './prisma-processed-event.store.js';
 
 /** Event consumption: one pipeline per event type running every reaction once. */
 @Module({
-  controllers: [NotificationsController],
+  controllers: [NotificationsController, AdminEventsController],
   providers: [
     InAppReaction,
+    RevalidationReaction,
+    { provide: WebRevalidator, useClass: HttpWebRevalidator },
     { provide: NotificationsRepository, useClass: PrismaNotificationsRepository },
     PrismaProcessedEventStore,
     EventConsumerRunner,

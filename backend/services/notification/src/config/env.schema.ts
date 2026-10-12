@@ -22,6 +22,9 @@ export const notificationEnvSchema = baseEnvSchema.extend({
   /** Customer site, for links in emails (order pages). */
   WEB_APP_URL: z.url().default('http://localhost:3100'),
   /** How often queued emails are sent. */
+  /** Web on-demand ISR endpoint and its shared secret; revalidation is off without a secret. */
+  WEB_REVALIDATE_URL: z.url().default('http://localhost:3100/api/revalidate'),
+  REVALIDATE_SECRET: z.string().min(32).optional(),
   EMAIL_RELAY_INTERVAL_MS: z.coerce.number().int().min(200).default(2_000),
 });
 

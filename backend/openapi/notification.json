@@ -174,6 +174,87 @@
           "notifications"
         ]
       }
+    },
+    "/api/v1/admin/events": {
+      "get": {
+        "operationId": "AdminEventsController_search",
+        "parameters": [
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/EventType"
+                }
+              ]
+            }
+          },
+          {
+            "name": "aggregateId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventLogPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
     }
   },
   "info": {
@@ -363,6 +444,98 @@
           "RESERVATION_TIMEOUT",
           "SHOPPER_CANCELLED"
         ]
+      },
+      "EventType": {
+        "type": "string",
+        "enum": [
+          "UserRegistered",
+          "EmailVerificationRequested",
+          "PasswordResetRequested",
+          "SellerApproved",
+          "OrderCreated",
+          "OrderPaid",
+          "OrderConfirmed",
+          "OrderCancelled",
+          "OrderCompleted",
+          "SellerOrderShipped",
+          "SellerOrderDelivered",
+          "SellerOrderCancelled",
+          "StockReserved",
+          "StockRejected",
+          "StockReleased",
+          "ProductPublished",
+          "ProductUpdated",
+          "ProductHidden",
+          "RatingUpdated"
+        ]
+      },
+      "EventLogPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventLogEntry"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      },
+      "EventLogEntry": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "topic": {
+            "type": "string"
+          },
+          "aggregateId": {
+            "type": "string"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "required": [
+          "eventId",
+          "type",
+          "topic",
+          "aggregateId",
+          "occurredAt",
+          "payload"
+        ],
+        "additionalProperties": false
       }
     }
   }

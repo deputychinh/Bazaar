@@ -1,4 +1,4 @@
-import { UserRole } from '@bazaar/contracts';
+import { type EventType, UserRole } from '@bazaar/contracts';
 import {
   type AuthenticatedUser,
   EnumUtil,
@@ -73,6 +73,25 @@ export class InMemoryEventLogRepository extends EventLogRepository {
   public append(entry: EventLogEntry): Promise<void> {
     this.entries.push(entry);
     return Promise.resolve();
+  }
+
+  public search(filter: {
+    type?: EventType;
+    aggregateId?: string;
+    page: number;
+    pageSize: number;
+  }): Promise<{ items: EventLogEntry[]; total: number }> {
+    const matching = this.entries
+      .filter((entry) => filter.type === undefined || entry.type === filter.type)
+      .filter(
+        (entry) => filter.aggregateId === undefined || entry.aggregateId === filter.aggregateId,
+      )
+      .sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime());
+    const start = (filter.page - 1) * filter.pageSize;
+    return Promise.resolve({
+      items: matching.slice(start, start + filter.pageSize),
+      total: matching.length,
+    });
   }
 }
 

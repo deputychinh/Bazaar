@@ -84,6 +84,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminEventsController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -124,6 +140,25 @@ export interface components {
         NotificationKind: NotificationKind;
         /** @enum {string} */
         CancelReason: CancelReason;
+        /** @enum {string} */
+        EventType: EventType;
+        EventLogPage: {
+            items: components["schemas"]["EventLogEntry"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
+        EventLogEntry: {
+            eventId: string;
+            type: components["schemas"]["EventType"];
+            topic: string;
+            aggregateId: string;
+            /** Format: date-time */
+            occurredAt: string;
+            payload: {
+                [key: string]: unknown;
+            };
+        };
     };
     responses: never;
     parameters: never;
@@ -270,6 +305,39 @@ export interface operations {
             };
         };
     };
+    AdminEventsController_search: {
+        parameters: {
+            query?: {
+                type?: components["schemas"]["EventType"];
+                aggregateId?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventLogPage"];
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
 }
 export enum ErrorCode {
     VALIDATION_FAILED = "VALIDATION_FAILED",
@@ -306,4 +374,25 @@ export enum CancelReason {
     PAYMENT_FAILED = "PAYMENT_FAILED",
     RESERVATION_TIMEOUT = "RESERVATION_TIMEOUT",
     SHOPPER_CANCELLED = "SHOPPER_CANCELLED"
+}
+export enum EventType {
+    UserRegistered = "UserRegistered",
+    EmailVerificationRequested = "EmailVerificationRequested",
+    PasswordResetRequested = "PasswordResetRequested",
+    SellerApproved = "SellerApproved",
+    OrderCreated = "OrderCreated",
+    OrderPaid = "OrderPaid",
+    OrderConfirmed = "OrderConfirmed",
+    OrderCancelled = "OrderCancelled",
+    OrderCompleted = "OrderCompleted",
+    SellerOrderShipped = "SellerOrderShipped",
+    SellerOrderDelivered = "SellerOrderDelivered",
+    SellerOrderCancelled = "SellerOrderCancelled",
+    StockReserved = "StockReserved",
+    StockRejected = "StockRejected",
+    StockReleased = "StockReleased",
+    ProductPublished = "ProductPublished",
+    ProductUpdated = "ProductUpdated",
+    ProductHidden = "ProductHidden",
+    RatingUpdated = "RatingUpdated"
 }

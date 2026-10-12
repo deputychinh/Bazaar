@@ -6,7 +6,11 @@ const serverEnvSchema = z.object({
   /** Public origin of this site, for canonical and hreflang URLs. */
   SITE_URL: z.url().default('http://localhost:3100'),
   /** Shared with the catalog service for on-demand ISR; the endpoint is off when unset. */
-  REVALIDATE_SECRET: z.string().min(32).optional(),
+  // An empty variable counts as unset (common in container and CI env files).
+  REVALIDATE_SECRET: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.string().min(32).optional(),
+  ),
 });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;

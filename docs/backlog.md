@@ -93,5 +93,20 @@ order changes to the shopper over SSE.
 | BZ-055 | Reviews | Catalog learns deliveries from `SellerOrderDelivered`; shopper reviews a delivered product once; rating summary recomputed with `RatingUpdated`; product page lists reviews and offers the form when allowed | L | ☑ |
 | BZ-056 | Event log + ISR hook | Admin `GET /admin/events` (filter by type / aggregate); product changes and new ratings revalidate the product page on the web (shared secret) | S | ☑ |
 
-## P6 — Admin site · P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
+## P6 — Admin site (SPA)
+`frontend-admin/` is its own project (Vite, React 19, React Router, TanStack Query, react-i18next) with
+the same conventions as the web (arrow functions, BEM, tokens). It calls `/api` on its own origin, proxied
+to the gateway (Vite dev server locally, the ingress in Kubernetes), so the refresh cookie stays first-party.
+
+| Id | Ticket | Acceptance criteria | Size | Status |
+|---|---|---|---|---|
+| BZ-057 | Admin scaffold | Vite + React 19 + TS strict, React Router, TanStack Query, react-i18next EN/VI; ESLint/Stylelint as the web; tokens identical to the web (`check-tokens.mjs` covers both); Vitest + RTL; API types generated; `admin.yml` CI | M | ☐ |
+| BZ-058 | Auth and shell | Sign-in, in-memory access token, one 401 → refresh → retry path, role-guarded areas (`/seller`, `/platform`, lazy-loaded), layout and navigation, language kept in settings | M | ☐ |
+| BZ-059 | Seller products | List with URL pagination/filter, create and edit with React Hook Form + zod (EN/VI text, variants, stock), publish/unpublish, image upload through a presigned URL | L | ☐ |
+| BZ-060 | Seller orders | Queue by status, ship and deliver actions, list refreshes on its own | M | ☐ |
+| BZ-061 | Stats + dashboards | Order service: seller sales per day and order counts, platform GMV / orders by status / top sellers; seller and platform dashboards with a simple chart | M | ☐ |
+| BZ-062 | Platform admin | Seller applications approve/reject, product moderation list (catalog admin list) with hide/restore, event log viewer | M | ☐ |
+| BZ-063 | Journeys | Playwright: seller (sign in → create product → publish → ship an order) and admin (approve seller → hide product) against the running stack | M | ☐ |
+
+## P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
 Detailed tickets are written at the start of each phase (plan §13).

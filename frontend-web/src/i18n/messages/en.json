@@ -322,5 +322,16 @@
       "NEW_SELLER_ORDER": "New order #{ref} to fulfil",
       "SELLER_ORDER_CANCELLED": "The shopper cancelled your part of order #{ref}"
     }
+  },
+  "reviews": {
+    "title": "Reviews",
+    "loading": "Loading reviews…",
+    "none": "No reviews yet.",
+    "verifiedBuyer": "Verified buyer",
+    "yourRating": "Your rating",
+    "stars": "{count, plural, one {# star} other {# stars}}",
+    "comment": "Your review (optional)",
+    "submit": "Post review",
+    "thanks": "Thank you for your review!"
   }
 }

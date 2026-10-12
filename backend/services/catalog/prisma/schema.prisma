@@ -126,3 +126,28 @@ model StockReservation {
 
   @@map("stock_reservations")
 }
+
+/// A shopper's review of a product they received (plan F11); one per product and shopper.
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  shopperId String
+  rating    Int
+  comment   String
+  locale    String
+  createdAt DateTime @default(now())
+
+  @@unique([productId, shopperId])
+  @@index([productId, createdAt])
+  @@map("reviews")
+}
+
+/// Who may review what: written when a seller order is delivered (_id = "<shopperId>:<productId>").
+model ReviewEligibility {
+  id          String   @id @map("_id")
+  shopperId   String
+  productId   String
+  deliveredAt DateTime
+
+  @@map("review_eligibility")
+}

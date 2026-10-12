@@ -3,6 +3,7 @@ import { EventConsumer } from '@bazaar/nest-common';
 import { Injectable, type OnApplicationBootstrap } from '@nestjs/common';
 
 import { CATALOG_CONSUMER_GROUP } from '../../constants/kafka.constant.js';
+import { SellerOrderDeliveredHandler } from '../reviews/events/seller-order-delivered.handler.js';
 import { SellerApprovedHandler } from '../shops/events/seller-approved.handler.js';
 import { OrderCancelledHandler } from '../stock/events/order-cancelled.handler.js';
 import { OrderCreatedHandler } from '../stock/events/order-created.handler.js';
@@ -17,6 +18,7 @@ export class EventConsumerRunner implements OnApplicationBootstrap {
     private readonly orderCreated: OrderCreatedHandler,
     private readonly orderCancelled: OrderCancelledHandler,
     private readonly sellerOrderCancelled: SellerOrderCancelledHandler,
+    private readonly sellerOrderDelivered: SellerOrderDeliveredHandler,
   ) {}
 
   public async onApplicationBootstrap(): Promise<void> {
@@ -28,6 +30,7 @@ export class EventConsumerRunner implements OnApplicationBootstrap {
         this.orderCreated,
         this.orderCancelled,
         this.sellerOrderCancelled,
+        this.sellerOrderDelivered,
       ],
     });
   }

@@ -152,6 +152,35 @@ ensureCollection('stock_reservations', {
   },
 });
 
+ensureCollection('reviews', {
+  bsonType: 'object',
+  required: ['productId', 'shopperId', 'rating', 'comment', 'locale', 'createdAt'],
+  properties: {
+    productId: { bsonType: 'objectId' },
+    shopperId: { bsonType: 'string' },
+    rating: { bsonType: ['int', 'long'], minimum: 1, maximum: 5 },
+    comment: { bsonType: 'string', maxLength: 1000 },
+    locale: { enum: ['en', 'vi'] },
+    createdAt: { bsonType: 'date' },
+  },
+});
+db.reviews.createIndex(
+  { productId: 1, shopperId: 1 },
+  { unique: true, name: 'reviews_one_per_shopper' },
+);
+db.reviews.createIndex({ productId: 1, createdAt: -1 }, { name: 'reviews_product_newest' });
+
+ensureCollection('review_eligibility', {
+  bsonType: 'object',
+  required: ['_id', 'shopperId', 'productId', 'deliveredAt'],
+  properties: {
+    _id: { bsonType: 'string' },
+    shopperId: { bsonType: 'string' },
+    productId: { bsonType: 'string' },
+    deliveredAt: { bsonType: 'date' },
+  },
+});
+
 db.outbox.createIndex({ sentAt: 1, _id: 1 }, { name: 'outbox_unsent' });
 // Kafka keeps messages 7 days, so remembering processed ids for 30 days is enough.
 db.processed_events.createIndex(

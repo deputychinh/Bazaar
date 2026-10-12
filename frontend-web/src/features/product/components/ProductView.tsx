@@ -1,6 +1,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 import type { ReactElement } from 'react';
 
+import { ProductReviews } from '@/features/reviews/components/ProductReviews';
 import { Link } from '@/i18n/navigation';
 import type { Category, ProductDetail } from '@/interfaces/catalog.interface';
 import { pickLocalized } from '@/utils/localized-text.util';
@@ -71,6 +72,7 @@ export const ProductView = ({ product, category }: ProductViewProps): ReactEleme
           </section>
         </div>
       </div>
+      <ProductReviews slug={product.slug} />
     </main>
   );
 };

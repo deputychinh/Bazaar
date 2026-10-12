@@ -18,3 +18,6 @@ export type ProductVariant = ProductDetail['variants'][number];
 export type ProductImage = ProductDetail['images'][number];
 export type Shop =
   paths['/api/v1/shops/{slug}']['get']['responses'][200]['content']['application/json'];
+export type ReviewView = components['schemas']['Review'];
+export type ReviewPage = components['schemas']['ReviewPage'];
+export type ReviewEligibility = components['schemas']['ReviewEligibility'];

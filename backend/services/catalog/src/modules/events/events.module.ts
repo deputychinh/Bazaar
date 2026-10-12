@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 
+import { ReviewsModule } from '../reviews/reviews.module.js';
 import { ShopsModule } from '../shops/shops.module.js';
 import { StockModule } from '../stock/stock.module.js';
 
 import { EventConsumerRunner } from './event-consumer.runner.js';
 
 @Module({
-  imports: [ShopsModule, StockModule],
+  imports: [ShopsModule, StockModule, ReviewsModule],
   providers: [EventConsumerRunner],
 })
 export class EventsModule {}

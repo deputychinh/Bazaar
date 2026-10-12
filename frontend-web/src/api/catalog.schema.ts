@@ -260,6 +260,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/{slug}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ProductReviewsController_list"];
+        put?: never;
+        post: operations["ProductReviewsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{slug}/reviews/eligibility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ProductReviewsController_eligibility"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -292,6 +324,26 @@ export interface components {
         ProductStatus: ProductStatus;
         /** @enum {string} */
         ImageContentType: ImageContentType;
+        ReviewPage: {
+            items: components["schemas"]["Review"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
+        Review: {
+            id: string;
+            rating: number;
+            comment: string;
+            locale: components["schemas"]["Locale"];
+            /** Format: date-time */
+            createdAt: string;
+        };
+        /** @enum {string} */
+        Locale: Locale;
+        ReviewEligibility: {
+            canReview: boolean;
+            hasReviewed: boolean;
+        };
     };
     responses: never;
     parameters: never;
@@ -1590,6 +1642,107 @@ export interface operations {
             };
         };
     };
+    ProductReviewsController_list: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewPage"];
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ProductReviewsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    rating: number;
+                    comment: string;
+                    locale: components["schemas"]["Locale"];
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Review"];
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    ProductReviewsController_eligibility: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewEligibility"];
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
 }
 export enum ErrorCode {
     VALIDATION_FAILED = "VALIDATION_FAILED",
@@ -1632,4 +1785,8 @@ export enum ImageContentType {
     image_jpeg = "image/jpeg",
     image_png = "image/png",
     image_webp = "image/webp"
+}
+export enum Locale {
+    en = "en",
+    vi = "vi"
 }

@@ -322,5 +322,16 @@
       "NEW_SELLER_ORDER": "Đơn mới #{ref} cần xử lý",
       "SELLER_ORDER_CANCELLED": "Người mua đã huỷ phần đơn #{ref} của bạn"
     }
+  },
+  "reviews": {
+    "title": "Đánh giá",
+    "loading": "Đang tải đánh giá…",
+    "none": "Chưa có đánh giá nào.",
+    "verifiedBuyer": "Người mua đã xác minh",
+    "yourRating": "Đánh giá của bạn",
+    "stars": "{count} sao",
+    "comment": "Nhận xét (không bắt buộc)",
+    "submit": "Gửi đánh giá",
+    "thanks": "Cảm ơn bạn đã đánh giá!"
   }
 }

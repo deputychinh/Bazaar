@@ -1,6 +1,7 @@
 import { API_TIMEOUT_MS } from '@/constants/api.constant';
 import { createApiClient } from '@/utils/api-client.util';
 
+import type { paths as CatalogPaths } from './catalog.schema';
 import type { paths as GatewayPaths } from './gateway.schema';
 import type { paths as NotificationPaths } from './notification.schema';
 import type { paths as OrderPaths } from './order.schema';
@@ -16,6 +17,8 @@ const options = {
 
 export const browserGatewayApi = createApiClient<GatewayPaths>(options);
 /** Order routes, proxied by the gateway (documented by backend/openapi/order.json). */
+/** Catalog routes (reviews), proxied by the gateway. */
+export const browserCatalogApi = createApiClient<CatalogPaths>(options);
 export const browserOrderApi = createApiClient<OrderPaths>(options);
 /** In-app notifications, proxied by the gateway (backend/openapi/notification.json). */
 export const browserNotificationApi = createApiClient<NotificationPaths>(options);

@@ -21,6 +21,12 @@ import type {
   ProductSearchCriteria,
   SellerProductsCriteria,
 } from '../../src/interfaces/product.interface.js';
+import type {
+  NewReview,
+  RatingSummary,
+  Review,
+  ReviewPage,
+} from '../../src/interfaces/review.interface.js';
 import type { NewShop, Shop } from '../../src/interfaces/shop.interface.js';
 import type { StockLine, StockReservation } from '../../src/interfaces/stock.interface.js';
 import type { PresignedUpload, StoredObject } from '../../src/interfaces/storage.interface.js';
@@ -31,6 +37,8 @@ import {
   type ProductChangesOptions,
   ProductsRepository,
 } from '../../src/modules/products/repositories/products.repository.js';
+import { DuplicateReviewError } from '../../src/modules/reviews/errors/duplicate-review.error.js';
+import { ReviewsRepository } from '../../src/modules/reviews/repositories/reviews.repository.js';
 import {
   type ShopChangesOptions,
   ShopsRepository,
@@ -366,5 +374,58 @@ export class InMemoryStockRepository extends StockRepository {
 
   public slugsOf(productIds: string[]): Promise<string[]> {
     return Promise.resolve(productIds.map((id) => `slug-${id}`));
+  }
+}
+
+/** Reviews in memory with the same uniqueness rule (one per product and shopper). */
+export class InMemoryReviewsRepository extends ReviewsRepository {
+  public readonly eligible = new Set<string>();
+  public readonly rows: Review[] = [];
+  public readonly ratings = new Map<string, RatingSummary>();
+
+  public markEligible(shopperId: string, productIds: string[]): Promise<void> {
+    productIds.forEach((productId) => this.eligible.add(`${shopperId}:${productId}`));
+    return Promise.resolve();
+  }
+
+  public isEligible(shopperId: string, productId: string): Promise<boolean> {
+    return Promise.resolve(this.eligible.has(`${shopperId}:${productId}`));
+  }
+
+  public hasReviewed(shopperId: string, productId: string): Promise<boolean> {
+    return Promise.resolve(
+      this.rows.some((row) => row.shopperId === shopperId && row.productId === productId),
+    );
+  }
+
+  public create(review: NewReview): Promise<Review> {
+    if (
+      this.rows.some(
+        (row) => row.shopperId === review.shopperId && row.productId === review.productId,
+      )
+    ) {
+      return Promise.reject(new DuplicateReviewError('You already reviewed this product'));
+    }
+    const created = { ...review, id: `review-${this.rows.length + 1}`, createdAt: NOW };
+    this.rows.push(created);
+    return Promise.resolve(created);
+  }
+
+  public page(productId: string, page: { page: number; pageSize: number }): Promise<ReviewPage> {
+    const mine = this.rows.filter((row) => row.productId === productId).reverse();
+    const start = (page.page - 1) * page.pageSize;
+    return Promise.resolve({ items: mine.slice(start, start + page.pageSize), total: mine.length });
+  }
+
+  public summary(productId: string): Promise<RatingSummary> {
+    const mine = this.rows.filter((row) => row.productId === productId);
+    const average =
+      mine.length === 0 ? 0 : mine.reduce((sum, row) => sum + row.rating, 0) / mine.length;
+    return Promise.resolve({ average: Number(average.toFixed(2)), count: mine.length });
+  }
+
+  public saveRating(productId: string, rating: RatingSummary): Promise<void> {
+    this.ratings.set(productId, rating);
+    return Promise.resolve();
   }
 }

@@ -19,12 +19,13 @@ import type { OrderView } from '@/interfaces/order.interface';
 import { pickLocalized } from '@/utils/localized-text.util';
 
 import { cancelSellerOrder, getOrder } from '../order-api';
+import { useOrderEvents } from '../useOrderEvents';
 
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 import './OrderDetail.css';
 
-/** While the saga is deciding, the page keeps asking (live push arrives with P5). */
+/** Order states the saga is still deciding: polled when the live stream is unavailable. */
 const IN_PROGRESS: readonly OrderStatus[] = [
   OrderStatus.PENDING,
   OrderStatus.RESERVED,
@@ -56,14 +57,19 @@ export const OrderDetail = ({ orderId }: OrderDetailProps): ReactElement => {
     };
   }, [load]);
 
+  // Live updates: reload whenever this order changes. Polling only while the stream is down.
+  const isLive = useOrderEvents(accessToken, (event) => {
+    if (event.orderId === orderId) void load().then(setResult);
+  });
+
   const status = result?.data?.status;
   useEffect(() => {
-    if (status === undefined || !IN_PROGRESS.includes(status)) return undefined;
+    if (isLive || status === undefined || !IN_PROGRESS.includes(status)) return undefined;
     const timer = setInterval(() => {
       void load().then(setResult);
     }, ORDER_POLL_INTERVAL_MS);
     return () => clearInterval(timer);
-  }, [status, load]);
+  }, [isLive, status, load]);
 
   if (result === null) return <p role="status">{t('loading')}</p>;
   if (result.errorCode !== null) return <ErrorState code={result.errorCode} />;

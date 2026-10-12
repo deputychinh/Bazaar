@@ -42,6 +42,27 @@ describe('OrderDetail', () => {
     vi.useRealTimers();
   });
 
+  it('reloads the order when the live stream says it changed, without polling', async () => {
+    let served = 0;
+    renderSignedIn(<OrderDetail orderId={ID} />, {
+      routes: {
+        [`GET /api/v1/orders/${ID}`]: () => ({
+          status: 200,
+          body: served++ === 0 ? orderFixture({ status: OrderStatus.PENDING }) : orderFixture(),
+        }),
+        'GET /api/v1/orders/stream': {
+          status: 200,
+          contentType: 'text/event-stream',
+          text: `event: order\ndata: ${JSON.stringify({ orderId: ID, type: 'OrderConfirmed', occurredAt: '' })}\n\n`,
+        },
+      },
+    });
+
+    expect(
+      await screen.findByText('Confirmed. The shops are preparing your items.'),
+    ).toBeInTheDocument();
+  });
+
   it('explains a cancellation in the shopper’s language', async () => {
     renderSignedIn(<OrderDetail orderId={ID} />, {
       routes: {

@@ -19,8 +19,8 @@ export class KafkaConnection {
     return this.kafka.producer({ kafkaJS: { idempotent: true, acks: -1 } });
   }
 
-  public createConsumer(groupId: string): KafkaJS.Consumer {
-    return this.kafka.consumer({ kafkaJS: { groupId, fromBeginning: true } });
+  public createConsumer(groupId: string, fromBeginning = true): KafkaJS.Consumer {
+    return this.kafka.consumer({ kafkaJS: { groupId, fromBeginning } });
   }
 
   public createAdmin(): KafkaJS.Admin {

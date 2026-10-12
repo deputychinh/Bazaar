@@ -12,6 +12,11 @@ export interface ConsumeOptions {
   groupId: string;
   topics: Topic[];
   handlers: BaseEventHandler[];
+  /**
+   * Where a new group starts (default true: from the beginning, so nothing is missed). Live
+   * listeners with a group per pod start at the end — they only care about what happens now.
+   */
+  fromBeginning?: boolean;
 }
 
 /** Runs consumer groups; each listens to its topics and their retry topics. */
@@ -25,7 +30,7 @@ export class EventConsumer implements OnApplicationShutdown {
   ) {}
 
   public async start(options: ConsumeOptions): Promise<void> {
-    const consumer = this.connection.createConsumer(options.groupId);
+    const consumer = this.connection.createConsumer(options.groupId, options.fromBeginning);
     const dispatcher = this.dispatcherFactory.create(options.handlers);
     this.consumers.push(consumer);
     await consumer.connect();

@@ -24,6 +24,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { CatalogProxyModule } from './modules/catalog-proxy/catalog-proxy.module.js';
 import { CheckoutModule } from './modules/checkout/checkout.module.js';
 import { CurrencyModule } from './modules/currency/currency.module.js';
+import { LiveModule } from './modules/live/live.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
 import { SellersModule } from './modules/sellers/sellers.module.js';
@@ -52,6 +53,8 @@ export class AppModule {
         TokensModule,
         AuthModule,
         SellersModule,
+        // Before the proxies: its GET /orders/stream must win over 'orders/*path'.
+        LiveModule,
         CatalogProxyModule,
         CheckoutModule,
         CurrencyModule,

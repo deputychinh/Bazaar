@@ -75,6 +75,7 @@ export class PaymentSettlementService {
           aggregateId: orderId,
           payload: {
             orderId,
+            shopperId: order.shopperId,
             paymentId: order.payment?.id ?? '',
             amountUsdCents: order.totalUsdCents,
           },

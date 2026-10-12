@@ -1116,6 +1116,36 @@
         ]
       }
     },
+    "/api/v1/orders/stream": {
+      "get": {
+        "operationId": "OrderStreamController_stream",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "default": {
+            "description": "Error (problem details). Translate `code`; `message` is for developers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Live order changes (text/event-stream)",
+        "tags": [
+          "orders"
+        ]
+      }
+    },
     "/api/v1/orders": {
       "post": {
         "operationId": "CheckoutController_place",

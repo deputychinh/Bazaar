@@ -100,7 +100,12 @@ describe('EventDispatcher', () => {
     const other = EventFactory.create({
       type: EventType.OrderPaid,
       aggregateId: 'order-1',
-      payload: { orderId: 'order-1', paymentId: 'pay-1', amountUsdCents: 100 },
+      payload: {
+        orderId: 'order-1',
+        shopperId: 'shopper-1',
+        paymentId: 'pay-1',
+        amountUsdCents: 100,
+      },
     });
 
     await dispatcher.dispatch(toMessage(other));

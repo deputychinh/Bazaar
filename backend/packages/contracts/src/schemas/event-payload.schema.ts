@@ -33,7 +33,12 @@ export const eventPayloadSchemas = {
     totalUsdCents: cents,
     lines: z.array(orderLine).min(1),
   }),
-  [EventType.OrderPaid]: z.object({ orderId: id, paymentId: id, amountUsdCents: cents }),
+  [EventType.OrderPaid]: z.object({
+    orderId: id,
+    shopperId: id,
+    paymentId: id,
+    amountUsdCents: cents,
+  }),
   [EventType.OrderConfirmed]: z.object({ orderId: id, shopperId: id }),
   [EventType.OrderCancelled]: z.object({
     orderId: id,

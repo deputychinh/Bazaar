@@ -11,6 +11,8 @@ export interface OrderCreatedPayload {
 
 export interface OrderPaidPayload {
   orderId: string;
+  /** Added in v1 (additive): lets live listeners route the event without a lookup. */
+  shopperId: string;
   paymentId: string;
   amountUsdCents: number;
 }

@@ -3,6 +3,8 @@ dist
 build
 coverage
 .next
+.lighthouseci
+*.tsbuildinfo
 .turbo
 cdk.out
 package-lock.json

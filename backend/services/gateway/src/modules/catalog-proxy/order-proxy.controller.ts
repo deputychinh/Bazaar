@@ -6,7 +6,7 @@ import type { Request, Response } from 'express';
 import { AppConfig } from '../../config/app-config.js';
 import { ORDER_ROUTES } from '../../constants/gateway.constant.js';
 
-import { UpstreamClient } from './upstream-client.js';
+import { ProxyForwarder } from './proxy-forwarder.js';
 
 /**
  * Order routes through the gateway (shopper orders, seller fulfilment). The order service
@@ -17,31 +17,18 @@ import { UpstreamClient } from './upstream-client.js';
 @Controller()
 export class OrderProxyController {
   public constructor(
-    private readonly upstream: UpstreamClient,
+    private readonly proxy: ProxyForwarder,
     private readonly config: AppConfig,
   ) {}
 
   /** Only GET on the collection: POST /orders is checkout (CheckoutController). */
   @Get('orders')
   public list(@Req() request: Request, @Res() response: Response): Promise<void> {
-    return this.forward(request, response);
+    return this.proxy.forward(this.config.env.ORDER_SERVICE_URL, request, response);
   }
 
   @All(ORDER_ROUTES)
   public forward(@Req() request: Request, @Res() response: Response): Promise<void> {
-    return this.upstream
-      .forward(this.config.env.ORDER_SERVICE_URL, {
-        method: request.method,
-        url: request.originalUrl,
-        headers: {
-          ...request.headers,
-          'x-request-id':
-            typeof request.id === 'string' ? request.id : request.headers['x-request-id'],
-        },
-        body: request.body as unknown,
-      })
-      .then((answer) => {
-        response.status(answer.status).set(answer.headers).send(answer.body);
-      });
+    return this.proxy.forward(this.config.env.ORDER_SERVICE_URL, request, response);
   }
 }

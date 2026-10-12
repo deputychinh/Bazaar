@@ -4,6 +4,7 @@ export * from './error-code.enum.js';
 export * from './event-type.enum.js';
 export * from './locale.enum.js';
 export * from './notification-channel.enum.js';
+export * from './notification-kind.enum.js';
 export * from './order-status.enum.js';
 export * from './payment-status.enum.js';
 export * from './product-status.enum.js';

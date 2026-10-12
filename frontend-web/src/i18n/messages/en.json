@@ -309,5 +309,18 @@
       "FAILED": "not charged",
       "REFUND_PENDING": "refund pending"
     }
+  },
+  "notifications": {
+    "label": "{count, plural, =0 {Notifications} one {Notifications, # unread} other {Notifications, # unread}}",
+    "empty": "No notifications yet.",
+    "kind": {
+      "ORDER_CONFIRMED": "Order #{ref} is confirmed",
+      "ORDER_CANCELLED": "Order #{ref} was cancelled",
+      "ORDER_COMPLETED": "Order #{ref} is complete",
+      "SELLER_ORDER_SHIPPED": "Part of order #{ref} has shipped",
+      "SELLER_ORDER_DELIVERED": "Part of order #{ref} was delivered",
+      "NEW_SELLER_ORDER": "New order #{ref} to fulfil",
+      "SELLER_ORDER_CANCELLED": "The shopper cancelled your part of order #{ref}"
+    }
   }
 }

@@ -4,6 +4,7 @@ import { CancelReason } from '../enums/cancel-reason.enum.js';
 import { DisplayCurrency } from '../enums/display-currency.enum.js';
 import { ErrorCode } from '../enums/error-code.enum.js';
 import { Locale } from '../enums/locale.enum.js';
+import { NotificationKind } from '../enums/notification-kind.enum.js';
 import { OrderStatus } from '../enums/order-status.enum.js';
 import { PaymentStatus } from '../enums/payment-status.enum.js';
 import { ProductStatus } from '../enums/product-status.enum.js';
@@ -20,6 +21,7 @@ export const cancelReasonSchema = z.enum(CancelReason).meta({ id: 'CancelReason'
 export const displayCurrencySchema = z.enum(DisplayCurrency).meta({ id: 'DisplayCurrency' });
 export const errorCodeSchema = z.enum(ErrorCode).meta({ id: 'ErrorCode' });
 export const localeSchema = z.enum(Locale).meta({ id: 'Locale' });
+export const notificationKindSchema = z.enum(NotificationKind).meta({ id: 'NotificationKind' });
 export const orderStatusSchema = z.enum(OrderStatus).meta({ id: 'OrderStatus' });
 export const paymentStatusSchema = z.enum(PaymentStatus).meta({ id: 'PaymentStatus' });
 export const productStatusSchema = z.enum(ProductStatus).meta({ id: 'ProductStatus' });

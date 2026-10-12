@@ -33,6 +33,7 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   CATALOG_SERVICE_URL: z.url().default('http://127.0.0.1:4010'),
   ORDER_SERVICE_URL: z.url().default('http://127.0.0.1:4020'),
+  NOTIFICATION_SERVICE_URL: z.url().default('http://127.0.0.1:4030'),
   /** Shared key for /internal routes of the catalog and order services (checkout). */
   INTERNAL_API_KEY: z.string().min(INTERNAL_API_KEY_MIN_LENGTH).optional(),
   FX_PROVIDER: z.enum(FxProviderKind).default(FxProviderKind.Http),

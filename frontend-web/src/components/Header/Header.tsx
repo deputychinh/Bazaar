@@ -5,6 +5,7 @@ import { AccountLink } from '@/features/auth/components/AccountLink';
 import { CartLink } from '@/features/cart/components/CartLink';
 import { CurrencySwitcher } from '@/features/currency/components/CurrencySwitcher';
 import { LocaleSwitcher } from '@/features/locale/components/LocaleSwitcher';
+import { NotificationBell } from '@/features/notifications/components/NotificationBell';
 import { Link } from '@/i18n/navigation';
 
 import './Header.css';
@@ -28,6 +29,7 @@ export const Header = async (): Promise<ReactElement> => {
         <div className="header__tools">
           <LocaleSwitcher />
           <CurrencySwitcher />
+          <NotificationBell />
           <AccountLink />
           <CartLink />
         </div>

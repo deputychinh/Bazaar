@@ -309,5 +309,18 @@
       "FAILED": "không bị trừ tiền",
       "REFUND_PENDING": "đang chờ hoàn tiền"
     }
+  },
+  "notifications": {
+    "label": "{count, plural, =0 {Thông báo} other {Thông báo, # chưa đọc}}",
+    "empty": "Chưa có thông báo nào.",
+    "kind": {
+      "ORDER_CONFIRMED": "Đơn #{ref} đã được xác nhận",
+      "ORDER_CANCELLED": "Đơn #{ref} đã bị huỷ",
+      "ORDER_COMPLETED": "Đơn #{ref} đã hoàn tất",
+      "SELLER_ORDER_SHIPPED": "Một phần đơn #{ref} đang được giao",
+      "SELLER_ORDER_DELIVERED": "Một phần đơn #{ref} đã được giao",
+      "NEW_SELLER_ORDER": "Đơn mới #{ref} cần xử lý",
+      "SELLER_ORDER_CANCELLED": "Người mua đã huỷ phần đơn #{ref} của bạn"
+    }
   }
 }

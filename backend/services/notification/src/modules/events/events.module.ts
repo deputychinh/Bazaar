@@ -13,6 +13,10 @@ import { EmailReaction } from '../emails/services/email.reaction.js';
 import { EventLogRepository } from '../event-log/repositories/event-log.repository.js';
 import { PrismaEventLogRepository } from '../event-log/repositories/prisma-event-log.repository.js';
 import { EventLogReaction } from '../event-log/services/event-log.reaction.js';
+import { NotificationsController } from '../in-app/controllers/notifications.controller.js';
+import { NotificationsRepository } from '../in-app/repositories/notifications.repository.js';
+import { PrismaNotificationsRepository } from '../in-app/repositories/prisma-notifications.repository.js';
+import { InAppReaction } from '../in-app/services/in-app.reaction.js';
 import { OrderSummariesRepository } from '../order-summaries/repositories/order-summaries.repository.js';
 import { PrismaOrderSummariesRepository } from '../order-summaries/repositories/prisma-order-summaries.repository.js';
 import { OrderSummaryReaction } from '../order-summaries/services/order-summary.reaction.js';
@@ -24,7 +28,10 @@ import { PrismaProcessedEventStore } from './prisma-processed-event.store.js';
 
 /** Event consumption: one pipeline per event type running every reaction once. */
 @Module({
+  controllers: [NotificationsController],
   providers: [
+    InAppReaction,
+    { provide: NotificationsRepository, useClass: PrismaNotificationsRepository },
     PrismaProcessedEventStore,
     EventConsumerRunner,
     EventLogReaction,

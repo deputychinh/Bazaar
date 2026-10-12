@@ -1,0 +1,15 @@
+{
+  "app": {
+    "title": "Bazaar Quản trị",
+    "tagline": "Quản lý shop của bạn và toàn sàn."
+  },
+  "locale": {
+    "label": "Ngôn ngữ",
+    "en": "English",
+    "vi": "Tiếng Việt"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "back": "Về trang đầu"
+  }
+}

@@ -10,5 +10,6 @@ package-lock.json
 # Generated files: compared byte-for-byte in CI, never reformatted.
 backend/openapi
 frontend-web/src/api/*.schema.ts
+frontend-admin/src/api/*.schema.ts
 **/generated/
 next-env.d.ts

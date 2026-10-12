@@ -1,0 +1,37 @@
+name: admin
+
+on:
+  push:
+    branches: [main]
+    paths: ['frontend-admin/**', 'backend/openapi/**', '.github/workflows/admin.yml']
+  pull_request:
+    paths: ['frontend-admin/**', 'backend/openapi/**', '.github/workflows/admin.yml']
+
+concurrency:
+  group: admin-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend-admin
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend-admin/package-lock.json
+      - run: npm ci
+      - name: API types match backend/openapi
+        run: |
+          npm run gen:api
+          git diff --exit-code -- src/api
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high

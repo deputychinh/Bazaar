@@ -1,0 +1,15 @@
+{
+  "app": {
+    "title": "Bazaar Admin",
+    "tagline": "Manage your shop and the marketplace."
+  },
+  "locale": {
+    "label": "Language",
+    "en": "English",
+    "vi": "Tiếng Việt"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "back": "Back to the start"
+  }
+}

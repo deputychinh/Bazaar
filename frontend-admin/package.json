@@ -1,0 +1,77 @@
+{
+  "name": "bazaar-admin",
+  "private": true,
+  "description": "Bazaar admin site: seller and platform areas (React SPA), English and Vietnamese.",
+  "type": "module",
+  "packageManager": "npm@11.19.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite --port 3200",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 3200",
+    "lint": "eslint . --max-warnings 0 && stylelint \"src/**/*.css\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "gen:api": "openapi-typescript ../backend/openapi/gateway.json -o src/api/gateway.schema.ts --enum && openapi-typescript ../backend/openapi/catalog.json -o src/api/catalog.schema.ts --enum && openapi-typescript ../backend/openapi/order.json -o src/api/order.schema.ts --enum && openapi-typescript ../backend/openapi/notification.json -o src/api/notification.schema.ts --enum"
+  },
+  "allowScripts": {
+    "@parcel/watcher": false,
+    "@swc/core": false,
+    "fsevents": false,
+    "unrs-resolver": false
+  },
+  "overrides": {
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "5.3.0",
+    "@fontsource-variable/inter": "5.3.0",
+    "@hookform/resolvers": "5.9.1",
+    "@tanstack/react-query": "5.104.2",
+    "i18next": "26.4.3",
+    "openapi-fetch": "0.17.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-hook-form": "7.90.0",
+    "react-i18next": "17.0.16",
+    "react-router": "8.4.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@csstools/postcss-global-data": "4.0.0",
+    "@eslint-react/eslint-plugin": "5.25.0",
+    "@eslint/js": "10.0.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.7",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "@vitest/coverage-v8": "5.0.3",
+    "eslint": "10.12.0",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-import-x": "4.17.1",
+    "eslint-plugin-jsx-a11y-x": "0.2.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "jsdom": "30.1.2",
+    "msw": "3.0.3",
+    "openapi-typescript": "7.13.0",
+    "postcss": "8.5.29",
+    "postcss-custom-media": "12.0.3",
+    "stylelint": "17.16.0",
+    "stylelint-config-standard": "40.0.0",
+    "stylelint-declaration-strict-value": "1.12.1",
+    "stylelint-order": "8.1.2",
+    "stylelint-selector-bem-pattern": "5.0.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  }
+}

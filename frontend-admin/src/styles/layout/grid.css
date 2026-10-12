@@ -1,0 +1,6 @@
+/* Auto-fit columns; a block can narrow them by setting --grid-min-column. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--grid-min-column, 240px), 100%), 1fr));
+  gap: var(--gap-grid);
+}

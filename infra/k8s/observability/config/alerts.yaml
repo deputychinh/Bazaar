@@ -37,7 +37,15 @@ spec:
             summary: '{{ $labels.consumergroup }} is {{ $value }} messages behind on {{ $labels.topic }}'
             runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#kafkaconsumerlaghigh
         - alert: DeadLetterNotEmpty
-          expr: sum by (service, topic) (increase(kafka_messages_consumed_total{outcome="dead_lettered"}[15m])) > 0
+          # increase() misses a counter's first step (the series only appears at the first dead
+          # letter), so series born in the last 15 minutes count too (found in drill R4).
+          expr: |
+            sum by (service, topic) (increase(kafka_messages_consumed_total{outcome="dead_lettered"}[15m])) > 0
+            or
+            sum by (service, topic) (
+              kafka_messages_consumed_total{outcome="dead_lettered"}
+                unless kafka_messages_consumed_total{outcome="dead_lettered"} offset 15m
+            ) > 0
           labels: { severity: warning }
           annotations:
             summary: '{{ $labels.service }} sent events from {{ $labels.topic }} to the dead-letter topic'

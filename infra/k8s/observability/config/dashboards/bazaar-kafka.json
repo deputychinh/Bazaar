@@ -135,7 +135,7 @@
     {
       "id": 4,
       "type": "timeseries",
-      "title": "Dead-lettered (last hour)",
+      "title": "Dead-lettered since pod start",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -166,7 +166,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (service, topic) (increase(kafka_messages_consumed_total{outcome=\"dead_lettered\"}[1h]))",
+          "expr": "sum by (service, topic) (kafka_messages_consumed_total{outcome=\"dead_lettered\"})",
           "legendFormat": "{{service}} {{topic}}"
         }
       ]

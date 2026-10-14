@@ -4,22 +4,37 @@ import { Reflector } from '@nestjs/core';
 import type { Request, Response } from 'express';
 import { PinoLogger } from 'nestjs-pino';
 
+import { AppConfig } from '../../config/app-config.js';
 import { RATE_LIMIT_POLICY_KEY } from '../../constants/metadata.constant.js';
 import { RATE_LIMIT_KEY_PREFIX, RATE_LIMITS } from '../../constants/rate-limit.constant.js';
 import { RateLimitPolicy } from '../../enums/rate-limit-policy.enum.js';
-import type { RateLimitResult } from '../../interfaces/rate-limit.interface.js';
+import type { RateLimitResult, RateLimitRule } from '../../interfaces/rate-limit.interface.js';
 import { RateLimiter } from '../../modules/rate-limit/rate-limiter.js';
 import { RateLimitedError } from '../errors/rate-limited.error.js';
 
 /** Global guard, runs first: limits each client IP per route; fails open if Redis is down. */
 @Injectable()
 export class RateLimitGuard implements CanActivate {
+  private readonly rules: Readonly<Record<RateLimitPolicy, RateLimitRule>>;
+
   public constructor(
     private readonly reflector: Reflector,
     private readonly limiter: RateLimiter,
     private readonly logger: PinoLogger,
+    config: AppConfig,
   ) {
     this.logger.setContext(RateLimitGuard.name);
+    const { RATE_LIMIT_DEFAULT_PER_MINUTE, RATE_LIMIT_STRICT_PER_MINUTE } = config.env;
+    this.rules = {
+      [RateLimitPolicy.Default]: {
+        ...RATE_LIMITS[RateLimitPolicy.Default],
+        limit: RATE_LIMIT_DEFAULT_PER_MINUTE,
+      },
+      [RateLimitPolicy.Strict]: {
+        ...RATE_LIMITS[RateLimitPolicy.Strict],
+        limit: RATE_LIMIT_STRICT_PER_MINUTE,
+      },
+    };
   }
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -37,7 +52,7 @@ export class RateLimitGuard implements CanActivate {
     const key = `${RATE_LIMIT_KEY_PREFIX}:${policy}:${route}:${request.ip ?? 'unknown'}`;
     let result: RateLimitResult;
     try {
-      result = await this.limiter.hit(key, RATE_LIMITS[policy]);
+      result = await this.limiter.hit(key, this.rules[policy]);
     } catch (error) {
       this.logger.warn(
         { reason: PromiseUtil.errorMessage(error) },

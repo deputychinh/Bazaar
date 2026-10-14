@@ -141,6 +141,9 @@ aws-test: ## CDK: typecheck + Vitest assertions (incl. cdk-nag) for dev and prod
 aws-synth: ## CDK: synthesize every stack of every environment to infra/cdk/cdk.out
 	cd infra/cdk && npm run synth
 
+load-test: ## k6 scenarios against kind (API reads 200 rps, product pages, checkout mix)
+	loadtest/run.sh
+
 dev-gateway: keys ## Run the gateway with reload on :4000
 	$(BACKEND) npm run dev -w @bazaar/gateway
 
@@ -153,4 +156,4 @@ dev-order: ## Run the order service with reload on :4020
 dev-notification: ## Run the notification service with reload on :4030
 	$(BACKEND) npm run dev -w @bazaar/notification
 
-.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images k8s-up k8s-up-cluster k8s-observability k8s-down k8s-status k8s-load release rollback aws-test aws-synth
+.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images k8s-up k8s-up-cluster k8s-observability k8s-down k8s-status k8s-load release rollback aws-test aws-synth load-test

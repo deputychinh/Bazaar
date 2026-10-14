@@ -3,7 +3,9 @@ import { baseEnvSchema, INTERNAL_API_KEY_MIN_LENGTH, REDIS_URL_PATTERN } from '@
 import { z } from 'zod';
 
 import { GATEWAY_DEFAULT_PORT, GATEWAY_SERVICE_NAME } from '../constants/gateway.constant.js';
+import { RATE_LIMITS } from '../constants/rate-limit.constant.js';
 import { FxProviderKind } from '../enums/fx-provider-kind.enum.js';
+import { RateLimitPolicy } from '../enums/rate-limit-policy.enum.js';
 
 const commaList = z.string().transform((value) =>
   value
@@ -31,6 +33,17 @@ export const gatewayEnvSchema = baseEnvSchema.extend({
    * passes a client-sent header through — so it must not be counted, or clients could spoof IPs.
    */
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
+  /** Requests per client IP and route per minute; load tests on staging raise them (make load-test). */
+  RATE_LIMIT_DEFAULT_PER_MINUTE: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(RATE_LIMITS[RateLimitPolicy.Default].limit),
+  RATE_LIMIT_STRICT_PER_MINUTE: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(RATE_LIMITS[RateLimitPolicy.Strict].limit),
   CATALOG_SERVICE_URL: z.url().default('http://127.0.0.1:4010'),
   ORDER_SERVICE_URL: z.url().default('http://127.0.0.1:4020'),
   NOTIFICATION_SERVICE_URL: z.url().default('http://127.0.0.1:4030'),

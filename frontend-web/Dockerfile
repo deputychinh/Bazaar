@@ -1,0 +1,30 @@
+# Customer site image (plan §9): Next.js standalone server, non-root. Build from frontend-web/.
+# Rewrites and image hosts are fixed at build time, so the in-cluster URLs are build arguments.
+ARG NODE_IMAGE=node:24.21.0-trixie-slim
+
+FROM ${NODE_IMAGE} AS build
+RUN npm install -g npm@11.19.1 && npm cache clean --force
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+ARG API_BASE_URL=http://gateway:4000
+ARG STORAGE_PUBLIC_URL=http://storage.bazaar.localhost
+ARG STORAGE_IS_PRIVATE=true
+ENV NEXT_OUTPUT=standalone NEXT_TELEMETRY_DISABLED=1 \
+  API_BASE_URL=${API_BASE_URL} STORAGE_PUBLIC_URL=${STORAGE_PUBLIC_URL} STORAGE_IS_PRIVATE=${STORAGE_IS_PRIVATE}
+RUN npm run build
+
+FROM ${NODE_IMAGE} AS runtime
+RUN apt-get update && apt-get install -y --no-install-recommends tini && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3100 HOSTNAME=0.0.0.0
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/public ./public
+USER node
+EXPOSE 3100
+HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=3 \
+  CMD ["node", "-e", "fetch('http://127.0.0.1:3100/en').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["node", "server.js"]

@@ -6,6 +6,11 @@ COMPOSE := docker compose
 INFRA := mysql mongo redis kafka kafka-ui storage mailpit
 INIT_JOBS := kafka-init storage-init
 GATEWAY_SECRETS := backend/services/gateway/.secrets
+# Images: tag = git sha (plan §11); the registry is the kind cluster's local one.
+REGISTRY ?= localhost:5001
+TAG ?= $(shell git rev-parse --short HEAD)
+SERVICES := gateway:4000 catalog:4010 order:4020 notification:4030
+MIGRATORS := gateway order
 
 help: ## Show this help
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -90,6 +95,16 @@ ci: lint typecheck test build ## Run the CI pipeline locally
 format: ## Format every file with Prettier
 	npx prettier --write .
 
+# --- images ------------------------------------------------------------------
+images: ## Build every image tagged $(REGISTRY)/bazaar/<app>:<git sha>
+	@set -e; for entry in $(SERVICES); do name=$${entry%%:*}; port=$${entry##*:}; \
+		echo "→ $$name"; docker build -q --build-arg SERVICE=$$name --build-arg PORT=$$port \
+			-t $(REGISTRY)/bazaar/$$name:$(TAG) backend; done
+	@set -e; for name in $(MIGRATORS); do echo "→ $$name-migrate"; docker build -q --target migrate \
+		--build-arg SERVICE=$$name -t $(REGISTRY)/bazaar/$$name-migrate:$(TAG) backend; done
+	@echo "→ web"; docker build -q -t $(REGISTRY)/bazaar/web:$(TAG) frontend-web
+	@echo "→ admin"; docker build -q -t $(REGISTRY)/bazaar/admin:$(TAG) frontend-admin
+
 dev-gateway: keys ## Run the gateway with reload on :4000
 	$(BACKEND) npm run dev -w @bazaar/gateway
 
@@ -102,4 +117,4 @@ dev-order: ## Run the order service with reload on :4020
 dev-notification: ## Run the notification service with reload on :4030
 	$(BACKEND) npm run dev -w @bazaar/notification
 
-.PHONY: help env install keys dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e
+.PHONY: help env install keys dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images

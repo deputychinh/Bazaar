@@ -14,6 +14,8 @@ const apiBaseUrl = process.env.API_BASE_URL ?? 'http://127.0.0.1:4000';
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // The container image runs the self-contained server (`node server.js`); `next start` stays for dev/CI.
+  output: process.env.NEXT_OUTPUT === 'standalone' ? 'standalone' : undefined,
   // Browser API calls stay same-origin: the refresh cookie is first-party and no CORS is needed.
   rewrites: () =>
     Promise.resolve([{ source: '/api/v1/:path*', destination: `${apiBaseUrl}/api/v1/:path*` }]),

@@ -1,0 +1,11 @@
+# Build context for backend/Dockerfile: sources only, everything is built inside the image.
+**/node_modules
+**/dist
+**/generated
+**/coverage
+**/.turbo
+**/*.tsbuildinfo
+**/*.log
+openapi
+**/.secrets
+**/.env*

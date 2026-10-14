@@ -137,5 +137,27 @@
     "none": "Hiện chưa có đơn nào.",
     "ship": "Đánh dấu đã gửi",
     "deliver": "Đánh dấu đã giao"
+  },
+  "dashboard": {
+    "sales30": "Doanh số 30 ngày",
+    "orders30": "Đơn hàng 30 ngày",
+    "toShip": "Chờ giao",
+    "goShip": "Giao các đơn đang chờ",
+    "salesPerDay": "Doanh số theo ngày",
+    "gmv30": "GMV 30 ngày",
+    "paidOrders30": "Đơn đã thanh toán 30 ngày",
+    "gmvPerDay": "GMV theo ngày",
+    "topSellers": "Người bán nổi bật",
+    "shop": "Shop",
+    "orders": "Đơn",
+    "sales": "Doanh số"
+  },
+  "orderStatus": {
+    "PENDING": "Đã đặt",
+    "RESERVED": "Đã giữ hàng",
+    "PAID": "Đã thanh toán",
+    "CONFIRMED": "Đã xác nhận",
+    "COMPLETED": "Hoàn tất",
+    "CANCELLED": "Đã huỷ"
   }
 }

@@ -1,0 +1,10 @@
+.platform-home-page__table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+.platform-home-page__cell {
+  padding: var(--space-3);
+  text-align: start;
+  border-block-end: 1px solid var(--color-border);
+}

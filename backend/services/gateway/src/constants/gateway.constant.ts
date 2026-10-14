@@ -24,7 +24,13 @@ export const FORWARDED_RESPONSE_HEADERS = [
  * Paths the gateway forwards to the order service (BZ-048). POST /orders is not here: checkout
  * is handled by the gateway itself (quote first, then the internal create).
  */
-export const ORDER_ROUTES = ['orders/*path', 'seller/orders', 'seller/orders/*path'];
+export const ORDER_ROUTES = [
+  'orders/*path',
+  'seller/orders',
+  'seller/orders/*path',
+  'seller/stats',
+  'admin/stats',
+];
 /** Paths the gateway forwards to the notification service (BZ-053, BZ-056). */
 export const NOTIFICATION_ROUTES = ['notifications', 'notifications/*path', 'admin/events'];
 /** Paths the gateway forwards to the catalog service (plan §3, BZ-029). */

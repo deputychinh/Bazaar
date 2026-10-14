@@ -25,6 +25,7 @@ import { OrdersModule } from './modules/orders/orders.module.js';
 import { OutboxModule } from './modules/outbox/outbox.module.js';
 import { PaymentsModule } from './modules/payments/payments.module.js';
 import { SagaModule } from './modules/saga/saga.module.js';
+import { StatsModule } from './modules/stats/stats.module.js';
 
 @Global()
 @Module({})
@@ -56,6 +57,7 @@ export class AppModule {
         OrdersModule,
         SagaModule,
         FulfilmentModule,
+        StatsModule,
       ],
       providers: [
         { provide: AppConfig, useValue: new AppConfig(env) },

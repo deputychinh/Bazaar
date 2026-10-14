@@ -137,5 +137,27 @@
     "none": "Nothing here right now.",
     "ship": "Mark as shipped",
     "deliver": "Mark as delivered"
+  },
+  "dashboard": {
+    "sales30": "Sales, last 30 days",
+    "orders30": "Orders, last 30 days",
+    "toShip": "Waiting to ship",
+    "goShip": "Ship waiting orders",
+    "salesPerDay": "Sales per day",
+    "gmv30": "GMV, last 30 days",
+    "paidOrders30": "Paid orders, last 30 days",
+    "gmvPerDay": "GMV per day",
+    "topSellers": "Top sellers",
+    "shop": "Shop",
+    "orders": "Orders",
+    "sales": "Sales"
+  },
+  "orderStatus": {
+    "PENDING": "Placed",
+    "RESERVED": "Reserved",
+    "PAID": "Paid",
+    "CONFIRMED": "Confirmed",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
   }
 }

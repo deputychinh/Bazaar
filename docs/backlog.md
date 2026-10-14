@@ -152,6 +152,6 @@ Goal: someone new (or a client) understands the system from the docs alone and c
 | Id | Ticket | Acceptance criteria | Size | Status |
 |---|---|---|---|---|
 | BZ-084 | ADRs | The twelve ADRs of plan §15 exist with the planned numbers (AWS moves to 0009); each states context, decision, consequences and links the code it governs | M | ☑ |
-| BZ-085 | Diagrams | draw.io sources in `docs/architecture/` with PNG exports: system architecture, Kubernetes deployment, AWS deployment, AWS CI/CD, event map, order state machine, rendering modes, ERD (MySQL) and collections (MongoDB), sequences for sign-up, browse, place order (saga), stock rejected, payment failed, live status, ISR revalidate; an index README | L | ☐ |
+| BZ-085 | Diagrams | draw.io sources in `docs/architecture/` with PNG exports: system architecture, Kubernetes deployment, AWS deployment, AWS CI/CD, event map, order state machine, rendering modes, ERD (MySQL) and collections (MongoDB), sequences for sign-up, browse, place order (saga), stock rejected, payment failed, live status, ISR revalidate; an index README | L | ☑ |
 | BZ-086 | Runbook operations | Start/stop, reset data, read consumer lag, deploy / roll back / destroy (staging and AWS) added to `docs/runbook.md` | S | ☑ |
 | BZ-087 | README tour | Screenshots (customer site EN/VI, admin seller and platform, Grafana, Jaeger-style trace) taken by a Playwright script, a feature tour, the URLs of each environment, and links to every doc | M | ☐ |

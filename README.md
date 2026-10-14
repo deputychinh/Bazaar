@@ -86,6 +86,7 @@ before quoting figures.
 - [Project plan](docs/plan.md) — requirements, architecture, data, Kafka, Kubernetes, AWS, phases
 - [Coding conventions](CONTRIBUTING.md) — single-source declarations, classes + SOLID (backend), arrow functions + BEM (frontend)
 - [Design system](docs/design-system.md) — "Saffron & Ink" tokens with contrast checks
+- [Architecture diagrams](docs/architecture/README.md) — system, deployment (kind, AWS), event map, data models, sequences
 - [Architecture decisions](docs/adr/):
   [0001 one repo](docs/adr/0001-one-repo-three-independent-projects.md) ·
   [0002 Next.js + SPA](docs/adr/0002-nextjs-site-and-react-spa-admin.md) ·

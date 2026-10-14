@@ -32,6 +32,12 @@ export class ProductPresenter {
   public seller(product: Product): SellerProduct {
     return {
       ...this.ownView(product),
+      // The storage key lets the seller remove an image; the public view only has its URL.
+      images: product.images.map((image) => ({
+        url: this.images.url(image.key),
+        key: image.key,
+        alt: image.alt,
+      })),
       hiddenReason: product.hiddenReason,
       createdAt: product.createdAt.toISOString(),
       updatedAt: product.updatedAt.toISOString(),

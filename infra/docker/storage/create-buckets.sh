@@ -20,6 +20,20 @@ cat > /tmp/public-read.json <<POLICY
 POLICY
 $S3 s3api put-bucket-policy --bucket "$STORAGE_BUCKET_IMAGES" --policy file:///tmp/public-read.json
 
+# Sellers upload images straight from the admin site with presigned PUT URLs (plan §2B Images).
+cat > /tmp/cors.json <<CORS
+{
+  "CORSRules": [{
+    "AllowedOrigins": ["http://localhost:3200", "http://admin.bazaar.localhost"],
+    "AllowedMethods": ["PUT", "GET"],
+    "AllowedHeaders": ["*"],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 3000
+  }]
+}
+CORS
+$S3 s3api put-bucket-cors --bucket "$STORAGE_BUCKET_IMAGES" --cors-configuration file:///tmp/cors.json
+
 # Category placeholders used by the seed products.
 $S3 s3 cp /placeholders "s3://$STORAGE_BUCKET_IMAGES/placeholders" --recursive \
   --content-type image/svg+xml --cache-control "public, max-age=86400" --only-show-errors

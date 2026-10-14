@@ -65,5 +65,70 @@
     "PAYMENT_FAILED": "Thanh toán không thành công.",
     "UPSTREAM_UNAVAILABLE": "Phần này của trang tạm thời gián đoạn. Vui lòng thử lại.",
     "INTERNAL": "Đã có lỗi xảy ra. Vui lòng thử lại."
+  },
+  "pagination": {
+    "label": "Trang",
+    "previous": "Trước",
+    "next": "Sau",
+    "pageOf": "Trang {{page}} / {{total}}"
+  },
+  "status": {
+    "PUBLISHED": "Đang bán",
+    "DRAFT": "Bản nháp",
+    "HIDDEN": "Bị ẩn",
+    "PENDING": "Chờ duyệt",
+    "APPROVED": "Đã duyệt",
+    "REJECTED": "Từ chối",
+    "CONFIRMED": "Cần giao",
+    "SHIPPED": "Đang giao",
+    "DELIVERED": "Đã giao",
+    "CANCELLED": "Đã huỷ"
+  },
+  "products": {
+    "title": "Sản phẩm",
+    "new": "Sản phẩm mới",
+    "status": "Trạng thái",
+    "allStatuses": "Tất cả",
+    "none": "Chưa có sản phẩm nào.",
+    "name": "Tên",
+    "price": "Giá từ",
+    "stock": "Tồn kho"
+  },
+  "productForm": {
+    "newTitle": "Sản phẩm mới",
+    "editTitle": "Sửa sản phẩm",
+    "titleEn": "Tên (tiếng Anh)",
+    "titleVi": "Tên (tiếng Việt)",
+    "descriptionEn": "Mô tả (tiếng Anh)",
+    "descriptionVi": "Mô tả (tiếng Việt)",
+    "category": "Danh mục",
+    "chooseCategory": "Chọn danh mục",
+    "variants": "Phân loại",
+    "sku": "SKU",
+    "price": "Giá (USD)",
+    "stock": "Tồn kho",
+    "colourEn": "Màu (tiếng Anh)",
+    "colourVi": "Màu (tiếng Việt)",
+    "addVariant": "Thêm phân loại",
+    "removeVariant": "Xoá",
+    "save": "Lưu",
+    "saving": "Đang lưu…",
+    "saved": "Đã lưu.",
+    "publish": "Đăng bán",
+    "unpublish": "Ngừng bán",
+    "hidden": "Đội ngũ Bazaar đã ẩn sản phẩm: {{reason}}",
+    "errors": {
+      "length": "Quá ngắn hoặc quá dài.",
+      "required": "Bắt buộc.",
+      "sku": "3–40 chữ, số hoặc dấu gạch.",
+      "price": "Nhập giá, ví dụ 12.50.",
+      "stock": "Từ 0 trở lên."
+    }
+  },
+  "productImages": {
+    "title": "Hình ảnh",
+    "none": "Chưa có hình ảnh.",
+    "add": "Thêm ảnh (JPEG, PNG hoặc WebP, tối đa 5 MB)",
+    "remove": "Xoá"
   }
 }

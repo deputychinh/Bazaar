@@ -61,6 +61,13 @@ export const sellerProductsQuerySchema = z.object({
 export type SellerProductsQuery = z.infer<typeof sellerProductsQuerySchema>;
 
 export const sellerProductSchema = productDetailSchema.omit({ shop: true }).extend({
+  images: z.array(
+    z.object({
+      url: z.string(),
+      key: z.string(),
+      alt: z.object({ en: z.string(), vi: z.string().optional() }).nullable(),
+    }),
+  ),
   hiddenReason: z.string().nullable(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),

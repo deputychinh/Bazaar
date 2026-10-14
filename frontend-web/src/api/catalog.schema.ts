@@ -746,6 +746,7 @@ export interface operations {
                             }[];
                             images: {
                                 url: string;
+                                key: string;
                                 alt: {
                                     en: string;
                                     vi?: string;
@@ -851,6 +852,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -926,6 +928,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1027,6 +1030,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1102,6 +1106,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1177,6 +1182,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1308,6 +1314,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1385,6 +1392,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1460,6 +1468,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1541,6 +1550,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;
@@ -1616,6 +1626,7 @@ export interface operations {
                         }[];
                         images: {
                             url: string;
+                            key: string;
                             alt: {
                                 en: string;
                                 vi?: string;

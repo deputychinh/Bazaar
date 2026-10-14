@@ -102,7 +102,7 @@ to the gateway (Vite dev server locally, the ingress in Kubernetes), so the refr
 |---|---|---|---|---|
 | BZ-057 | Admin scaffold | Vite + React 19 + TS strict, React Router, TanStack Query, react-i18next EN/VI; ESLint/Stylelint as the web; tokens identical to the web (`check-tokens.mjs` covers both); Vitest + RTL; API types generated; `admin.yml` CI | M | ☑ |
 | BZ-058 | Auth and shell | Sign-in, in-memory access token, one 401 → refresh → retry path, role-guarded areas (`/seller`, `/platform`, lazy-loaded), layout and navigation, language kept in settings | M | ☑ |
-| BZ-059 | Seller products | List with URL pagination/filter, create and edit with React Hook Form + zod (EN/VI text, variants, stock), publish/unpublish, image upload through a presigned URL | L | ☐ |
+| BZ-059 | Seller products | List with URL pagination/filter, create and edit with React Hook Form + zod (EN/VI text, variants, stock), publish/unpublish, image upload through a presigned URL | L | ☑ |
 | BZ-060 | Seller orders | Queue by status, ship and deliver actions, list refreshes on its own | M | ☐ |
 | BZ-061 | Stats + dashboards | Order service: seller sales per day and order counts, platform GMV / orders by status / top sellers; seller and platform dashboards with a simple chart | M | ☐ |
 | BZ-062 | Platform admin | Seller applications approve/reject, product moderation list (catalog admin list) with hide/restore, event log viewer | M | ☐ |

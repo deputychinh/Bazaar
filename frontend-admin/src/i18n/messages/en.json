@@ -65,5 +65,70 @@
     "PAYMENT_FAILED": "The payment did not go through.",
     "UPSTREAM_UNAVAILABLE": "This part of the site is temporarily unavailable. Please try again.",
     "INTERNAL": "Something went wrong. Please try again."
+  },
+  "pagination": {
+    "label": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}"
+  },
+  "status": {
+    "PUBLISHED": "Published",
+    "DRAFT": "Draft",
+    "HIDDEN": "Hidden",
+    "PENDING": "Pending",
+    "APPROVED": "Approved",
+    "REJECTED": "Rejected",
+    "CONFIRMED": "To ship",
+    "SHIPPED": "Shipped",
+    "DELIVERED": "Delivered",
+    "CANCELLED": "Cancelled"
+  },
+  "products": {
+    "title": "Products",
+    "new": "New product",
+    "status": "Status",
+    "allStatuses": "All",
+    "none": "No products yet.",
+    "name": "Name",
+    "price": "From",
+    "stock": "Stock"
+  },
+  "productForm": {
+    "newTitle": "New product",
+    "editTitle": "Edit product",
+    "titleEn": "Title (English)",
+    "titleVi": "Title (Vietnamese)",
+    "descriptionEn": "Description (English)",
+    "descriptionVi": "Description (Vietnamese)",
+    "category": "Category",
+    "chooseCategory": "Choose a category",
+    "variants": "Variants",
+    "sku": "SKU",
+    "price": "Price (USD)",
+    "stock": "Stock",
+    "colourEn": "Colour (English)",
+    "colourVi": "Colour (Vietnamese)",
+    "addVariant": "Add a variant",
+    "removeVariant": "Remove",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "hidden": "Hidden by the Bazaar team: {{reason}}",
+    "errors": {
+      "length": "Too short or too long.",
+      "required": "Required.",
+      "sku": "3–40 letters, digits or dashes.",
+      "price": "Enter a price, e.g. 12.50.",
+      "stock": "0 or more."
+    }
+  },
+  "productImages": {
+    "title": "Images",
+    "none": "No images yet.",
+    "add": "Add an image (JPEG, PNG or WebP, up to 5 MB)",
+    "remove": "Remove"
   }
 }

@@ -970,6 +970,9 @@
                                 "url": {
                                   "type": "string"
                                 },
+                                "key": {
+                                  "type": "string"
+                                },
                                 "alt": {
                                   "nullable": true,
                                   "type": "object",
@@ -989,6 +992,7 @@
                               },
                               "required": [
                                 "url",
+                                "key",
                                 "alt"
                               ],
                               "additionalProperties": false
@@ -1312,6 +1316,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -1331,6 +1338,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -1541,6 +1549,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -1560,6 +1571,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -1860,6 +1872,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -1879,6 +1894,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -2089,6 +2105,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -2108,6 +2127,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -2318,6 +2338,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -2337,6 +2360,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -2680,6 +2704,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -2699,6 +2726,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -2917,6 +2945,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -2936,6 +2967,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -3146,6 +3178,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -3165,6 +3200,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -3395,6 +3431,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -3414,6 +3453,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false
@@ -3624,6 +3664,9 @@
                           "url": {
                             "type": "string"
                           },
+                          "key": {
+                            "type": "string"
+                          },
                           "alt": {
                             "nullable": true,
                             "type": "object",
@@ -3643,6 +3686,7 @@
                         },
                         "required": [
                           "url",
+                          "key",
                           "alt"
                         ],
                         "additionalProperties": false

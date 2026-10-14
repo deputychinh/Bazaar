@@ -4,6 +4,11 @@ import { QueryClient } from '@tanstack/react-query';
 export const createQueryClient = (): QueryClient =>
   new QueryClient({
     defaultOptions: {
-      queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false },
+      // Tests fail fast instead of waiting for the retry delay.
+      queries: {
+        staleTime: 30_000,
+        retry: import.meta.env.MODE === 'test' ? false : 1,
+        refetchOnWindowFocus: false,
+      },
     },
   });

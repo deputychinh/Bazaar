@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ClusterStack > matches the resource inventory 1`] = `
+{
+  "AWS::EC2::LaunchTemplate": 1,
+  "AWS::EC2::SecurityGroup": 1,
+  "AWS::EKS::AccessEntry": 2,
+  "AWS::EKS::Addon": 3,
+  "AWS::EKS::Cluster": 1,
+  "AWS::EKS::Nodegroup": 1,
+  "AWS::EKS::PodIdentityAssociation": 4,
+  "AWS::IAM::OIDCProvider": 1,
+  "AWS::IAM::Policy": 6,
+  "AWS::IAM::Role": 10,
+  "AWS::KMS::Alias": 1,
+  "AWS::KMS::Key": 1,
+  "AWS::Lambda::Function": 3,
+  "AWS::Lambda::LayerVersion": 2,
+  "AWS::Logs::LogGroup": 2,
+  "AWS::SSM::Parameter": 1,
+  "Custom::AWSCDK-EKS-HelmChart": 2,
+  "Custom::AWSCDK-EKS-KubernetesResource": 6,
+  "Custom::AWSCDKCfnJson": 1,
+}
+`;

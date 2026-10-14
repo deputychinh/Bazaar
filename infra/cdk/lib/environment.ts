@@ -3,6 +3,7 @@ import { type App, Tags } from 'aws-cdk-lib';
 import { PROJECT_NAME } from './constants/project.constant.js';
 import type { EnvironmentConfig } from './interfaces/environment-config.interface.js';
 import { CiStack } from './stacks/ci-stack.js';
+import { ClusterStack } from './stacks/cluster-stack.js';
 import { DataStack } from './stacks/data-stack.js';
 import { NetworkStack } from './stacks/network-stack.js';
 
@@ -11,6 +12,7 @@ export interface EnvironmentStacks {
   readonly ci: CiStack;
   readonly network: NetworkStack;
   readonly data: DataStack;
+  readonly cluster: ClusterStack;
 }
 
 const stackName = (config: EnvironmentConfig, part: string): string =>
@@ -23,9 +25,21 @@ export const buildEnvironment = (app: App, config: EnvironmentConfig): Environme
   const ci = new CiStack(app, stackName(config, 'ci'), props);
   const network = new NetworkStack(app, stackName(config, 'network'), props);
   const data = new DataStack(app, stackName(config, 'data'), { ...props, vpc: network.vpc });
+  const cluster = new ClusterStack(app, stackName(config, 'cluster'), {
+    ...props,
+    vpc: network.vpc,
+    dataClientSecurityGroup: data.clientSecurityGroup,
+    dataKey: data.key,
+    imagesBucket: data.imagesBucket,
+    secretArns: [
+      `arn:aws:secretsmanager:${config.region}:${config.account}:secret:${PROJECT_NAME}/${config.name}/*`,
+      data.kafkaSecret.secretArn,
+    ],
+    deployRole: ci.deployRole,
+  });
 
-  for (const stack of [ci, network, data]) {
+  for (const stack of [ci, network, data, cluster]) {
     Tags.of(stack).add('env', config.name);
   }
-  return { ci, network, data };
+  return { ci, network, data, cluster };
 };

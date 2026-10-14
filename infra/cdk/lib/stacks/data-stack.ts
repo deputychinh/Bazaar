@@ -29,6 +29,7 @@ import {
 } from '../constants/data.constant.js';
 import { PROJECT_NAME } from '../constants/project.constant.js';
 import type { DataStackProps } from '../interfaces/data-stack-props.interface.js';
+import { imagesBucketName } from '../naming.js';
 
 /**
  * Managed replacements for the local data stores (plan §9A.1, §9A.2 DataStack). Everything sits in
@@ -366,6 +367,7 @@ export class DataStack extends Stack {
       },
     ]);
     this.imagesBucket = new s3.Bucket(this, 'Images', {
+      bucketName: imagesBucketName(config),
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,

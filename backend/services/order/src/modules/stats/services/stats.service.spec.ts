@@ -1,8 +1,10 @@
-import { FixedClock } from '@bazaar/nest-common';
+import type { OrderStatus } from '@bazaar/contracts';
+import { FixedClock, MetricsRegistry } from '@bazaar/nest-common';
 
 import type { PlatformFigures, SellerFigures } from '../../../interfaces/stats.interface.js';
 import { StatsRepository } from '../repositories/stats.repository.js';
 
+import { OrderMetrics } from './order-metrics.js';
 import { StatsService } from './stats.service.js';
 
 class FakeStats extends StatsRepository {
@@ -24,6 +26,10 @@ class FakeStats extends StatsRepository {
       topSellers: [] as never[],
       ...{ topCount },
     } as PlatformFigures);
+  }
+
+  public ordersByStatus(): Promise<Partial<Record<OrderStatus, number>>> {
+    return Promise.resolve({ PENDING: 1, CONFIRMED: 4 });
   }
 }
 
@@ -49,5 +55,15 @@ describe('StatsService', () => {
     const figures = await new StatsService(new FakeStats(), clock).platform(7);
     expect(figures.daily).toHaveLength(7);
     expect(figures.byStatus).toEqual({ CONFIRMED: 3 });
+  });
+});
+
+describe('OrderMetrics', () => {
+  it('exposes the order count per status at scrape time, zero for statuses with no order', async () => {
+    const metrics = new MetricsRegistry({ serviceName: 'order', collectDefaults: false });
+    new OrderMetrics(metrics, new FakeStats());
+    const scraped = await metrics.scrape();
+    expect(scraped).toContain('orders_by_status{status="CONFIRMED",service="order"} 4');
+    expect(scraped).toContain('orders_by_status{status="CANCELLED",service="order"} 0');
   });
 });

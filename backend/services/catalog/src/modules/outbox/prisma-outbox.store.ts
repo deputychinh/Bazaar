@@ -1,4 +1,4 @@
-import { type OutboxMessage, OutboxStore } from '@bazaar/nest-common';
+import { type OutboxBacklog, type OutboxMessage, OutboxStore } from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../infrastructure/prisma/prisma.service.js';
@@ -31,5 +31,18 @@ export class PrismaOutboxStore extends OutboxStore {
       where: { id: { in: ids } },
       data: { sentAt: new Date() },
     });
+  }
+
+  public async backlog(): Promise<OutboxBacklog> {
+    const where = { OR: [{ sentAt: null }, { sentAt: { isSet: false } }] };
+    const [count, oldest] = await Promise.all([
+      this.prisma.outboxMessage.count({ where }),
+      this.prisma.outboxMessage.findFirst({
+        where,
+        orderBy: { id: 'asc' },
+        select: { createdAt: true },
+      }),
+    ]);
+    return { count, oldestCreatedAt: oldest?.createdAt ?? null };
   }
 }

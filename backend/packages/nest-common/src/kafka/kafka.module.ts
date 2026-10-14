@@ -4,6 +4,8 @@ import { type DynamicModule, Module } from '@nestjs/common';
 import type { BaseEnv } from '../config/base-env.schema.js';
 import { KAFKA_MODULE_OPTIONS } from '../constants/injection-token.constant.js';
 import type { KafkaModuleOptions } from '../interfaces/kafka-module-options.interface.js';
+import { KafkaMetrics } from '../metrics/kafka-metrics.js';
+import { MetricsRegistry } from '../metrics/metrics.registry.js';
 
 import { EventConsumer } from './event-consumer.js';
 import { EventDispatcherFactory } from './event-dispatcher.factory.js';
@@ -38,6 +40,11 @@ export class KafkaModule {
       providers: [
         { provide: KAFKA_MODULE_OPTIONS, useValue: options },
         { provide: RetryPolicy, useFactory: () => new RetryPolicy(MAX_DELIVERY_ATTEMPTS) },
+        {
+          provide: KafkaMetrics,
+          useFactory: (registry?: MetricsRegistry) => new KafkaMetrics(registry),
+          inject: [{ token: MetricsRegistry, optional: true }],
+        },
         KafkaConnection,
         EventProducer,
         { provide: MessagePublisher, useExisting: EventProducer },

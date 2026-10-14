@@ -2,11 +2,15 @@ import type { PinoLogger } from 'nestjs-pino';
 
 import { OUTBOX_BATCH_SIZE } from '../constants/outbox.constant.js';
 import type { OutgoingMessage } from '../interfaces/kafka-message.interface.js';
+import type { OutboxBacklog } from '../interfaces/outbox-backlog.interface.js';
 import type { OutboxMessage } from '../interfaces/outbox-message.interface.js';
 import { MessagePublisher } from '../kafka/message-publisher.js';
+import { MetricsRegistry } from '../metrics/metrics.registry.js';
 
 import { OutboxRelay } from './outbox-relay.js';
 import { OutboxStore } from './outbox-store.js';
+
+const CREATED_AT = new Date(Date.now() - 90_000);
 
 class InMemoryOutbox extends OutboxStore {
   public readonly sentIds: string[] = [];
@@ -24,6 +28,14 @@ class InMemoryOutbox extends OutboxStore {
   public markSent(ids: string[]): Promise<void> {
     this.sentIds.push(...ids);
     return Promise.resolve();
+  }
+
+  public backlog(): Promise<OutboxBacklog> {
+    const unsent = this.rows.filter((row) => !this.sentIds.includes(row.id));
+    return Promise.resolve({
+      count: unsent.length,
+      oldestCreatedAt: unsent.length > 0 ? CREATED_AT : null,
+    });
   }
 }
 
@@ -126,5 +138,23 @@ describe('OutboxRelay', () => {
     relay.stop();
 
     expect(publisher.sent).toHaveLength(OUTBOX_BATCH_SIZE + 1);
+  });
+});
+
+describe('OutboxRelay metrics', () => {
+  it('reports the backlog and the age of the oldest unsent message at scrape time', async () => {
+    const metrics = new MetricsRegistry({ serviceName: 'order', collectDefaults: false });
+    const store = new InMemoryOutbox([
+      { id: '1', topic: 'order.events', key: 'o1', value: '{}', headers: {} },
+      { id: '2', topic: 'order.events', key: 'o2', value: '{}', headers: {} },
+    ]);
+    new OutboxRelay(store, new FlakyPublisher(), logger, metrics);
+
+    const scraped = await metrics.scrape();
+    expect(scraped).toContain('outbox_backlog_messages{service="order"} 2');
+    const age = Number(
+      /outbox_oldest_unsent_age_seconds\{service="order"\} ([\d.]+)/.exec(scraped)?.[1],
+    );
+    expect(age).toBeGreaterThanOrEqual(90);
   });
 });

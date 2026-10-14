@@ -7,7 +7,9 @@ import {
 import type { PinoLogger } from 'nestjs-pino';
 
 import { ERROR_HEADER, FIRST_DELIVERY_ATTEMPT } from '../constants/kafka-header.constant.js';
+import { ConsumeOutcome } from '../enums/consume-outcome.enum.js';
 import type { IncomingMessage } from '../interfaces/kafka-message.interface.js';
+import { KafkaMetrics } from '../metrics/kafka-metrics.js';
 import { PromiseUtil } from '../utils/promise.util.js';
 
 import type { BaseEventHandler } from './base-event-handler.js';
@@ -23,6 +25,7 @@ export class EventDispatcher {
     private readonly publisher: MessagePublisher,
     private readonly retryPolicy: RetryPolicy,
     private readonly logger: PinoLogger,
+    private readonly metrics: KafkaMetrics = new KafkaMetrics(),
   ) {
     this.handlers = new Map(handlers.map((handler) => [handler.eventType, handler]));
   }
@@ -38,10 +41,12 @@ export class EventDispatcher {
     }
     const handler = this.handlers.get(event.type);
     if (handler === undefined) {
+      this.metrics.recordConsumed(message.topic, ConsumeOutcome.Ignored);
       return;
     }
     try {
       await handler.handle(event);
+      this.metrics.recordConsumed(message.topic, ConsumeOutcome.Handled);
     } catch (error) {
       await this.forward(message, this.retryPolicy.decide(message.topic, attempt), error);
     }
@@ -56,6 +61,10 @@ export class EventDispatcher {
     this.logger.warn(
       { topic: message.topic, to: decision.topic, attempt: decision.attempt, reason },
       decision.isDeadLetter ? 'event sent to dead-letter topic' : 'event scheduled for retry',
+    );
+    this.metrics.recordConsumed(
+      message.topic,
+      decision.isDeadLetter ? ConsumeOutcome.DeadLettered : ConsumeOutcome.Retried,
     );
     await this.publisher.send({
       topic: decision.topic,

@@ -8,6 +8,7 @@ export * from './http/index.js';
 export * from './interfaces/index.js';
 export * from './kafka/index.js';
 export * from './logger/index.js';
+export * from './metrics/index.js';
 export * from './outbox/index.js';
 export * from './redis/index.js';
 export * from './utils/index.js';

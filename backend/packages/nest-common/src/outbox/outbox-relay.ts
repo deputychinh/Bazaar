@@ -1,8 +1,9 @@
-import { Injectable, type OnApplicationShutdown } from '@nestjs/common';
+import { Injectable, type OnApplicationShutdown, Optional } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 
 import { OUTBOX_BATCH_SIZE, OUTBOX_POLL_INTERVAL_MS } from '../constants/outbox.constant.js';
 import { MessagePublisher } from '../kafka/message-publisher.js';
+import { MetricsRegistry } from '../metrics/metrics.registry.js';
 
 import { OutboxStore } from './outbox-store.js';
 
@@ -16,8 +17,10 @@ export class OutboxRelay implements OnApplicationShutdown {
     private readonly store: OutboxStore,
     private readonly publisher: MessagePublisher,
     private readonly logger: PinoLogger,
+    @Optional() metrics?: MetricsRegistry,
   ) {
     this.logger.setContext(OutboxRelay.name);
+    this.registerMetrics(metrics);
   }
 
   /** Publishes one batch; returns how many messages were sent. */
@@ -72,5 +75,26 @@ export class OutboxRelay implements OnApplicationShutdown {
     }
     // A full batch means more rows are waiting: run again right away.
     this.schedule(sent === OUTBOX_BATCH_SIZE ? 0 : intervalMs);
+  }
+
+  /** Backlog gauges, read from the store at scrape time. */
+  private registerMetrics(metrics?: MetricsRegistry): void {
+    if (metrics === undefined) return;
+    const store = this.store;
+    metrics.gauge({
+      name: 'outbox_backlog_messages',
+      help: 'Outbox messages not yet sent to Kafka',
+      collect: async function () {
+        this.set((await store.backlog()).count);
+      },
+    });
+    metrics.gauge({
+      name: 'outbox_oldest_unsent_age_seconds',
+      help: 'Age of the oldest unsent outbox message (0 when empty)',
+      collect: async function () {
+        const { oldestCreatedAt } = await store.backlog();
+        this.set(oldestCreatedAt === null ? 0 : (Date.now() - oldestCreatedAt.getTime()) / 1000);
+      },
+    });
   }
 }

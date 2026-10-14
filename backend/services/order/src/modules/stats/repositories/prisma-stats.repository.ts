@@ -76,6 +76,13 @@ export class PrismaStatsRepository extends StatsRepository {
     };
   }
 
+  public async ordersByStatus(): Promise<Partial<Record<OrderStatus, number>>> {
+    const rows = await this.prisma.order.groupBy({ by: ['status'], _count: { _all: true } });
+    return Object.fromEntries(
+      rows.map((row) => [EnumUtil.parse(OrderStatus, row.status), row._count._all]),
+    );
+  }
+
   private static toDaily(row: DailyRow): DailyFigure {
     const day =
       row.day instanceof Date ? row.day.toISOString().slice(0, 10) : String(row.day).slice(0, 10);

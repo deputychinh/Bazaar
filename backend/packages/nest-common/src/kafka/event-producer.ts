@@ -3,6 +3,7 @@ import type { KafkaJS } from '@confluentinc/kafka-javascript';
 import { Injectable, type OnApplicationShutdown, type OnModuleInit } from '@nestjs/common';
 
 import type { OutgoingMessage } from '../interfaces/kafka-message.interface.js';
+import { KafkaMetrics } from '../metrics/kafka-metrics.js';
 
 import { KafkaConnection } from './kafka-connection.js';
 import { MessagePublisher } from './message-publisher.js';
@@ -12,7 +13,10 @@ import { MessagePublisher } from './message-publisher.js';
 export class EventProducer extends MessagePublisher implements OnModuleInit, OnApplicationShutdown {
   private readonly producer: KafkaJS.Producer;
 
-  public constructor(connection: KafkaConnection) {
+  public constructor(
+    connection: KafkaConnection,
+    private readonly metrics: KafkaMetrics,
+  ) {
     super();
     this.producer = connection.createProducer();
   }
@@ -35,9 +39,15 @@ export class EventProducer extends MessagePublisher implements OnModuleInit, OnA
   }
 
   public async send(message: OutgoingMessage): Promise<void> {
-    await this.producer.send({
-      topic: message.topic,
-      messages: [{ key: message.key, value: message.value, headers: message.headers }],
-    });
+    try {
+      await this.producer.send({
+        topic: message.topic,
+        messages: [{ key: message.key, value: message.value, headers: message.headers }],
+      });
+      this.metrics.recordProduced(message.topic, true);
+    } catch (error) {
+      this.metrics.recordProduced(message.topic, false);
+      throw error;
+    }
   }
 }

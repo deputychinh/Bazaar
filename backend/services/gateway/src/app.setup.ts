@@ -1,3 +1,4 @@
+import { METRICS_ROUTE } from '@bazaar/nest-common';
 import type { INestApplication } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import cookieParser from 'cookie-parser';
@@ -14,7 +15,9 @@ export class AppSetup {
     app.use(helmet());
     app.use(cookieParser());
     app.enableCors({ origin: env.CORS_ORIGINS, credentials: true });
-    app.setGlobalPrefix(API_PREFIX, { exclude: ['health/live', 'health/ready', JWKS_PATH] });
+    app.setGlobalPrefix(API_PREFIX, {
+      exclude: ['health/live', 'health/ready', METRICS_ROUTE, JWKS_PATH],
+    });
     app.enableShutdownHooks();
   }
 }

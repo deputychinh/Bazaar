@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`NetworkStack > matches the resource inventory 1`] = `
+{
+  "AWS::EC2::EIP": 3,
+  "AWS::EC2::FlowLog": 1,
+  "AWS::EC2::InternetGateway": 1,
+  "AWS::EC2::NatGateway": 3,
+  "AWS::EC2::Route": 6,
+  "AWS::EC2::RouteTable": 9,
+  "AWS::EC2::SecurityGroup": 5,
+  "AWS::EC2::Subnet": 9,
+  "AWS::EC2::SubnetRouteTableAssociation": 9,
+  "AWS::EC2::VPC": 1,
+  "AWS::EC2::VPCEndpoint": 6,
+  "AWS::EC2::VPCGatewayAttachment": 1,
+  "AWS::IAM::Policy": 1,
+  "AWS::IAM::Role": 1,
+  "AWS::Logs::LogGroup": 1,
+}
+`;

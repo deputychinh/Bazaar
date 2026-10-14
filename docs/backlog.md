@@ -121,5 +121,17 @@ Goal: `make k8s-up` → the whole marketplace reachable at `http://bazaar.localh
 | BZ-069 | Jobs, rollout, scaling | Migration Job (Prisma `migrate deploy` + Mongo `schema.js`) and seed Job run before the apps (init containers wait for them); bucket Job; HPA on gateway and catalog (CPU 70 %), PDB for services; rolling update `maxUnavailable: 0`; `make release` / `make rollback` | M | ☑ |
 | BZ-070 | Image + cluster CI | `images.yml`: build images, Trivy scan (fail on HIGH/CRITICAL with a fix); `k8s-smoke.yml`: kind cluster, local overlay, rollout status, curl health through the ingress; ADR 0007 (Kustomize + kind + Strimzi); `docs/k8s.md` how-to | M | ☑ |
 
-## P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish
+## P8 — AWS CDK (prod, written and tested, never deployed)
+Goal: `make aws-test aws-synth` → every stack synthesizes for dev and prod, Vitest assertions and cdk-nag pass, with no AWS account (plan §9A).
+
+| Id | Ticket | Acceptance criteria | Size | Status |
+|---|---|---|---|---|
+| BZ-071 | CDK scaffold | `infra/cdk` own package (aws-cdk-lib, constructs, cdk-nag, Vitest), `bin/bazaar.ts` builds stacks per environment from one typed `lib/config/environments.ts` (dev, prod: sizes, AZs, retention, deletion protection), tags `project/env/owner` on everything, cdk-nag AwsSolutions on every synth (each suppression with a reason), `make aws-synth / aws-test`, `cdk.yml` CI | M | ☐ |
+| BZ-072 | Network + CI stacks | VPC over 3 AZs (public / private / isolated), NAT 1 in dev and 1 per AZ in prod, VPC endpoints (ECR, S3, Secrets Manager, CloudWatch Logs), flow logs; ECR repo per app (scan on push, immutable tags, lifecycle), GitHub OIDC provider + least-privilege deploy role (no access keys) | M | ☐ |
+| BZ-073 | Data stack | Aurora MySQL Serverless v2 (encrypted, Multi-AZ in prod, secret rotation), MSK provisioned (TLS + SASL/SCRAM), ElastiCache Valkey (TLS + AUTH), MongoDB Atlas project/cluster/PrivateLink with the official constructs, S3 images + backups buckets, KMS keys, security groups that only admit the EKS nodes | L | ☐ |
+| BZ-074 | Cluster stack | EKS on Graviton managed nodes, add-ons (AWS Load Balancer Controller, EBS CSI, metrics-server, External Secrets) via Helm with pinned versions, Pod Identity roles per app (S3 images for catalog, SES for notification), namespaces | L | ☐ |
+| BZ-075 | Edge + observability stacks | S3 + CloudFront (OAC) for SSG/static and the admin SPA, SSR to the ALB origin, WAF managed rules, ACM/Route 53 when a domain is given; CloudWatch dashboard and alarms (5xx, p95, MSK lag, Aurora CPU) → SNS email | M | ☐ |
+| BZ-076 | AWS overlay + deploy pipeline | `infra/k8s/overlays/aws`: ALB Ingress, ExternalSecrets from Secrets Manager, service accounts, 2+ replicas with PDB `minAvailable: 1`, managed endpoints; `deploy.yml` written in full (OIDC → ECR → cdk deploy → migration Job → kubectl apply → S3 sync + invalidation), manual and disabled; `docs/aws-cost.md` monthly estimate; ADR | M | ☐ |
+
+## P9 — Observability + quality · P10 — Docs & polish
 Detailed tickets are written at the start of each phase (plan §13).

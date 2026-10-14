@@ -86,5 +86,19 @@ before quoting figures.
 - [Project plan](docs/plan.md) — requirements, architecture, data, Kafka, Kubernetes, AWS, phases
 - [Coding conventions](CONTRIBUTING.md) — single-source declarations, classes + SOLID (backend), arrow functions + BEM (frontend)
 - [Design system](docs/design-system.md) — "Saffron & Ink" tokens with contrast checks
-- [Architecture decisions](docs/adr/)
+- [Architecture decisions](docs/adr/):
+  [0001 one repo](docs/adr/0001-one-repo-three-independent-projects.md) ·
+  [0002 Next.js + SPA](docs/adr/0002-nextjs-site-and-react-spa-admin.md) ·
+  [0003 gateway + services](docs/adr/0003-gateway-bff-and-database-per-service.md) ·
+  [0004 MySQL / MongoDB](docs/adr/0004-mysql-and-mongodb-split.md) ·
+  [0005 saga + outbox](docs/adr/0005-kafka-choreography-saga-and-outbox.md) ·
+  [0006 idempotency, retry, DLQ](docs/adr/0006-idempotent-consumers-retry-and-dlq.md) ·
+  [0007 Kubernetes](docs/adr/0007-kubernetes-kustomize-kind-strimzi.md) ·
+  [0008 BEM + tokens](docs/adr/0008-bem-and-design-tokens.md) ·
+  [0009 AWS as CDK](docs/adr/0009-aws-production-as-cdk-code.md) ·
+  [0010 Atlas](docs/adr/0010-mongodb-atlas-on-aws.md) ·
+  [0011 Prisma](docs/adr/0011-prisma-for-mysql-and-mongodb.md) ·
+  [0012 bilingual + currency](docs/adr/0012-bilingual-content-and-currency-display.md)
+- [Kubernetes staging](docs/k8s.md) · [AWS production](docs/aws.md) · [AWS cost](docs/aws-cost.md)
+- [Runbook](docs/runbook.md) · [Resilience drills](docs/drills.md)
 - [Database files](backend/db/README.md)

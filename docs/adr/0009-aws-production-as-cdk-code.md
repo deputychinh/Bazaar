@@ -1,4 +1,4 @@
-# ADR 0008 — Production on AWS as CDK code, never deployed
+# ADR 0009 — Production on AWS as CDK code, never deployed
 
 - Status: Accepted
 - Date: 2026-10-14

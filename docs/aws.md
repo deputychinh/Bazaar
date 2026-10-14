@@ -1,6 +1,6 @@
 # Production on AWS (written, tested, never deployed)
 
-Plan §9A, ADR 0008. Everything here synthesizes and is tested locally (`make aws-test aws-synth`);
+Plan §9A, ADR 0009. Everything here synthesizes and is tested locally (`make aws-test aws-synth`);
 nothing has been deployed — the project has no AWS account.
 
 ## Stacks (`infra/cdk`, one set per environment: dev, prod)

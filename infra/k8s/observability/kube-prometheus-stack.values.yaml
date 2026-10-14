@@ -14,6 +14,27 @@ prometheus:
       requests: { cpu: 100m, memory: 512Mi }
       limits: { memory: 1536Mi }
 alertmanager:
+  # Alerts arrive as emails in Mailpit (http://mail.bazaar.localhost), like production pages would.
+  config:
+    global:
+      smtp_smarthost: mailpit.bazaar-data.svc:1025
+      smtp_from: alertmanager@bazaar.test
+      smtp_require_tls: false
+    route:
+      receiver: oncall
+      group_by: [alertname, service]
+      group_wait: 30s
+      repeat_interval: 4h
+      routes:
+        # The chart's always-firing heartbeat and noisy kind-only rules stay out of the inbox.
+        - receiver: 'null'
+          matchers: ['alertname =~ "Watchdog|InfoInhibitor"']
+    receivers:
+      - name: 'null'
+      - name: oncall
+        email_configs:
+          - to: oncall@bazaar.test
+            send_resolved: true
   alertmanagerSpec:
     resources:
       requests: { cpu: 10m, memory: 32Mi }

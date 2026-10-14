@@ -1,0 +1,66 @@
+# SLO and health alerts as code (plan §9.3). Each one links its section of docs/runbook.md.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: bazaar
+  namespace: observability
+spec:
+  groups:
+    - name: bazaar.slo
+      rules:
+        # Gateway availability 99.9 %: page when more than 1 % of requests fail for 5 minutes.
+        - alert: GatewayErrorRateHigh
+          expr: |
+            sum(rate(http_server_request_duration_seconds_count{service="gateway",status_code=~"5.."}[5m]))
+              / sum(rate(http_server_request_duration_seconds_count{service="gateway"}[5m])) > 0.01
+          for: 5m
+          labels: { severity: page }
+          annotations:
+            summary: 'Gateway: {{ $value | humanizePercentage }} of requests fail'
+            runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#gatewayerrorratehigh
+        # NFR-03: p95 < 200 ms on the public API.
+        - alert: GatewayLatencyHigh
+          expr: |
+            histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_seconds_bucket{service="gateway"}[5m]))) > 0.2
+          for: 10m
+          labels: { severity: warning }
+          annotations:
+            summary: 'Gateway p95 latency is {{ $value | humanizeDuration }}'
+            runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#gatewaylatencyhigh
+    - name: bazaar.events
+      rules:
+        - alert: KafkaConsumerLagHigh
+          expr: max by (consumergroup, topic) (clamp_min(kafka_consumergroup_lag{namespace="bazaar-data"}, 0)) > 1000
+          for: 5m
+          labels: { severity: warning }
+          annotations:
+            summary: '{{ $labels.consumergroup }} is {{ $value }} messages behind on {{ $labels.topic }}'
+            runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#kafkaconsumerlaghigh
+        - alert: DeadLetterNotEmpty
+          expr: sum by (service, topic) (increase(kafka_messages_consumed_total{outcome="dead_lettered"}[15m])) > 0
+          labels: { severity: warning }
+          annotations:
+            summary: '{{ $labels.service }} sent events from {{ $labels.topic }} to the dead-letter topic'
+            runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#deadletternotempty
+        - alert: OutboxStale
+          expr: max by (service) (outbox_oldest_unsent_age_seconds) > 60
+          for: 2m
+          labels: { severity: page }
+          annotations:
+            summary: '{{ $labels.service }}: oldest unsent outbox message is {{ $value | humanizeDuration }} old'
+            runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#outboxstale
+    - name: bazaar.workloads
+      rules:
+        - alert: ServiceDown
+          expr: up{namespace="bazaar"} == 0
+          for: 2m
+          labels: { severity: page }
+          annotations:
+            summary: '{{ $labels.service }} ({{ $labels.pod }}) cannot be scraped'
+            runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#servicedown
+        - alert: PodCrashLooping
+          expr: increase(kube_pod_container_status_restarts_total{namespace=~"bazaar|bazaar-data"}[15m]) > 2
+          labels: { severity: warning }
+          annotations:
+            summary: '{{ $labels.namespace }}/{{ $labels.pod }} restarted {{ $value }} times in 15 minutes'
+            runbook_url: https://github.com/deputychinh/Bazaar/blob/main/docs/runbook.md#podcrashlooping

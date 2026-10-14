@@ -37,7 +37,10 @@ export class ObservabilityStack extends Stack {
     ): cloudwatch.Alarm => {
       const created = new cloudwatch.Alarm(this, name, {
         alarmName: `${PROJECT_NAME}-${config.name}-${name}`,
-        alarmDescription: `${description} Runbook: docs/runbook.md#${name.toLowerCase()}`,
+        // All lag alarms share one runbook section.
+        alarmDescription: `${description} Runbook: docs/runbook.md#${
+          name.startsWith('KafkaLag') ? 'kafkaconsumerlaghigh' : name.toLowerCase()
+        }`,
         metric,
         threshold,
         evaluationPeriods: 1,

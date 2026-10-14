@@ -1,5 +1,17 @@
-# Monitoring config as code, applied by install.sh once the Prometheus Operator CRDs exist.
+# Monitoring config as code, applied by install.sh once the Prometheus Operator CRDs exist:
+# scrape targets, alert rules and the Grafana dashboards (picked up by the Grafana sidecar).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: observability
 resources:
   - monitors.yaml
+  - alerts.yaml
+configMapGenerator:
+  - name: bazaar-dashboards
+    files:
+      - dashboards/bazaar-services.json
+      - dashboards/bazaar-kafka.json
+      - dashboards/bazaar-orders.json
+    options:
+      labels: { grafana_dashboard: '1' }
+      disableNameSuffixHash: true

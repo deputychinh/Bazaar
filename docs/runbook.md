@@ -6,6 +6,39 @@ Staging commands assume the kind cluster (`kubectl` context `kind-bazaar-staging
 
 Every section follows: **what it means → check → act → afterwards**.
 
+## Operations
+
+### Start and stop
+| Where | Start | Stop |
+|---|---|---|
+| Dev (host services) | `make up`, then `make dev-gateway` / `dev-catalog` / … | Ctrl-C, `make down` |
+| Compose, everything from images | `make up-full` → http://bazaar.localhost:8000 | `make down` (data kept) |
+| Staging (kind) | `make k8s-up` → http://bazaar.localhost; `make k8s-observability` for Grafana | `make k8s-down` (registry images kept) |
+
+`make nuke` deletes the compose volumes; `make urls` prints the local tool URLs.
+
+### Reset data
+- Compose / dev: `make db-reset` (drop, migrate, schema, seed). Seeds are idempotent: `make seed` alone
+  re-applies them without wiping.
+- Staging: `make release` re-runs the db-setup Job (migrations + idempotent seed). For a truly empty
+  database, recreate the cluster (`make k8s-down k8s-up`).
+
+### Read consumer lag
+- Grafana *Bazaar · Kafka and outbox* → *Consumer lag by group and topic* (`-1` from the exporter
+  means no committed offset yet; the panel clamps it to 0).
+- CLI: `kubectl -n bazaar-data exec bazaar-dual-0 -- /opt/kafka/bin/kafka-consumer-groups.sh
+  --bootstrap-server localhost:9092 --describe --all-groups` (compose: the `kafka` container, port 9092).
+
+### Deploy, roll back, destroy
+| | Staging (kind) | AWS |
+|---|---|---|
+| Deploy | `make release` (build, push, data → db-setup → apps) | Actions → **deploy** (manual, needs `AWS_DEPLOY_ENABLED`) |
+| Roll back | `make rollback TAG=<sha>` (images still in the registry) | Re-run **deploy** at the previous sha; migrations only move forward (expand/contract, `docs/drills.md` R7) |
+| Destroy | `make k8s-down` | Dev: `cd infra/cdk && npx cdk destroy "bazaar-dev-*"`. Prod keeps data by design (RETAIN, deletion protection): disable protection on purpose, snapshot, then destroy |
+
+After an emergency `kubectl rollout undo`, run `make release` (or `make rollback`) so the applied
+manifests match the cluster again.
+
 ---
 
 ## GatewayErrorRateHigh

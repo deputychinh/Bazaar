@@ -1,0 +1,22 @@
+# Public names for the local data tools. storage.bazaar.localhost is also what the catalog puts in
+# image URLs; CoreDNS rewrites it to Traefik inside the cluster (cluster.sh), so the web server's
+# image optimizer fetches the same URL browsers use.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: data-tools
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: storage.bazaar.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: storage, port: { name: s3 } } }
+    - host: mail.bazaar.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: mailpit, port: { name: http } } }

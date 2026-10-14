@@ -1,0 +1,116 @@
+# Generated from infra/docker/kafka/topics.txt by `node scripts/check-topics.mjs --write`.
+# Do not edit by hand: CI fails when this file and topics.txt disagree.
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: identity.events
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: 86400000
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: identity.events.retry
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: 86400000
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: identity.events.dlq
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 1
+  replicas: 1
+  config:
+    retention.ms: 86400000
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: order.events
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: order.events.retry
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: order.events.dlq
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 1
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: inventory.events
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: inventory.events.retry
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: inventory.events.dlq
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 1
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: catalog.events
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: catalog.events.retry
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 3
+  replicas: 1
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: catalog.events.dlq
+  labels: { strimzi.io/cluster: bazaar }
+spec:
+  partitions: 1
+  replicas: 1

@@ -35,6 +35,7 @@ CORS
 $S3 s3api put-bucket-cors --bucket "$STORAGE_BUCKET_IMAGES" --cors-configuration file:///tmp/cors.json
 
 # Category placeholders used by the seed products.
-$S3 s3 cp /placeholders "s3://$STORAGE_BUCKET_IMAGES/placeholders" --recursive \
+# `..*` skips the hidden folders Kubernetes adds to a mounted ConfigMap.
+$S3 s3 cp /placeholders "s3://$STORAGE_BUCKET_IMAGES/placeholders" --recursive --exclude '..*' \
   --content-type image/svg+xml --cache-control "public, max-age=86400" --only-show-errors
 echo "buckets ready"

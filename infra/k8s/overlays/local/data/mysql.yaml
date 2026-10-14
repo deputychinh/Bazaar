@@ -1,0 +1,53 @@
+# MySQL for identity (gateway) and orders — one database and one user per service (plan DS-02).
+# Local overlay only; on AWS this is Aurora MySQL (plan §9A).
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  clusterIP: None
+  selector: { app.kubernetes.io/name: mysql }
+  ports:
+    - { name: mysql, port: 3306 }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: mysql }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: mysql }
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4.11
+          ports:
+            - { name: mysql, containerPort: 3306 }
+          envFrom:
+            - secretRef: { name: bazaar-data-secrets }
+          readinessProbe:
+            exec:
+              command:
+                [sh, -c, 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent']
+            periodSeconds: 5
+            failureThreshold: 30
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { memory: 1Gi }
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/mysql }
+            # Same script as docker compose: databases and users, on an empty volume only.
+            - { name: init, mountPath: /docker-entrypoint-initdb.d, readOnly: true }
+      volumes:
+        - name: init
+          configMap: { name: mysql-init }
+  volumeClaimTemplates:
+    - metadata: { name: data }
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: { requests: { storage: 5Gi } }

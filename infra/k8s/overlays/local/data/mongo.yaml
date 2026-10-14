@@ -1,0 +1,56 @@
+# MongoDB for catalog and notification: a single-node replica set (Prisma and transactions need one).
+# Local overlay only; on AWS this is MongoDB Atlas (plan §9A).
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  clusterIP: None
+  # The replica set is initiated with member host `mongo:27017`, which must resolve to this pod
+  # before it is ready (readiness = it is primary).
+  publishNotReadyAddresses: true
+  selector: { app.kubernetes.io/name: mongo }
+  ports:
+    - { name: mongo, port: 27017 }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  serviceName: mongo
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: mongo }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: mongo }
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:8.0.32
+          args: [--replSet, rs0, --bind_ip_all]
+          ports:
+            - { name: mongo, containerPort: 27017 }
+          # Same script as docker compose: initiates the replica set (member host `mongo:27017`,
+          # the headless Service) and is ready once this node is primary.
+          readinessProbe:
+            exec:
+              command: [mongosh, --quiet, /probe/healthcheck.js]
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 30
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { memory: 1Gi }
+          volumeMounts:
+            - { name: data, mountPath: /data/db }
+            - { name: probe, mountPath: /probe, readOnly: true }
+      volumes:
+        - name: probe
+          configMap: { name: mongo-probe }
+  volumeClaimTemplates:
+    - metadata: { name: data }
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: { requests: { storage: 5Gi } }

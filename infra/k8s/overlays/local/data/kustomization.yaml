@@ -1,0 +1,35 @@
+# Data stores of the local (kind) environment, namespace bazaar-data. Applied first by deploy.sh.
+# Scripts are the ones docker compose uses (single source), hence --load-restrictor LoadRestrictionsNone.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: bazaar-data
+labels:
+  - pairs: { app.kubernetes.io/part-of: bazaar, bazaar.dev/phase: data }
+resources:
+  - namespace.yaml
+  - mysql.yaml
+  - mongo.yaml
+  - redis.yaml
+  - storage.yaml
+  - mailpit.yaml
+  - kafka.yaml
+  - kafka-topics.yaml
+  - ingress.yaml
+secretGenerator:
+  - name: bazaar-data-secrets
+    envs: [../.generated/data-secrets.env]
+configMapGenerator:
+  - name: mysql-init
+    files: [../../../../docker/mysql/init/01-databases.sh]
+  - name: mongo-probe
+    files: [../../../../docker/mongo/healthcheck.js]
+  - name: storage-scripts
+    files: [../../../../docker/storage/create-buckets.sh]
+  - name: storage-placeholders
+    files:
+      - ../../../../docker/storage/placeholders/beauty.svg
+      - ../../../../docker/storage/placeholders/books.svg
+      - ../../../../docker/storage/placeholders/crafts.svg
+      - ../../../../docker/storage/placeholders/electronics.svg
+      - ../../../../docker/storage/placeholders/fashion.svg
+      - ../../../../docker/storage/placeholders/home-kitchen.svg

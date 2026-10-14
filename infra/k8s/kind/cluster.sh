@@ -50,6 +50,24 @@ data:
 YAML
 }
 
+# Pods resolve storage.bazaar.localhost to Traefik, like browsers do on the host, so image URLs
+# handed out by the catalog also work for the web server's image optimizer.
+dns_up() {
+  local corefile
+  corefile="$(kubectl -n kube-system get configmap coredns -o jsonpath='{.data.Corefile}')"
+  if ! grep -q 'storage.bazaar.localhost' <<<"$corefile"; then
+    corefile="$(awk '/kubernetes cluster.local/ && !done {
+      match($0, /^ */)
+      print substr($0, 1, RLENGTH) "rewrite name storage.bazaar.localhost traefik.traefik.svc.cluster.local"
+      done = 1
+    } { print }' <<<"$corefile")"
+    kubectl -n kube-system create configmap coredns --from-literal=Corefile="$corefile" \
+      --dry-run=client -o yaml | kubectl apply -f - >/dev/null
+    kubectl -n kube-system rollout restart deployment/coredns >/dev/null
+    kubectl -n kube-system rollout status deployment/coredns --timeout=120s
+  fi
+}
+
 addons_up() {
   helm repo add traefik https://traefik.github.io/charts --force-update >/dev/null
   helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ --force-update >/dev/null
@@ -73,6 +91,7 @@ case "${1:-}" in
     registry_up
     cluster_up
     addons_up
+    dns_up
     kubectl get nodes
     ;;
   down)

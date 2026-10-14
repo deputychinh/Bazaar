@@ -1,7 +1,7 @@
 {
   "name": "bazaar-cdk",
   "private": true,
-  "description": "Bazaar production on AWS as CDK code (plan \u00a79A): synthesized and tested locally, never deployed.",
+  "description": "Bazaar production on AWS as CDK code (plan §9A): synthesized and tested locally, never deployed.",
   "packageManager": "npm@11.19.1",
   "type": "module",
   "engines": {
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "aws-cdk-lib": "2.273.0",
+    "awscdk-resources-mongodbatlas": "4.0.0",
     "cdk-nag": "3.0.2",
     "constructs": "10.8.1"
   },

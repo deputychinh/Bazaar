@@ -15,7 +15,9 @@ exports[`NetworkStack > matches the resource inventory 1`] = `
   "AWS::EC2::VPCEndpoint": 6,
   "AWS::EC2::VPCGatewayAttachment": 1,
   "AWS::IAM::Policy": 1,
-  "AWS::IAM::Role": 1,
+  "AWS::IAM::Role": 2,
+  "AWS::Lambda::Function": 1,
   "AWS::Logs::LogGroup": 1,
+  "Custom::VpcRestrictDefaultSG": 1,
 }
 `;

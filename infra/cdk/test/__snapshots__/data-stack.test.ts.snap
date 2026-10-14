@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DataStack > matches the resource inventory 1`] = `
+{
+  "AWS::EC2::SecurityGroup": 8,
+  "AWS::EC2::SecurityGroupIngress": 7,
+  "AWS::EC2::VPCEndpoint": 1,
+  "AWS::ElastiCache::ReplicationGroup": 1,
+  "AWS::ElastiCache::SubnetGroup": 1,
+  "AWS::IAM::Policy": 1,
+  "AWS::IAM::Role": 2,
+  "AWS::KMS::Alias": 1,
+  "AWS::KMS::Key": 1,
+  "AWS::Lambda::Function": 1,
+  "AWS::Logs::LogGroup": 1,
+  "AWS::MSK::BatchScramSecret": 1,
+  "AWS::MSK::Cluster": 1,
+  "AWS::MSK::Configuration": 1,
+  "AWS::RDS::DBCluster": 1,
+  "AWS::RDS::DBClusterParameterGroup": 1,
+  "AWS::RDS::DBInstance": 2,
+  "AWS::RDS::DBSubnetGroup": 1,
+  "AWS::S3::Bucket": 3,
+  "AWS::S3::BucketPolicy": 3,
+  "AWS::SecretsManager::ResourcePolicy": 3,
+  "AWS::SecretsManager::RotationSchedule": 3,
+  "AWS::SecretsManager::Secret": 7,
+  "AWS::SecretsManager::SecretTargetAttachment": 3,
+  "AWS::Serverless::Application": 3,
+  "Custom::LogRetention": 4,
+  "MongoDB::Atlas::Cluster": 1,
+  "MongoDB::Atlas::DatabaseUser": 2,
+  "MongoDB::Atlas::PrivateEndpointAWS": 1,
+  "MongoDB::Atlas::PrivateEndpointService": 1,
+  "MongoDB::Atlas::Project": 1,
+}
+`;

@@ -26,7 +26,10 @@ export interface EnvironmentConfig {
   readonly atlas: {
     readonly instanceSize: string;
     readonly diskSizeGb: number;
+    /** SSM parameter holding the Atlas organization id (set once per account). */
     readonly orgIdParameter: string;
+    /** Atlas CloudFormation profile: Secrets Manager secret `cfn/atlas/profile/<name>` with API keys. */
+    readonly profile: string;
   };
   readonly eks: {
     readonly instanceType: string;

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import { App, type Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 
@@ -6,15 +8,27 @@ import { ENVIRONMENTS } from '../../lib/config/environments.js';
 import { buildEnvironment, type EnvironmentStacks } from '../../lib/environment.js';
 import type { EnvironmentName } from '../../lib/enums/environment-name.enum.js';
 
+// Tests run with the same feature flags and cached context as `cdk synth`.
+const readJson = (file: string): Record<string, unknown> =>
+  JSON.parse(readFileSync(new URL(`../../${file}`, import.meta.url), 'utf8')) as Record<
+    string,
+    unknown
+  >;
+const context = {
+  ...(readJson('cdk.json').context as Record<string, unknown>),
+  ...readJson('cdk.context.json'),
+};
+const newApp = (): App => new App({ context });
+
 /** Builds one environment in a fresh app, the way bin/bazaar.ts does. */
 export const buildFor = (name: EnvironmentName): EnvironmentStacks =>
-  buildEnvironment(new App(), ENVIRONMENTS[name]);
+  buildEnvironment(newApp(), ENVIRONMENTS[name]);
 
 export const templateOf = (stack: Stack): Template => Template.fromStack(stack);
 
 /** The whole application with cdk-nag attached; synth throws on any unacknowledged finding. */
 export const synthWithNag = (): void => {
-  const app = new App();
+  const app = newApp();
   for (const config of Object.values(ENVIRONMENTS)) {
     buildEnvironment(app, config);
   }

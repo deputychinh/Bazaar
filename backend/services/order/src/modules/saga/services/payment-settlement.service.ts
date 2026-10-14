@@ -6,7 +6,7 @@ import {
   PaymentStatus,
   SellerOrderStatus,
 } from '@bazaar/contracts';
-import { PromiseUtil } from '@bazaar/nest-common';
+import { PromiseUtil, TraceContext } from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 
@@ -38,7 +38,14 @@ export class PaymentSettlementService {
     this.logger.setContext(PaymentSettlementService.name);
   }
 
+  /** The payment step of the saga, as its own span (the provider call is the slow part). */
   public async settle(orderId: string): Promise<void> {
+    await TraceContext.inSpan('saga.settle-payment', () => this.settleNow(orderId), {
+      attributes: { 'order.id': orderId },
+    });
+  }
+
+  private async settleNow(orderId: string): Promise<void> {
     const order = await this.orders.findById(orderId);
     if (order?.status !== OrderStatus.Reserved || order.payment === null) return;
 

@@ -2,12 +2,16 @@
   "name": "@bazaar/nest-common",
   "version": "0.1.0",
   "private": true,
-  "description": "Shared NestJS building blocks: config, logging, health, errors, Kafka, outbox.",
+  "description": "Shared NestJS building blocks: config, logging, health, errors, Kafka, outbox, metrics, tracing.",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./tracing": {
+      "types": "./dist/tracing/tracing.d.ts",
+      "default": "./dist/tracing/tracing.js"
     }
   },
   "main": "dist/index.js",
@@ -23,6 +27,8 @@
   },
   "devDependencies": {
     "@nestjs/testing": "12.1.2",
+    "@opentelemetry/context-async-hooks": "2.12.0",
+    "@opentelemetry/core": "2.12.0",
     "@types/express": "5.0.6",
     "@types/supertest": "7.2.1",
     "pino-pretty": "13.2.0",
@@ -35,6 +41,18 @@
     "@nestjs/core": "12.1.2",
     "@nestjs/platform-express": "12.1.2",
     "@nestjs/swagger": "12.0.2",
+    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/exporter-trace-otlp-http": "0.223.0",
+    "@opentelemetry/instrumentation-express": "0.71.0",
+    "@opentelemetry/instrumentation-http": "0.223.0",
+    "@opentelemetry/instrumentation-pino": "0.69.0",
+    "@opentelemetry/instrumentation-redis": "0.71.0",
+    "@opentelemetry/instrumentation-undici": "0.33.0",
+    "@opentelemetry/resources": "2.12.0",
+    "@opentelemetry/sdk-node": "0.223.0",
+    "@opentelemetry/sdk-trace-base": "2.12.0",
+    "@opentelemetry/semantic-conventions": "1.43.0",
+    "@prisma/instrumentation": "6.19.3",
     "jose": "6.2.12",
     "nestjs-pino": "5.3.1",
     "pino": "10.4.0",

@@ -1,4 +1,5 @@
 import { type AnyEventEnvelope, EVENT_TOPIC, TRACE_ID_HEADER } from '@bazaar/contracts';
+import { TraceContext } from '@bazaar/nest-common';
 import { Injectable } from '@nestjs/common';
 
 import type { Transaction } from '../../interfaces/transaction.interface.js';
@@ -13,7 +14,11 @@ export class PrismaEventOutbox extends EventOutbox {
         topic: EVENT_TOPIC[event.type],
         msgKey: event.aggregateId,
         value: JSON.stringify(event),
-        headers: event.traceId === null ? {} : { [TRACE_ID_HEADER]: event.traceId },
+        // The request's trace context travels with the row; the relay continues it.
+        headers: {
+          ...TraceContext.headers(),
+          ...(event.traceId === null ? {} : { [TRACE_ID_HEADER]: event.traceId }),
+        },
       },
     });
   }

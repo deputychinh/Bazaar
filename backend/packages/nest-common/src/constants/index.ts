@@ -7,4 +7,5 @@ export * from './kafka-header.constant.js';
 export * from './logger.constant.js';
 export * from './metrics.constant.js';
 export * from './outbox.constant.js';
+export * from './tracing.constant.js';
 export * from './metadata.constant.js';

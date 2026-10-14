@@ -1,3 +1,4 @@
+import './instrumentation.js';
 import 'reflect-metadata';
 
 import { AppConfigLoader, Environment } from '@bazaar/nest-common';

@@ -13,3 +13,4 @@ export * from './outbox/index.js';
 export * from './redis/index.js';
 export * from './utils/index.js';
 export * from './time/index.js';
+export * from './tracing/index.js';

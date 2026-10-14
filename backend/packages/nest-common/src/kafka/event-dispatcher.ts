@@ -4,12 +4,14 @@ import {
   EventParser,
   type EventType,
 } from '@bazaar/contracts';
+import { SpanKind } from '@opentelemetry/api';
 import type { PinoLogger } from 'nestjs-pino';
 
 import { ERROR_HEADER, FIRST_DELIVERY_ATTEMPT } from '../constants/kafka-header.constant.js';
 import { ConsumeOutcome } from '../enums/consume-outcome.enum.js';
 import type { IncomingMessage } from '../interfaces/kafka-message.interface.js';
 import { KafkaMetrics } from '../metrics/kafka-metrics.js';
+import { TraceContext } from '../tracing/trace-context.js';
 import { PromiseUtil } from '../utils/promise.util.js';
 
 import type { BaseEventHandler } from './base-event-handler.js';
@@ -30,7 +32,16 @@ export class EventDispatcher {
     this.handlers = new Map(handlers.map((handler) => [handler.eventType, handler]));
   }
 
+  /** Handles one message in a consumer span that continues the producer's trace. */
   public async dispatch(message: IncomingMessage): Promise<void> {
+    await TraceContext.inSpan(`${message.topic} process`, () => this.dispatchNow(message), {
+      kind: SpanKind.CONSUMER,
+      parent: message.headers,
+      attributes: { 'messaging.system': 'kafka', 'messaging.destination.name': message.topic },
+    });
+  }
+
+  private async dispatchNow(message: IncomingMessage): Promise<void> {
     const attempt = Number(message.headers[DELIVERY_ATTEMPT_HEADER] ?? FIRST_DELIVERY_ATTEMPT);
     let event: AnyEventEnvelope;
     try {

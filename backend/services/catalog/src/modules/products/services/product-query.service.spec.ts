@@ -51,12 +51,14 @@ describe('ProductQueryService', () => {
         slug: 'tea-set',
         title: { en: 'Tea set', vi: 'Bộ ấm chén' },
         minPriceUsdCents: 900,
+        soldCount: 10,
       }),
       productFixture({
         id: 'p3',
         slug: 'speaker',
         categoryId: 'cat-audio',
         minPriceUsdCents: 4000,
+        soldCount: 90,
       }),
       productFixture({ id: 'p4', slug: 'draft', status: ProductStatus.Draft }),
     ]);
@@ -74,6 +76,13 @@ describe('ProductQueryService', () => {
     const page = await service.list({ category: 'crafts', page: 1, pageSize: 24 });
 
     expect(page.items.map((product) => product.slug).sort()).toEqual(['tea-set', 'vase']);
+  });
+
+  it('puts the best sellers first', async () => {
+    const page = await service.list({ sort: ProductSort.BestSelling, page: 1, pageSize: 24 });
+
+    expect(page.items.map((product) => product.slug)).toEqual(['speaker', 'tea-set', 'vase']);
+    expect(page.items[0]?.soldCount).toBe(90);
   });
 
   it('sorts by relevance when searching and by newest otherwise', async () => {

@@ -117,6 +117,7 @@ db.products.createIndex(
 );
 db.products.createIndex({ status: 1, publishedAt: -1 }, { name: 'products_status_newest' });
 db.products.createIndex({ status: 1, 'rating.average': -1 }, { name: 'products_status_rating' });
+db.products.createIndex({ status: 1, soldCount: -1 }, { name: 'products_status_best_selling' });
 db.products.createIndex({ shopId: 1, status: 1, createdAt: -1 }, { name: 'products_shop_status' });
 db.products.createIndex({ sellerId: 1, createdAt: -1 }, { name: 'products_seller' });
 // Full-text search in English and Vietnamese. MongoDB has no Vietnamese stemmer, so

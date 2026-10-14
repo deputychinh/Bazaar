@@ -240,7 +240,9 @@ export class InMemoryProductsRepository extends ProductsRepository {
           ? b.minPriceUsdCents - a.minPriceUsdCents
           : criteria.sort === ProductSort.Rating
             ? b.rating.average - a.rating.average
-            : 0,
+            : criteria.sort === ProductSort.BestSelling
+              ? b.soldCount - a.soldCount
+              : 0,
     );
     const start = (criteria.page - 1) * criteria.pageSize;
     return Promise.resolve({

@@ -1899,7 +1899,8 @@ export enum ProductSort {
     newest = "newest",
     price_asc = "price_asc",
     price_desc = "price_desc",
-    rating = "rating"
+    rating = "rating",
+    best_selling = "best_selling"
 }
 export enum ProductStatus {
     DRAFT = "DRAFT",

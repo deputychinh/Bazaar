@@ -4444,7 +4444,8 @@
           "newest",
           "price_asc",
           "price_desc",
-          "rating"
+          "rating",
+          "best_selling"
         ]
       },
       "ProductStatus": {

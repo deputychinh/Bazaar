@@ -244,6 +244,8 @@ export class PrismaProductsRepository extends ProductsRepository {
         return { minPriceUsdCents: 'desc' };
       case ProductSort.Rating:
         return { rating: { average: 'desc' } };
+      case ProductSort.BestSelling:
+        return { soldCount: 'desc' };
       case ProductSort.Newest:
       case ProductSort.Relevance:
         return { publishedAt: 'desc' };
@@ -258,6 +260,8 @@ export class PrismaProductsRepository extends ProductsRepository {
         return { minPriceUsdCents: -1 };
       case ProductSort.Rating:
         return { 'rating.average': -1 };
+      case ProductSort.BestSelling:
+        return { soldCount: -1 };
       case ProductSort.Newest:
         return { publishedAt: -1 };
       case ProductSort.Relevance:

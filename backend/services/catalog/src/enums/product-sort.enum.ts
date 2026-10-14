@@ -4,4 +4,5 @@ export enum ProductSort {
   PriceAsc = 'price_asc',
   PriceDesc = 'price_desc',
   Rating = 'rating',
+  BestSelling = 'best_selling',
 }

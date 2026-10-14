@@ -4,8 +4,27 @@ A production-style fullstack project run entirely on a laptop: **React with thre
 (SSG · SSR · SPA)**, **NestJS services talking over Kafka**, **MySQL + MongoDB + Redis**, shipped with
 **Docker** and **Kubernetes** (kind), with the AWS production environment written in **CDK**.
 
-> Status: **P2 Catalog done** · next: P3 Customer site (Next.js). Full plan: [`docs/plan.md`](docs/plan.md) ·
-> backlog: [`docs/backlog.md`](docs/backlog.md).
+> Status: **all planned phases done (P0–P10)** — staging on kind, AWS as tested CDK code, observability,
+> load tests and resilience drills. Full plan: [`docs/plan.md`](docs/plan.md) · backlog:
+> [`docs/backlog.md`](docs/backlog.md) · diagrams: [`docs/architecture`](docs/architecture/README.md).
+
+## Tour
+| | |
+|---|---|
+| ![Customer site, home](docs/screenshots/web-home-en.png) **Customer site** — SSG home page (`/en`) | ![Category, Vietnamese](docs/screenshots/web-category-vi.png) **SSR category** in Vietnamese, prices shown in VND (stored in USD) |
+| ![Product page](docs/screenshots/web-product-vi.png) **ISR product page**, revalidated when the seller edits it | ![Seller dashboard](docs/screenshots/admin-seller-dashboard.png) **Admin SPA, seller** — dashboard with sales stats |
+| ![Seller orders](docs/screenshots/admin-seller-orders.png) **Seller order queue** — ship and deliver | ![Moderation](docs/screenshots/admin-platform-moderation.png) **Platform admin** — product moderation |
+| ![Grafana services](docs/screenshots/grafana-services.png) **Grafana** — golden signals per service and route | ![One checkout, one trace](docs/screenshots/grafana-trace.png) **One checkout = one trace** across gateway, catalog, order, Kafka and notification |
+
+Screenshots come from the staging cluster: `cd e2e && npm run screenshots` (needs `make k8s-up k8s-observability`).
+
+### Where it runs
+| Environment | How | URLs |
+|---|---|---|
+| Dev | `make up` + `make dev-*` | API http://localhost:4000, web :3100, admin :3200 |
+| Compose, all images | `make up-full` | http://bazaar.localhost:8000 · http://admin.bazaar.localhost:8000 |
+| Staging (kind) | `make k8s-up` (+ `make k8s-observability`) | http://bazaar.localhost · http://admin.bazaar.localhost · http://grafana.bazaar.localhost · http://mail.bazaar.localhost |
+| Production (AWS) | CDK + `deploy.yml`, written and tested, never deployed | see [`docs/aws.md`](docs/aws.md) |
 
 ## Stack
 | Area | Choice |

@@ -108,6 +108,20 @@ images: ## Build every image tagged $(REGISTRY)/bazaar/<app>:<git sha>
 	@echo "→ web"; docker build -q -t $(REGISTRY)/bazaar/web:$(TAG) frontend-web
 	@echo "→ admin"; docker build -q -t $(REGISTRY)/bazaar/admin:$(TAG) frontend-admin
 
+# --- kubernetes (staging on kind) --------------------------------------------
+k8s-up: ## Create the kind cluster + local registry, install Traefik, metrics-server, Strimzi
+	infra/k8s/kind/cluster.sh up
+
+k8s-down: ## Delete the kind cluster (registry images are kept)
+	infra/k8s/kind/cluster.sh down
+
+k8s-status: ## Nodes, Helm releases and Bazaar pods
+	infra/k8s/kind/cluster.sh status
+
+k8s-load: images ## Build every image and push it to the cluster registry (localhost:5001)
+	@set -e; for name in gateway catalog order notification gateway-migrate order-migrate web admin; do \
+		docker push -q $(REGISTRY)/bazaar/$$name:$(TAG); done
+
 dev-gateway: keys ## Run the gateway with reload on :4000
 	$(BACKEND) npm run dev -w @bazaar/gateway
 
@@ -120,4 +134,4 @@ dev-order: ## Run the order service with reload on :4020
 dev-notification: ## Run the notification service with reload on :4030
 	$(BACKEND) npm run dev -w @bazaar/notification
 
-.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images
+.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images k8s-up k8s-down k8s-status k8s-load

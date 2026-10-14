@@ -1,0 +1,5 @@
+# Strimzi operator (chart strimzi/strimzi-kafka-operator): manages Kafka in bazaar-data only.
+watchNamespaces: [bazaar-data]
+resources:
+  requests: { cpu: 100m, memory: 256Mi }
+  limits: { memory: 384Mi }

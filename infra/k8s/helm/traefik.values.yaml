@@ -1,0 +1,25 @@
+# Traefik ingress controller for kind (chart traefik/traefik, version pinned in cluster.sh).
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+providers:
+  kubernetesIngress:
+    enabled: true
+  kubernetesCRD:
+    enabled: false
+service:
+  spec:
+    type: NodePort
+ports:
+  web:
+    nodePort: 30080
+  websecure:
+    nodePort: 30443
+# Incoming X-Forwarded-* headers are not trusted (default): Traefik writes the client address
+# itself, which is the single hop the gateway trusts (TRUST_PROXY_HOPS=1).
+accessLog:
+  enabled: true
+  format: json
+resources:
+  requests: { cpu: 50m, memory: 64Mi }
+  limits: { memory: 256Mi }

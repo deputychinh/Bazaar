@@ -29,6 +29,12 @@ export const routes: RouteObject[] = [
             }),
           },
           {
+            path: 'orders',
+            lazy: async () => ({
+              Component: (await import('@/routes/seller/OrdersPage')).OrdersPage,
+            }),
+          },
+          {
             path: 'products/:id',
             lazy: async () => ({
               Component: (await import('@/routes/seller/ProductEditorPage')).ProductEditorPage,

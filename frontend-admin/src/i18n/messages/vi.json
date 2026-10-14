@@ -130,5 +130,12 @@
     "none": "Chưa có hình ảnh.",
     "add": "Thêm ảnh (JPEG, PNG hoặc WebP, tối đa 5 MB)",
     "remove": "Xoá"
+  },
+  "orders": {
+    "title": "Đơn hàng",
+    "filter": "Hiển thị đơn",
+    "none": "Hiện chưa có đơn nào.",
+    "ship": "Đánh dấu đã gửi",
+    "deliver": "Đánh dấu đã giao"
   }
 }

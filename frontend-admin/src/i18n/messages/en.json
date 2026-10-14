@@ -130,5 +130,12 @@
     "none": "No images yet.",
     "add": "Add an image (JPEG, PNG or WebP, up to 5 MB)",
     "remove": "Remove"
+  },
+  "orders": {
+    "title": "Orders",
+    "filter": "Show orders",
+    "none": "Nothing here right now.",
+    "ship": "Mark as shipped",
+    "deliver": "Mark as delivered"
   }
 }

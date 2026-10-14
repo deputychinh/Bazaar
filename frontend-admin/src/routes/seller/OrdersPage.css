@@ -1,0 +1,54 @@
+.orders-page__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.orders-page__tab {
+  padding: var(--padding-control-sm);
+  font: inherit;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.orders-page__tab.is-active {
+  color: var(--color-on-primary-subtle);
+  background: var(--color-primary-subtle);
+  border-color: var(--color-primary);
+}
+
+.orders-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-0);
+  list-style: none;
+}
+
+.orders-page__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--padding-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.orders-page__summary,
+.orders-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-inline);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.orders-page__meta {
+  color: var(--color-text-muted);
+}
+
+.orders-page__items {
+  padding-inline-start: var(--space-4);
+}

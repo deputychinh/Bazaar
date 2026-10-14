@@ -1,6 +1,8 @@
 #!/bin/bash
 # One database and one user per service (plan DS-02). Runs once, on an empty data volume.
-set -euo pipefail
+# No `set -u` here: the MySQL entrypoint *sources* scripts it cannot execute (a ConfigMap mounted
+# without exec bits), and the option would leak into it and crash it mid-init. A failing mysql
+# command still stops the entrypoint, which runs with `set -e`.
 mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" <<SQL
 CREATE DATABASE IF NOT EXISTS bazaar_identity CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 CREATE DATABASE IF NOT EXISTS bazaar_order CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;

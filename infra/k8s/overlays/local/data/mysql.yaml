@@ -45,7 +45,8 @@ spec:
             - { name: init, mountPath: /docker-entrypoint-initdb.d, readOnly: true }
       volumes:
         - name: init
-          configMap: { name: mysql-init }
+          # Executable, so the entrypoint runs the script instead of sourcing it.
+          configMap: { name: mysql-init, defaultMode: 0555 }
   volumeClaimTemplates:
     - metadata: { name: data }
       spec:

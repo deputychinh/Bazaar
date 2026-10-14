@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="herbal-soap ivory">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef8f1"/><stop offset="1" stop-color="#cfeedb"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<path d="M190 400 L600 400 L620 520 Q400 560 180 520 Z" fill="#aca493"/>
+<rect x="190" y="320" width="420" height="140" rx="44" fill="#efe4cc"/>
+<path d="M330 390 Q400 300 470 390 Q400 440 330 390 Z" fill="#7bbf6a"/>
+<path d="M400 330 L400 420" stroke="#4f8f43" stroke-width="5"/>
+<circle cx="560" cy="300" r="22" fill="#ffffff" opacity=".6"/><circle cx="600" cy="260" r="12" fill="#ffffff" opacity=".6"/>
+</g>
+</svg>

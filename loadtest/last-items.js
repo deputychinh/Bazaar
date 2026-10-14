@@ -39,10 +39,19 @@ export const setup = () => {
   http.post(`${API}/api/v1/seller/products/${id}/publish`, null, { headers: auth });
   const slug = http.get(`${API}/api/v1/seller/products/${id}`, { headers: auth }).json('slug');
   return {
+    id,
+    seller,
     slug,
     sku,
     tokens: [login('shopper.linh@bazaar.test'), login('shopper.tom@bazaar.test')],
   };
+};
+
+// The drill's product leaves the storefront afterwards.
+export const teardown = ({ id, seller }) => {
+  http.post(`${API}/api/v1/seller/products/${id}/unpublish`, null, {
+    headers: { authorization: `Bearer ${seller}` },
+  });
 };
 
 export default ({ slug, sku, tokens }) => {

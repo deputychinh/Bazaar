@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="ceramic-vase indigo">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3efe6"/><stop offset="1" stop-color="#e6dcc4"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<path d="M340 190 L460 190 L450 260 Q600 340 560 500 Q530 640 400 640 Q270 640 240 500 Q200 340 350 260 Z" fill="#3f4f9a"/>
+<rect x="325" y="180" width="150" height="30" rx="12" fill="#2d396f"/>
+<path d="M270 430 Q400 470 530 430" stroke="#fbf8f1" stroke-width="12" fill="none"/>
+<path d="M300 480 Q400 520 500 480" stroke="#fbf8f1" stroke-width="6" fill="none" opacity=".7"/>
+<path d="M300 330 Q280 420 310 520" stroke="#ffffff" stroke-width="14" fill="none" opacity=".18" stroke-linecap="round"/>
+</g>
+</svg>

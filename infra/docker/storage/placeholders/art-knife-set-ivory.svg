@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="knife-set ivory">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1e6"/><stop offset="1" stop-color="#ffd9bf"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<path d="M300 230 L330 230 L330 380 L300 380 Z" fill="#a9b1ba"/>
+<path d="M370 190 L405 190 L405 380 L370 380 Z" fill="#c7ccd2"/>
+<path d="M445 250 L472 250 L472 380 L445 380 Z" fill="#a9b1ba"/>
+<path d="M250 380 L550 380 L590 620 L210 620 Z" fill="#b07a4a"/>
+<path d="M250 380 L550 380 L560 430 L240 430 Z" fill="#7f5835"/>
+<rect x="292" y="330" width="46" height="70" rx="12" fill="#efe4cc"/>
+<rect x="364" y="320" width="48" height="80" rx="12" fill="#efe4cc"/>
+<rect x="438" y="335" width="42" height="65" rx="12" fill="#efe4cc"/>
+</g>
+</svg>

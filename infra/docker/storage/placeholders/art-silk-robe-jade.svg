@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="silk-robe jade">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3efe6"/><stop offset="1" stop-color="#e6dcc4"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<path d="M330 190 L470 190 L560 240 L650 430 L590 450 L540 360 L560 660 L240 660 L260 360 L210 450 L150 430 L240 240 Z" fill="#2f9b7c"/>
+<path d="M330 190 L400 420 L470 190" stroke="#227059" stroke-width="18" fill="none"/>
+<rect x="250" y="420" width="300" height="34" fill="#227059"/>
+<path d="M500 454 L540 560 M520 454 L580 540" stroke="#227059" stroke-width="14" stroke-linecap="round"/>
+</g>
+</svg>

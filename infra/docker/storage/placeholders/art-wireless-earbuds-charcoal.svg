@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="wireless-earbuds charcoal">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eaf0fb"/><stop offset="1" stop-color="#cfdcf5"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<rect x="250" y="340" width="300" height="230" rx="80" fill="#3b3d42"/>
+<path d="M250 430 L550 430" stroke="#2a2c30" stroke-width="6"/>
+<circle cx="400" cy="500" r="9" fill="#5be3a0"/>
+<ellipse cx="335" cy="300" rx="44" ry="40" fill="#808184"/><rect x="322" y="300" width="26" height="90" rx="13" fill="#808184"/>
+<ellipse cx="470" cy="290" rx="44" ry="40" fill="#808184"/><rect x="457" y="290" width="26" height="90" rx="13" fill="#808184"/>
+</g>
+</svg>

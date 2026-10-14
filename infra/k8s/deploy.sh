@@ -29,6 +29,8 @@ mkdir -p "$RELEASE"
 kubectl kustomize --load-restrictor LoadRestrictionsNone "$RELEASE" > "$RENDERED"
 
 echo "→ data stores"
+# Jobs are immutable: the bucket Job runs again on every release (new placeholders, same script).
+kubectl -n bazaar-data delete job storage-init --ignore-not-found
 kubectl apply -f "$RENDERED" -l bazaar.dev/phase=data
 for store in mysql mongo redis storage; do
   kubectl -n bazaar-data rollout status "statefulset/$store" --timeout=300s

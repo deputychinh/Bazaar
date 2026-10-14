@@ -58,4 +58,10 @@ test('a seller creates and publishes a product, then ships its first order', asy
 
   await page.getByRole('button', { name: 'Shipped', exact: true }).click();
   await expect(page.getByRole('listitem').filter({ hasText: reference })).toBeVisible();
+
+  // Leave the storefront as it was: the journey's product goes back to draft.
+  await api(`/api/v1/seller/products/${productId}/unpublish`, {
+    method: 'POST',
+    token: sellerToken,
+  });
 });

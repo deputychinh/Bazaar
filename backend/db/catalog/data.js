@@ -236,7 +236,14 @@ for (let index = 0; index < PRODUCT_COUNT; index += 1) {
     categoryId: category._id,
     attributes: { origin: { en: 'Vietnam', vi: 'Việt Nam' } },
     variants,
-    images: [{ key: `placeholders/${category.top}.svg`, alt: { en: titleEn, vi: titleVi } }],
+    // One illustration per variant colour (scripts/generate-product-art.mjs); the first is the cover.
+    images: variants.map((variant) => ({
+      key: `placeholders/art-${slugify(nounEn)}-${slugify(variant.attributes.colour.en)}.svg`,
+      alt: {
+        en: `${titleEn} — ${variant.attributes.colour.en}`,
+        vi: `${titleVi} — ${variant.attributes.colour.vi}`,
+      },
+    })),
     status,
     minPriceUsdCents: int(Math.min(...variants.map((variant) => variant.priceUsdCents))),
     totalStock: int(variants.reduce((total, variant) => total + variant.stock, 0)),

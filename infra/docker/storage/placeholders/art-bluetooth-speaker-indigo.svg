@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="bluetooth-speaker indigo">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eaf0fb"/><stop offset="1" stop-color="#cfdcf5"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<rect x="200" y="320" width="400" height="220" rx="110" fill="#3f4f9a"/>
+<rect x="240" y="350" width="320" height="160" rx="80" fill="#2d396f"/>
+<g fill="#828dbd" opacity=".55"><circle cx="290" cy="385" r="7"/><circle cx="321" cy="385" r="7"/><circle cx="352" cy="385" r="7"/><circle cx="383" cy="385" r="7"/><circle cx="414" cy="385" r="7"/><circle cx="445" cy="385" r="7"/><circle cx="476" cy="385" r="7"/><circle cx="507" cy="385" r="7"/><circle cx="290" cy="430" r="7"/><circle cx="321" cy="430" r="7"/><circle cx="352" cy="430" r="7"/><circle cx="383" cy="430" r="7"/><circle cx="414" cy="430" r="7"/><circle cx="445" cy="430" r="7"/><circle cx="476" cy="430" r="7"/><circle cx="507" cy="430" r="7"/><circle cx="290" cy="475" r="7"/><circle cx="321" cy="475" r="7"/><circle cx="352" cy="475" r="7"/><circle cx="383" cy="475" r="7"/><circle cx="414" cy="475" r="7"/><circle cx="445" cy="475" r="7"/><circle cx="476" cy="475" r="7"/><circle cx="507" cy="475" r="7"/></g>
+<rect x="360" y="290" width="80" height="22" rx="11" fill="#2d396f"/>
+</g>
+</svg>

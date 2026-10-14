@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="silk-scarf indigo">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdeef4"/><stop offset="1" stop-color="#f8d1e1"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<path d="M160 300 Q300 220 420 300 T680 300 L640 420 Q520 340 400 420 T150 420 Z" fill="#3f4f9a"/>
+<path d="M150 420 Q280 500 400 420 T640 420 L600 560 Q480 480 380 560 T190 560 Z" fill="#2d396f"/>
+<path d="M190 330 Q300 280 420 330" stroke="#d9a646" stroke-width="6" fill="none"/>
+</g>
+</svg>

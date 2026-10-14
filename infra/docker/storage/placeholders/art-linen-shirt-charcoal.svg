@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="linen-shirt charcoal">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fdeef4"/><stop offset="1" stop-color="#f8d1e1"/></linearGradient></defs>
+<rect width="800" height="800" fill="url(#g)"/>
+<circle cx="640" cy="160" r="120" fill="#ffffff" opacity=".35"/>
+<ellipse cx="400" cy="660" rx="260" ry="34" fill="#000000" opacity=".08"/>
+<g transform="translate(400 430) scale(1.12) translate(-400 -430)">
+<path d="M300 200 L250 220 L150 320 L210 390 L260 350 L260 620 L540 620 L540 350 L590 390 L650 320 L550 220 L500 200 Q400 260 300 200 Z" fill="#3b3d42"/>
+<path d="M300 200 L360 300 L400 250 L440 300 L500 200 Q400 240 300 200 Z" fill="#2a2c30"/>
+<line x1="400" y1="260" x2="400" y2="620" stroke="#2a2c30" stroke-width="6"/>
+<circle cx="400" cy="330" r="7" fill="#fbf8f1"/><circle cx="400" cy="410" r="7" fill="#fbf8f1"/>
+<circle cx="400" cy="490" r="7" fill="#fbf8f1"/><circle cx="400" cy="570" r="7" fill="#fbf8f1"/>
+</g>
+</svg>

@@ -223,6 +223,8 @@ for (let index = 0; index < PRODUCT_COUNT; index += 1) {
   });
   const status = random() < 0.95 ? 'PUBLISHED' : random() < 0.6 ? 'DRAFT' : 'HIDDEN';
   const createdAt = new Date(SEEDED_AT.getTime() - Math.floor(random() * 270) * 86400000);
+  const average = Math.round((3 + random() * 2) * 10) / 10;
+  const reviews = Math.floor(random() * 500);
   products.push({
     _id: oid('b0', number),
     shopId: shop._id,
@@ -247,10 +249,9 @@ for (let index = 0; index < PRODUCT_COUNT; index += 1) {
     status,
     minPriceUsdCents: int(Math.min(...variants.map((variant) => variant.priceUsdCents))),
     totalStock: int(variants.reduce((total, variant) => total + variant.stock, 0)),
-    rating: {
-      average: Math.round((3 + random() * 2) * 10) / 10,
-      count: int(Math.floor(random() * 500)),
-    },
+    rating: { average, count: int(reviews) },
+    // Roughly one review for every three buyers.
+    soldCount: int(reviews * 3 + (number % 7)),
     hiddenReason: status === 'HIDDEN' ? 'Seed: hidden by moderation' : null,
     publishedAt: status === 'PUBLISHED' ? createdAt : null,
     createdAt,

@@ -13,6 +13,7 @@ const product: ProductSummary = {
   minPriceUsdCents: 1500,
   imageUrl: 'http://127.0.0.1:9002/bazaar-images/a.webp',
   rating: { average: 4.6, count: 12 },
+  soldCount: 1250,
   inStock: true,
 };
 

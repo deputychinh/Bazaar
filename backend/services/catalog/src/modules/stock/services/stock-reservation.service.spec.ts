@@ -117,4 +117,27 @@ describe('StockReservationService', () => {
     expect(stock.units('p1', 'A')).toBe(3);
     expect(outbox.events).toHaveLength(0);
   });
+
+  it('counts a confirmed order as sold, except seller orders already given back', async () => {
+    await service.reserve(
+      order([
+        ['so1', 'p1', 'A', 2],
+        ['so2', 'p2', 'B', 1],
+      ]),
+      NO_TRANSACTION,
+    );
+    await service.release('order-1', 'so2', NO_TRANSACTION);
+
+    await service.recordSale('order-1', NO_TRANSACTION);
+
+    expect(stock.sold.get('p1')).toBe(2);
+    expect(stock.sold.has('p2')).toBe(false);
+  });
+
+  it('counts nothing for an order that holds no stock', async () => {
+    await service.release('order-1', null, NO_TRANSACTION);
+    await service.recordSale('order-1', NO_TRANSACTION);
+    await service.recordSale('missing', NO_TRANSACTION);
+    expect(stock.sold.size).toBe(0);
+  });
 });

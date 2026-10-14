@@ -86,6 +86,19 @@ export class StockReservationService {
   }
 
   /**
+   * The order was paid and confirmed: its reserved units count as sold. Lines already given back
+   * (a seller order cancelled first) are not counted. Runs once per event (processed-event store).
+   */
+  public async recordSale(orderId: string, transaction: Transaction): Promise<void> {
+    const reservation = await this.stock.findReservation(orderId, transaction);
+    if (reservation === null || reservation.status === ReservationStatus.Released) return;
+    const released = new Set(reservation.releasedSellerOrderIds);
+    for (const line of reservation.lines) {
+      if (!released.has(line.sellerOrderId)) await this.stock.addSold(line, transaction);
+    }
+  }
+
+  /**
    * Gives back what is still held for the order, or only for one seller order. Does nothing when
    * nothing was reserved (e.g. OUT_OF_STOCK) or it was already given back.
    */

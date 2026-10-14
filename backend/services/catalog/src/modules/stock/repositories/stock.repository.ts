@@ -8,6 +8,9 @@ export abstract class StockRepository {
 
   public abstract giveBack(line: StockLine, transaction: Transaction): Promise<void>;
 
+  /** Counts the units of a confirmed order as sold (the storefront's "sold" figure). */
+  public abstract addSold(line: StockLine, transaction: Transaction): Promise<void>;
+
   /** Units left of a variant (0 when the product or variant is gone). */
   public abstract available(line: StockLine, transaction: Transaction): Promise<number>;
 

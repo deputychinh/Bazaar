@@ -11,6 +11,7 @@ export const sellerProductFixture = (overrides: Partial<SellerProduct> = {}): Se
   minPriceUsdCents: 1500,
   imageUrl: null,
   rating: { average: 0, count: 0 },
+  soldCount: 0,
   inStock: true,
   categoryId: fixtureCategoryId,
   status: ProductStatus.DRAFT,

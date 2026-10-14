@@ -517,6 +517,11 @@
                             ],
                             "additionalProperties": false
                           },
+                          "soldCount": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "inStock": {
                             "type": "boolean"
                           }
@@ -528,6 +533,7 @@
                           "minPriceUsdCents",
                           "imageUrl",
                           "rating",
+                          "soldCount",
                           "inStock"
                         ],
                         "additionalProperties": false
@@ -644,6 +650,11 @@
                         "count"
                       ],
                       "additionalProperties": false
+                    },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "inStock": {
                       "type": "boolean"
@@ -769,6 +780,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -900,6 +912,11 @@
                             ],
                             "additionalProperties": false
                           },
+                          "soldCount": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "inStock": {
                             "type": "boolean"
                           },
@@ -1026,6 +1043,7 @@
                           "minPriceUsdCents",
                           "imageUrl",
                           "rating",
+                          "soldCount",
                           "inStock",
                           "description",
                           "categoryId",
@@ -1246,6 +1264,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -1372,6 +1395,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -1479,6 +1503,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -1605,6 +1634,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -1802,6 +1832,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -1928,6 +1963,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -2035,6 +2071,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -2161,6 +2202,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -2268,6 +2310,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -2394,6 +2441,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -2634,6 +2682,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -2760,6 +2813,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -2875,6 +2929,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -3001,6 +3060,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -3149,6 +3209,11 @@
                             ],
                             "additionalProperties": false
                           },
+                          "soldCount": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "inStock": {
                             "type": "boolean"
                           },
@@ -3275,6 +3340,7 @@
                           "minPriceUsdCents",
                           "imageUrl",
                           "rating",
+                          "soldCount",
                           "inStock",
                           "description",
                           "categoryId",
@@ -3407,6 +3473,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -3533,6 +3604,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -3660,6 +3732,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -3786,6 +3863,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",
@@ -3893,6 +3971,11 @@
                       ],
                       "additionalProperties": false
                     },
+                    "soldCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "inStock": {
                       "type": "boolean"
                     },
@@ -4019,6 +4102,7 @@
                     "minPriceUsdCents",
                     "imageUrl",
                     "rating",
+                    "soldCount",
                     "inStock",
                     "description",
                     "categoryId",

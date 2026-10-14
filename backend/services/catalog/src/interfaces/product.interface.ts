@@ -29,6 +29,8 @@ export interface Product {
   minPriceUsdCents: number;
   totalStock: number;
   rating: { average: number; count: number };
+  /** Units in confirmed orders. */
+  soldCount: number;
   hiddenReason: string | null;
   publishedAt: Date | null;
   createdAt: Date;

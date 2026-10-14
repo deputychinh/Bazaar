@@ -85,6 +85,8 @@ model Product {
   minPriceUsdCents Int
   totalStock       Int
   rating           Rating
+  /// Units in confirmed orders (OrderConfirmed), shown as "sold" on the storefront.
+  soldCount        Int              @default(0)
   hiddenReason     String?
   publishedAt      DateTime?
   createdAt        DateTime         @default(now())

@@ -6,6 +6,7 @@ import { CATALOG_CONSUMER_GROUP } from '../../constants/kafka.constant.js';
 import { SellerOrderDeliveredHandler } from '../reviews/events/seller-order-delivered.handler.js';
 import { SellerApprovedHandler } from '../shops/events/seller-approved.handler.js';
 import { OrderCancelledHandler } from '../stock/events/order-cancelled.handler.js';
+import { OrderConfirmedHandler } from '../stock/events/order-confirmed.handler.js';
 import { OrderCreatedHandler } from '../stock/events/order-created.handler.js';
 import { SellerOrderCancelledHandler } from '../stock/events/seller-order-cancelled.handler.js';
 
@@ -17,6 +18,7 @@ export class EventConsumerRunner implements OnApplicationBootstrap {
     private readonly sellerApproved: SellerApprovedHandler,
     private readonly orderCreated: OrderCreatedHandler,
     private readonly orderCancelled: OrderCancelledHandler,
+    private readonly orderConfirmed: OrderConfirmedHandler,
     private readonly sellerOrderCancelled: SellerOrderCancelledHandler,
     private readonly sellerOrderDelivered: SellerOrderDeliveredHandler,
   ) {}
@@ -29,6 +31,7 @@ export class EventConsumerRunner implements OnApplicationBootstrap {
         this.sellerApproved,
         this.orderCreated,
         this.orderCancelled,
+        this.orderConfirmed,
         this.sellerOrderCancelled,
         this.sellerOrderDelivered,
       ],

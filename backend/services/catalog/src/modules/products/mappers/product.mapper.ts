@@ -30,6 +30,7 @@ export class ProductMapper {
       minPriceUsdCents: row.minPriceUsdCents,
       totalStock: row.totalStock,
       rating: { average: row.rating.average, count: row.rating.count },
+      soldCount: row.soldCount,
       hiddenReason: row.hiddenReason,
       publishedAt: row.publishedAt,
       createdAt: row.createdAt,

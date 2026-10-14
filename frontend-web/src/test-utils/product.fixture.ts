@@ -10,6 +10,7 @@ export const productFixture = (overrides: Partial<ProductDetail> = {}): ProductD
   minPriceUsdCents: 1500,
   imageUrl: 'http://127.0.0.1:9002/bazaar-images/a.png',
   rating: { average: 4.5, count: 12 },
+  soldCount: 40,
   inStock: true,
   categoryId: 'c1',
   status: ProductStatus.PUBLISHED,

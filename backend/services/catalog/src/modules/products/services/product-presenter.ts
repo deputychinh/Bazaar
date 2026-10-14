@@ -20,6 +20,7 @@ export class ProductPresenter {
       minPriceUsdCents: product.minPriceUsdCents,
       imageUrl: firstImage === undefined ? null : this.images.url(firstImage.key),
       rating: product.rating,
+      soldCount: product.soldCount,
       inStock: product.totalStock > 0,
     };
   }

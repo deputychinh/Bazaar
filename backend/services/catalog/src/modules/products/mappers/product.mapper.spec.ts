@@ -22,6 +22,7 @@ const row = {
   minPriceUsdCents: 1500,
   totalStock: 2,
   rating: { average: 4, count: 1 },
+  soldCount: 12,
   hiddenReason: null,
   publishedAt: null,
   createdAt: new Date('2026-10-01T00:00:00.000Z'),

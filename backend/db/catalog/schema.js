@@ -95,6 +95,7 @@ ensureCollection('products', {
     status: { bsonType: 'string' },
     minPriceUsdCents: nonNegativeInteger,
     totalStock: nonNegativeInteger,
+    soldCount: nonNegativeInteger,
     rating: {
       bsonType: 'object',
       required: ['average', 'count'],

@@ -6,6 +6,7 @@ import type { PrismaProcessedEventStore } from '../../events/prisma-processed-ev
 import type { StockReservationService } from '../services/stock-reservation.service.js';
 
 import { OrderCancelledHandler } from './order-cancelled.handler.js';
+import { OrderConfirmedHandler } from './order-confirmed.handler.js';
 import { OrderCreatedHandler } from './order-created.handler.js';
 import { SellerOrderCancelledHandler } from './seller-order-cancelled.handler.js';
 
@@ -24,7 +25,7 @@ class OnceStore extends ProcessedEventStore<Transaction> {
 }
 
 describe('stock event handlers', () => {
-  const reservations = { reserve: vi.fn(), release: vi.fn() };
+  const reservations = { reserve: vi.fn(), release: vi.fn(), recordSale: vi.fn() };
   const store = new OnceStore() as unknown as PrismaProcessedEventStore;
   const service = reservations as unknown as StockReservationService;
   const line = {
@@ -75,5 +76,17 @@ describe('stock event handlers', () => {
       }),
     );
     expect(reservations.release).toHaveBeenLastCalledWith('o1', 'so1', expect.anything());
+  });
+
+  it('records the sale of a confirmed order once', async () => {
+    const confirmed = EventFactory.create({
+      type: EventType.OrderConfirmed,
+      aggregateId: 'o2',
+      payload: { orderId: 'o2', shopperId: 'u1' },
+    });
+    await new OrderConfirmedHandler(store, service).handle(confirmed);
+    await new OrderConfirmedHandler(store, service).handle(confirmed);
+    expect(reservations.recordSale).toHaveBeenCalledOnce();
+    expect(reservations.recordSale).toHaveBeenCalledWith('o2', expect.anything());
   });
 });

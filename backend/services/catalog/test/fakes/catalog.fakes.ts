@@ -178,6 +178,7 @@ export const productFixture = (overrides: Partial<Product> = {}): Product => ({
   minPriceUsdCents: 1500,
   totalStock: 3,
   rating: { average: 4.5, count: 10 },
+  soldCount: 0,
   hiddenReason: null,
   publishedAt: NOW,
   createdAt: NOW,
@@ -283,6 +284,7 @@ export class InMemoryProductsRepository extends ProductsRepository {
       id: `p${this.rows.length + 100}`,
       images: [],
       rating: { average: 0, count: 0 },
+      soldCount: 0,
       hiddenReason: null,
       publishedAt: null,
       createdAt: NOW,
@@ -349,6 +351,8 @@ export class FakeObjectStorage extends ObjectStorage {
 export class InMemoryStockRepository extends StockRepository {
   public readonly stock = new Map<string, number>();
   public readonly reservations = new Map<string, StockReservation>();
+  /** Units counted as sold, per product id. */
+  public readonly sold = new Map<string, number>();
 
   public set(productId: string, sku: string, units: number): void {
     this.stock.set(`${productId}/${sku}`, units);
@@ -373,6 +377,11 @@ export class InMemoryStockRepository extends StockRepository {
       line.variantSku,
       this.units(line.productId, line.variantSku) + line.quantity,
     );
+    return Promise.resolve();
+  }
+
+  public addSold(line: StockLine): Promise<void> {
+    this.sold.set(line.productId, (this.sold.get(line.productId) ?? 0) + line.quantity);
     return Promise.resolve();
   }
 

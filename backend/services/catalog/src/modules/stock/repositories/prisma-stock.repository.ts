@@ -52,6 +52,16 @@ export class PrismaStockRepository extends StockRepository {
     });
   }
 
+  public async addSold(line: StockLine, transaction: Transaction): Promise<void> {
+    if (!OBJECT_ID.test(line.productId)) return;
+    await transaction.$runCommandRaw({
+      update: 'products',
+      updates: [
+        { q: { _id: { $oid: line.productId } }, u: { $inc: { soldCount: line.quantity } } },
+      ],
+    });
+  }
+
   public async available(line: StockLine, transaction: Transaction): Promise<number> {
     if (!OBJECT_ID.test(line.productId)) return 0;
     const product = await transaction.product.findUnique({

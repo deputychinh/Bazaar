@@ -35,6 +35,7 @@ export const productSummarySchema = z.object({
   minPriceUsdCents: z.number().int(),
   imageUrl: z.string().nullable(),
   rating: z.object({ average: z.number(), count: z.number().int() }),
+  soldCount: z.number().int(),
   inStock: z.boolean(),
 });
 export type ProductSummary = z.infer<typeof productSummarySchema>;

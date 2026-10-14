@@ -617,6 +617,7 @@ export interface operations {
                                 average: number;
                                 count: number;
                             };
+                            soldCount: number;
                             inStock: boolean;
                         }[];
                         total: number;
@@ -665,6 +666,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -742,6 +744,7 @@ export interface operations {
                                 average: number;
                                 count: number;
                             };
+                            soldCount: number;
                             inStock: boolean;
                             description: {
                                 en: string;
@@ -848,6 +851,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -924,6 +928,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1026,6 +1031,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1102,6 +1108,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1178,6 +1185,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1310,6 +1318,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1388,6 +1397,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1468,6 +1478,7 @@ export interface operations {
                                 average: number;
                                 count: number;
                             };
+                            soldCount: number;
                             inStock: boolean;
                             description: {
                                 en: string;
@@ -1548,6 +1559,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1630,6 +1642,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;
@@ -1706,6 +1719,7 @@ export interface operations {
                             average: number;
                             count: number;
                         };
+                        soldCount: number;
                         inStock: boolean;
                         description: {
                             en: string;

@@ -13,7 +13,8 @@ ARG STORAGE_PUBLIC_URL=http://storage.bazaar.localhost
 ARG STORAGE_IS_PRIVATE=true
 ENV NEXT_OUTPUT=standalone NEXT_TELEMETRY_DISABLED=1 \
   API_BASE_URL=${API_BASE_URL} STORAGE_PUBLIC_URL=${STORAGE_PUBLIC_URL} STORAGE_IS_PRIVATE=${STORAGE_IS_PRIVATE}
-RUN npm run build
+# public/ may be empty, and git keeps no empty folders: make sure it exists for the copy below.
+RUN mkdir -p public && npm run build
 
 FROM ${NODE_IMAGE} AS runtime
 # npm, npx, corepack and yarn are build tools: not shipped (smaller image, no CVEs in their deps).

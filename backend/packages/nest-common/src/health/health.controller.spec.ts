@@ -20,12 +20,14 @@ class DatabaseIndicator extends HealthIndicator {
 @Injectable()
 class KafkaIndicator extends HealthIndicator {
   public readonly name = 'kafka';
+  public override readonly critical = false;
   public check = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
 }
 
 describe('HealthController', () => {
   let app: INestApplication;
   let kafka: KafkaIndicator;
+  let database: DatabaseIndicator;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -37,6 +39,7 @@ describe('HealthController', () => {
     app = moduleRef.createNestApplication();
     await app.init();
     kafka = moduleRef.get(KafkaIndicator);
+    database = moduleRef.get(DatabaseIndicator);
   });
 
   afterEach(async () => {
@@ -66,8 +69,8 @@ describe('HealthController', () => {
     });
   });
 
-  it('returns 503 and the failing check when a dependency is down', async () => {
-    kafka.check.mockRejectedValue(new Error('broker unreachable'));
+  it('returns 503 and the failing check when a critical dependency is down', async () => {
+    database.check.mockRejectedValue(new Error('connection refused'));
 
     const response = await request(app.getHttpServer() as Server)
       .get('/health/ready')
@@ -75,6 +78,22 @@ describe('HealthController', () => {
 
     expect(response.body).toMatchObject({
       status: HealthStatus.Down,
+      checks: [
+        { name: 'database', status: HealthStatus.Down, error: 'connection refused' },
+        { name: 'kafka', status: HealthStatus.Up },
+      ],
+    });
+  });
+
+  it('stays ready but degraded while a non-critical dependency (Kafka) is down', async () => {
+    kafka.check.mockRejectedValue(new Error('broker unreachable'));
+
+    const response = await request(app.getHttpServer() as Server)
+      .get('/health/ready')
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      status: HealthStatus.Degraded,
       checks: [
         { name: 'database', status: HealthStatus.Up },
         { name: 'kafka', status: HealthStatus.Down, error: 'broker unreachable' },

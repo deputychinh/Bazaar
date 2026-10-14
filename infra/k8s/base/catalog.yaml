@@ -68,6 +68,8 @@ spec:
           readinessProbe:
             httpGet: { path: /health/ready, port: http }
             periodSeconds: 5
+            # Longer than one dependency check (HEALTH_CHECK_TIMEOUT_MS = 3 s).
+            timeoutSeconds: 4
             failureThreshold: 3
           resources:
             requests: { cpu: 50m, memory: 160Mi }

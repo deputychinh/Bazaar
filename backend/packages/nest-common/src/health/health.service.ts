@@ -16,8 +16,13 @@ export class HealthService {
 
   public async report(): Promise<HealthReport> {
     const checks = await Promise.all(this.indicators.map((indicator) => this.run(indicator)));
-    const isUp = checks.every((check) => check.status === HealthStatus.Up);
-    return { status: isUp ? HealthStatus.Up : HealthStatus.Down, checks };
+    const down = this.indicators.filter((_, index) => checks[index]?.status === HealthStatus.Down);
+    const status = down.some((indicator) => indicator.critical)
+      ? HealthStatus.Down
+      : down.length > 0
+        ? HealthStatus.Degraded
+        : HealthStatus.Up;
+    return { status, checks };
   }
 
   private async run(indicator: HealthIndicator): Promise<HealthCheckResult> {

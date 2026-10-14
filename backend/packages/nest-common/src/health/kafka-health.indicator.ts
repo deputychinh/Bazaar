@@ -5,10 +5,12 @@ import { KafkaConnection } from '../kafka/kafka-connection.js';
 
 import { HealthIndicator } from './health-indicator.js';
 
-/** Ready when the broker answers a metadata request. */
+/** Reports whether the broker answers a metadata request; never blocks readiness (see critical). */
 @Injectable()
 export class KafkaHealthIndicator extends HealthIndicator implements OnApplicationShutdown {
   public readonly name = 'kafka';
+  // Events wait in the outbox and consumers reconnect: an outage must not empty the endpoints.
+  public override readonly critical = false;
   private readonly admin: KafkaJS.Admin;
   private isConnected = false;
 

@@ -34,8 +34,10 @@ jobs:
           cp .env.example .env
           make keys
           make k8s-up-cluster
-      - name: Release (images → registry → data → db-setup → apps)
-        run: make release TAG=${GITHUB_SHA::7}
+      - name: Images → cluster registry
+        run: make k8s-load TAG=${GITHUB_SHA::7}
+      - name: Deploy (data → db-setup → apps)
+        run: infra/k8s/deploy.sh ${GITHUB_SHA::7}
       - name: Requests through the ingress
         run: |
           check() { curl -fsS -o /dev/null -w "%{http_code} $1$2\n" --resolve "$1:80:127.0.0.1" "http://$1$2"; }
@@ -48,7 +50,13 @@ jobs:
       - name: Cluster state on failure
         if: failure()
         run: |
-          kubectl get pods -A -o wide
-          kubectl get events -A --sort-by=.lastTimestamp | tail -50
+          kubectl get pods -A -o wide || true
+          kubectl get events -A --sort-by=.lastTimestamp | tail -50 || true
+          kubectl -n bazaar-data get kafka,kafkanodepool,kafkatopic || true
           kubectl -n bazaar-data logs job/db-setup --all-containers --tail=50 || true
           for app in gateway catalog order notification web; do kubectl -n bazaar logs deploy/$app --tail=30 || true; done
+          # Annotations are readable without signing in, unlike job logs: surface the essentials there.
+          annotate() { printf '::error title=%s::%s\n' "$1" "$(cat | tail -c 3500 | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')"; }
+          kubectl get pods -A --no-headers 2>&1 | grep -v ' Running \| Completed ' | annotate 'Pods not running'
+          kubectl get events -A --field-selector type=Warning --sort-by=.lastTimestamp 2>&1 | tail -15 | annotate 'Warning events'
+          kubectl -n bazaar-data get kafka bazaar -o jsonpath='{.status.conditions}' 2>&1 | annotate 'Kafka conditions'

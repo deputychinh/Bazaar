@@ -34,6 +34,11 @@ spec:
           image: bazaar/admin
           ports:
             - { name: http, containerPort: 8080 }
+          # Keep serving while the endpoint removal reaches Traefik and kube-proxy; without it a
+          # rolling update drops requests that were already routed to this pod.
+          lifecycle:
+            preStop:
+              sleep: { seconds: 5 }
           livenessProbe:
             httpGet: { path: /healthz, port: http }
             periodSeconds: 10

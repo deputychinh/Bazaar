@@ -50,6 +50,11 @@ spec:
               valueFrom: { secretKeyRef: { name: bazaar-secrets, key: STORAGE_ACCESS_KEY } }
             - name: STORAGE_SECRET_KEY
               valueFrom: { secretKeyRef: { name: bazaar-secrets, key: STORAGE_SECRET_KEY } }
+          # Keep serving while the endpoint removal reaches Traefik and kube-proxy; without it a
+          # rolling update drops requests that were already routed to this pod.
+          lifecycle:
+            preStop:
+              sleep: { seconds: 5 }
           startupProbe:
             httpGet: { path: /health/live, port: http }
             periodSeconds: 2

@@ -41,6 +41,11 @@ spec:
               valueFrom: { configMapKeyRef: { name: bazaar-config, key: SITE_URL } }
             - name: REVALIDATE_SECRET
               valueFrom: { secretKeyRef: { name: bazaar-secrets, key: REVALIDATE_SECRET } }
+          # Keep serving while the endpoint removal reaches Traefik and kube-proxy; without it a
+          # rolling update drops requests that were already routed to this pod.
+          lifecycle:
+            preStop:
+              sleep: { seconds: 5 }
           startupProbe:
             tcpSocket: { port: http }
             periodSeconds: 2

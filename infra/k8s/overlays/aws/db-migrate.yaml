@@ -1,0 +1,99 @@
+# Before every rollout on AWS (plan §9A.3: migration Job first). Ordered init containers:
+# per-service MySQL users → Prisma migrations → MSK topics → MongoDB schema. No seed in prod.
+# Every step is idempotent; the pipeline deletes the previous run, applies this, waits.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: { type: RuntimeDefault }
+      initContainers:
+        - name: mysql-users
+          image: mysql:8.4.11
+          securityContext: &restricted
+            runAsUser: 999
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+          envFrom:
+            - secretRef: { name: bazaar-db-admin }
+          command:
+            - sh
+            - -c
+            - |
+              mysql -h"$MYSQL_HOST" -u"$MYSQL_ADMIN_USER" --ssl-mode=REQUIRED <<SQL
+              CREATE DATABASE IF NOT EXISTS bazaar_identity CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+              CREATE DATABASE IF NOT EXISTS bazaar_order CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+              CREATE USER IF NOT EXISTS 'bazaar_identity'@'%' IDENTIFIED BY '$IDENTITY_PASSWORD' REQUIRE SSL;
+              CREATE USER IF NOT EXISTS 'bazaar_order'@'%' IDENTIFIED BY '$ORDER_PASSWORD' REQUIRE SSL;
+              GRANT ALL PRIVILEGES ON bazaar_identity.* TO 'bazaar_identity'@'%';
+              GRANT ALL PRIVILEGES ON bazaar_order.* TO 'bazaar_order'@'%';
+              SQL
+        - name: identity-migrate
+          image: bazaar/gateway-migrate
+          securityContext: { <<: *restricted, runAsUser: 1000 }
+          env:
+            - name: IDENTITY_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: IDENTITY_DATABASE_URL } }
+            - { name: PRISMA_HIDE_UPDATE_MESSAGE, value: '1' }
+        - name: order-migrate
+          image: bazaar/order-migrate
+          securityContext: { <<: *restricted, runAsUser: 1000 }
+          env:
+            - name: ORDER_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: ORDER_DATABASE_URL } }
+            - { name: PRISMA_HIDE_UPDATE_MESSAGE, value: '1' }
+        - name: kafka-topics
+          image: apache/kafka:4.3.1
+          securityContext: { <<: *restricted, runAsUser: 1000 }
+          envFrom:
+            - secretRef: { name: bazaar-kafka }
+          command:
+            - sh
+            - -c
+            - |
+              cat > /tmp/client.properties <<PROPS
+              security.protocol=SASL_SSL
+              sasl.mechanism=SCRAM-SHA-512
+              sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="$KAFKA_SASL_USERNAME" password="$KAFKA_SASL_PASSWORD";
+              PROPS
+              grep -v '^#' /db/topics.txt | while read -r topic partitions retention; do
+                [ -n "$topic" ] || continue
+                config=""; [ -n "$retention" ] && config="--config retention.ms=$retention"
+                /opt/kafka/bin/kafka-topics.sh --bootstrap-server "$KAFKA_BROKERS" --command-config /tmp/client.properties \
+                  --create --if-not-exists --topic "$topic" --partitions "$partitions" --replication-factor 3 $config
+              done
+          volumeMounts:
+            - { name: db, mountPath: /db, readOnly: true }
+            - { name: tmp, mountPath: /tmp }
+      containers:
+        - name: mongo-schema
+          image: mongo:8.0.32
+          securityContext: *restricted
+          env:
+            - name: CATALOG_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: CATALOG_DATABASE_URL } }
+            - name: NOTIFICATION_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: NOTIFICATION_DATABASE_URL } }
+          command:
+            - bash
+            - -c
+            - |
+              set -euo pipefail
+              mongosh "$CATALOG_DATABASE_URL" --quiet --eval "$(cat /db/catalog-schema.js)"
+              mongosh "$NOTIFICATION_DATABASE_URL" --quiet --eval "$(cat /db/notification-schema.js)"
+          volumeMounts:
+            - { name: db, mountPath: /db, readOnly: true }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: db
+          configMap: { name: db-schema }
+        - name: tmp
+          emptyDir: { sizeLimit: 16Mi }

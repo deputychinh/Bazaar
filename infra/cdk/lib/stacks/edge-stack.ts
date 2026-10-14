@@ -1,4 +1,4 @@
-import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
@@ -192,6 +192,12 @@ export class EdgeStack extends Stack {
         stringValue: originCertificate.certificateArn,
       });
     }
+
+    // Read by the deploy pipeline (S3 sync, CloudFront invalidation).
+    new CfnOutput(this, 'WebStaticBucket', { value: this.staticBucket.bucketName });
+    new CfnOutput(this, 'AdminSiteBucket', { value: this.adminBucket.bucketName });
+    new CfnOutput(this, 'WebDistributionId', { value: this.webDistribution.distributionId });
+    new CfnOutput(this, 'AdminDistributionId', { value: this.adminDistribution.distributionId });
 
     this.acknowledgeFindings(domain === undefined);
   }

@@ -1,0 +1,116 @@
+name: deploy
+
+# The production pipeline of plan §9A.3, written in full but switched off: this project has no AWS
+# account. It runs only by hand AND when the repository variable AWS_DEPLOY_ENABLED is 'true'.
+# Order: images → ECR, cdk deploy, endpoint parameters, migration Job, apps, static assets.
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [dev, prod]
+        default: dev
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write # GitHub OIDC → the CiStack deploy role; no access keys
+  contents: read
+
+env:
+  AWS_REGION: ap-southeast-1
+  ENV: ${{ inputs.environment }}
+
+jobs:
+  deploy:
+    if: vars.AWS_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Prod waits for a reviewer (GitHub environment protection rules).
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 24 }
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/bazaar-${{ inputs.environment }}-github-deploy
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Images → ECR (tag = git sha)
+        run: |
+          TAG=${GITHUB_SHA::7}
+          REGISTRY=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$REGISTRY"
+          docker buildx create --use
+          build() { docker buildx build --platform linux/arm64 --push -t "$REGISTRY/bazaar/$1:$TAG" "${@:2}"; }
+          for entry in gateway:4000 catalog:4010 order:4020 notification:4030; do
+            build "${entry%%:*}" --build-arg SERVICE=${entry%%:*} --build-arg PORT=${entry##*:} backend
+          done
+          build gateway-migrate --target migrate --build-arg SERVICE=gateway backend
+          build order-migrate --target migrate --build-arg SERVICE=order backend
+          build web --build-arg API_BASE_URL=http://gateway:4000 \
+            --build-arg STORAGE_PUBLIC_URL=https://images.${{ vars.DOMAIN }} \
+            --build-arg STORAGE_IS_PRIVATE=false --build-arg STORAGE_IMAGE_PATH= frontend-web
+      - name: Infrastructure (cdk deploy)
+        working-directory: infra/cdk
+        run: |
+          npm ci
+          npx cdk deploy "bazaar-$ENV-*" --require-approval never
+      - name: Endpoints CloudFormation cannot output
+        run: |
+          brokers=$(aws kafka get-bootstrap-brokers --cluster-arn \
+            "$(aws kafka list-clusters-v2 --cluster-name-filter bazaar-$ENV --query 'ClusterInfoList[0].ClusterArn' --output text)" \
+            --query BootstrapBrokerStringSaslScram --output text)
+          aws ssm put-parameter --overwrite --name /bazaar/$ENV/endpoints/kafka-bootstrap --type String --value "$brokers"
+          # The Atlas SRV host of the private endpoint is set once by the runbook (docs/aws.md).
+          aws ssm get-parameter --name /bazaar/$ENV/endpoints/atlas-srv-host > /dev/null
+      - name: Cluster access
+        run: aws eks update-kubeconfig --name bazaar-$ENV
+      - name: Render the AWS overlay
+        run: |
+          export ACCOUNT=${{ vars.AWS_ACCOUNT_ID }} DOMAIN=${{ vars.DOMAIN }} VPC_CIDR=${{ vars.VPC_CIDR }}
+          export ORIGIN_CERTIFICATE_ARN=$(aws ssm get-parameter --name /bazaar/$ENV/edge/origin-certificate-arn --query Parameter.Value --output text)
+          cd infra/k8s/overlays/aws
+          for app in gateway catalog order notification web gateway-migrate order-migrate; do
+            kustomize edit set image "bazaar/$app=$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/bazaar/$app:${GITHUB_SHA::7}"
+          done
+          kubectl kustomize --load-restrictor LoadRestrictionsNone . \
+            | envsubst '$ENV $ACCOUNT $AWS_REGION $DOMAIN $VPC_CIDR $ORIGIN_CERTIFICATE_ARN' > /tmp/rendered.yaml
+      - name: Secrets, then the migration Job
+        run: |
+          yq 'select(.kind == "Namespace" or .kind == "ConfigMap" or .kind == "SecretStore" or .kind == "ExternalSecret")' \
+            /tmp/rendered.yaml | kubectl apply -f -
+          kubectl -n bazaar wait externalsecret --all --for=condition=Ready --timeout=300s
+          kubectl -n bazaar delete job db-migrate --ignore-not-found
+          yq 'select(.kind == "Job")' /tmp/rendered.yaml | kubectl apply -f -
+          kubectl -n bazaar wait job/db-migrate --for=condition=Complete --timeout=900s
+      - name: Apps
+        run: |
+          kubectl apply -f /tmp/rendered.yaml
+          for app in gateway catalog order notification web; do
+            kubectl -n bazaar rollout status deployment/$app --timeout=600s
+          done
+          alb=$(kubectl -n bazaar get ingress bazaar-alb -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          aws ssm put-parameter --overwrite --name /bazaar/$ENV/edge/alb-dns-name --type String --value "$alb"
+      - name: Static assets → S3, CloudFront invalidation
+        run: |
+          outputs() { aws cloudformation describe-stacks --stack-name bazaar-$ENV-edge \
+            --query "Stacks[0].Outputs[?contains(OutputKey,'$1')].OutputValue" --output text; }
+          (cd frontend-admin && npm ci && npx vite build)
+          aws s3 sync frontend-admin/dist "s3://$(outputs AdminSiteBucket)" --delete
+          # /_next/static is content-hashed: copy the files out of the web image just pushed.
+          id=$(docker create ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/bazaar/web:${GITHUB_SHA::7})
+          docker cp "$id:/app/.next/static" ./next-static && docker rm "$id"
+          aws s3 sync ./next-static "s3://$(outputs WebStaticBucket)/_next/static" \
+            --cache-control "public, max-age=31536000, immutable"
+          for distribution in $(outputs DistributionId); do  # web + admin
+            aws cloudfront create-invalidation --distribution-id "$distribution" --paths '/*' > /dev/null
+          done
+      - name: Smoke test
+        run: |
+          curl -fsS https://${{ vars.DOMAIN }}/en > /dev/null
+          curl -fsS https://${{ vars.DOMAIN }}/api/v1/categories > /dev/null
+          curl -fsS https://admin.${{ vars.DOMAIN }}/ > /dev/null

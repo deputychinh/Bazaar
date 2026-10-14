@@ -167,6 +167,14 @@ export class ClusterStack extends Stack {
         resources: [...props.secretArns],
       }),
     );
+    // Endpoints for the connection URLs (written by DataStack and the deploy pipeline).
+    const endpointParameters = `arn:aws:ssm:${config.region}:${config.account}:parameter/${PROJECT_NAME}/${config.name}/*`;
+    externalSecrets.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['ssm:GetParameter', 'ssm:GetParameters', 'ssm:GetParametersByPath'],
+        resources: [endpointParameters],
+      }),
+    );
     props.dataKey.grantDecrypt(externalSecrets);
     const externalSecretsChart = this.cluster.addHelmChart('ExternalSecrets', {
       ...EXTERNAL_SECRETS_CHART,
@@ -193,7 +201,13 @@ export class ClusterStack extends Stack {
         reason: 'AWS-managed policy the EBS CSI add-on is designed for.',
       },
     ]);
-    this.acknowledgeFindings(nodegroup, imagesObjects, sesIdentity, props.secretArns[0] ?? '');
+    this.acknowledgeFindings(
+      nodegroup,
+      imagesObjects,
+      sesIdentity,
+      props.secretArns[0] ?? '',
+      endpointParameters,
+    );
   }
 
   /**
@@ -206,6 +220,7 @@ export class ClusterStack extends Stack {
     imagesObjects: string,
     sesIdentity: string,
     appSecrets: string,
+    endpointParameters: string,
   ): void {
     const managed = (policy: string): string =>
       `AwsSolutions::AwsSolutions-IAM4[Policy::arn:<AWS::Partition>:iam::aws:policy/${policy}]`;
@@ -275,6 +290,10 @@ export class ClusterStack extends Stack {
       {
         id: wildcard(appSecrets),
         reason: "External Secrets reads this environment's app secrets only.",
+      },
+      {
+        id: wildcard(endpointParameters),
+        reason: "External Secrets reads this environment's endpoint parameters only.",
       },
       ...(sesIdentity.endsWith('/*')
         ? [

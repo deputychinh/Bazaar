@@ -56,6 +56,7 @@ ADMIN_URL=http://admin.bazaar.localhost:8000 GATEWAY_URL=http://bazaar.localhost
 ```
 
 Staging on Kubernetes (kind): `make k8s-up` → http://bazaar.localhost — see [docs/k8s.md](docs/k8s.md).
+Production on AWS exists as tested CDK code, never deployed: `make aws-test aws-synth` — see [docs/aws.md](docs/aws.md) and [docs/aws-cost.md](docs/aws-cost.md).
 
 Demo data: `make migrate db-schema seed` loads 7 accounts, 13 categories, 3 shops and 1,000 bilingual products.
 Demo accounts, password **`Bazaar@2026!`**: `admin@bazaar.test`,

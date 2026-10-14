@@ -435,6 +435,39 @@ export class DataStack extends Stack {
       autoDeleteObjects: !retain,
     });
 
+    // App-level shared secrets (the INTERNAL_API_KEY and REVALIDATE_SECRET of .env.example).
+    for (const [name, id] of [
+      ['internal-api-key', 'InternalApiKey'],
+      ['revalidate-secret', 'RevalidateSecret'],
+    ] as const) {
+      const secret = new secretsmanager.Secret(this, id, {
+        secretName: `${secretPrefix}/app/${name}`,
+        encryptionKey: this.key,
+        generateSecretString: { excludePunctuation: true, passwordLength: 48 },
+        removalPolicy,
+      });
+      acknowledge(secret, [
+        {
+          id: 'AwsSolutions::AwsSolutions-SMG4',
+          reason:
+            'Shared between services; rotated by the runbook with a rolling restart, not a Lambda.',
+        },
+      ]);
+      serviceSecrets.set(`app-${name}`, secret);
+    }
+
+    // Endpoints the AWS overlay builds connection URLs from (External Secrets reads SSM too).
+    // MSK bootstrap brokers and the Atlas SRV host are not CloudFormation attributes: the
+    // deploy pipeline writes those two (docs/aws.md).
+    const endpoint = (name: string, value: string): void => {
+      new ssm.StringParameter(this, `Endpoint-${name}`, {
+        parameterName: `/${secretPrefix}/endpoints/${name}`,
+        stringValue: value,
+      });
+    };
+    endpoint('aurora-host', this.aurora.clusterEndpoint.hostname);
+    endpoint('cache-host', this.cache.attrPrimaryEndPointAddress);
+
     this.serviceSecrets = serviceSecrets;
     this.acknowledgeLogRetention();
   }

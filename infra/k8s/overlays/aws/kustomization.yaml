@@ -1,0 +1,142 @@
+# Production on EKS (plan §9A.3), written in full and never applied from this laptop.
+# The deploy pipeline renders it, fills the ${…} placeholders with envsubst (ENV, ACCOUNT,
+# AWS_REGION, DOMAIN, VPC_CIDR, ORIGIN_CERTIFICATE_ARN — see docs/aws.md) and pins image tags.
+# Managed services replace the data stores; secrets come from AWS through External Secrets.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - secret-stores.yaml
+  - external-secrets.yaml
+  - ingress.yaml
+  - db-migrate.yaml
+namespace: bazaar
+images:
+  - {
+      name: bazaar/gateway,
+      newName: '${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/bazaar/gateway',
+    }
+  - {
+      name: bazaar/catalog,
+      newName: '${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/bazaar/catalog',
+    }
+  - { name: bazaar/order, newName: '${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/bazaar/order' }
+  - {
+      name: bazaar/notification,
+      newName: '${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/bazaar/notification',
+    }
+  - { name: bazaar/web, newName: '${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/bazaar/web' }
+  - {
+      name: bazaar/gateway-migrate,
+      newName: '${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/bazaar/gateway-migrate',
+    }
+  - {
+      name: bazaar/order-migrate,
+      newName: '${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com/bazaar/order-migrate',
+    }
+configMapGenerator:
+  # Managed-service switches added by BZ-077; everything else stays as in base.
+  - name: bazaar-config
+    behavior: merge
+    literals:
+      - KAFKA_SSL=true
+      - KAFKA_SASL_MECHANISM=scram-sha-512
+      - STORAGE_REGION=${AWS_REGION}
+      - STORAGE_ENDPOINT=https://s3.${AWS_REGION}.amazonaws.com
+      - STORAGE_PUBLIC_URL=https://s3.${AWS_REGION}.amazonaws.com
+      - STORAGE_FORCE_PATH_STYLE=false
+      - STORAGE_BUCKET_IMAGES=bazaar-${ENV}-images-${ACCOUNT}
+      - STORAGE_IMAGE_BASE_URL=https://images.${DOMAIN}
+      - MAIL_TRANSPORT=ses
+      - SES_REGION=${AWS_REGION}
+      - MAIL_FROM=Bazaar <no-reply@${DOMAIN}>
+      - SITE_URL=https://${DOMAIN}
+      - WEB_APP_URL=https://${DOMAIN}
+      - CORS_ORIGINS=https://${DOMAIN},https://admin.${DOMAIN}
+      - COOKIE_SECURE=true
+      # CloudFront appends the viewer address, the ALB appends CloudFront's: two trusted hops.
+      - TRUST_PROXY_HOPS=2
+  - name: db-schema
+    files:
+      - catalog-schema.js=../../../../backend/db/catalog/schema.js
+      - notification-schema.js=../../../../backend/db/notification/schema.js
+      - topics.txt=../../../docker/kafka/topics.txt
+patches:
+  # Traefik is a local concern; the ALB ingress above replaces it.
+  - target: { kind: Ingress, name: bazaar }
+    patch: |-
+      $patch: delete
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata: { name: bazaar }
+  # The admin SPA is served by CloudFront from S3 (EdgeStack).
+  - target: { kind: Deployment, name: admin }
+    patch: |-
+      $patch: delete
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata: { name: admin }
+  - target: { kind: Service, name: admin }
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: Service
+      metadata: { name: admin }
+  # ALB targets are pod IPs reached from the load balancer's addresses inside the VPC.
+  - target: { kind: NetworkPolicy, name: from-ingress }
+    patch: |-
+      - op: replace
+        path: /spec/ingress/0/from
+        value: [{ ipBlock: { cidr: '${VPC_CIDR}' } }]
+      - op: replace
+        path: /spec/podSelector/matchExpressions/0/values
+        value: [gateway, web]
+  # Two replicas of everything, so a node or AZ can go without an outage.
+  - target: { kind: Deployment, name: '(gateway|catalog|order|notification|web)' }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+  - target: { kind: HorizontalPodAutoscaler }
+    patch: |-
+      - op: replace
+        path: /spec/minReplicas
+        value: 2
+      - op: replace
+        path: /spec/maxReplicas
+        value: 6
+  - target: { kind: PodDisruptionBudget, name: services }
+    patch: |-
+      - op: remove
+        path: /spec/maxUnavailable
+      - op: add
+        path: /spec/minAvailable
+        value: 1
+  # MSK credentials and brokers for every service.
+  - target: { kind: Deployment, name: '(gateway|catalog|order|notification)' }
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom/-
+        value: { secretRef: { name: bazaar-kafka } }
+  # Pod Identity: catalog writes images to S3, notification sends through SES (ClusterStack).
+  - target: { kind: Deployment, name: catalog }
+    patch: |-
+      - op: add
+        path: /spec/template/spec/serviceAccountName
+        value: catalog
+  - target: { kind: Deployment, name: notification }
+    patch: |-
+      - op: add
+        path: /spec/template/spec/serviceAccountName
+        value: notification
+  # Target-group health checks per service.
+  - target: { kind: Service, name: gateway }
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value: { alb.ingress.kubernetes.io/healthcheck-path: /health/ready }
+  - target: { kind: Service, name: web }
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value: { alb.ingress.kubernetes.io/healthcheck-path: /en }

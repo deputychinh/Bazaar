@@ -1,0 +1,25 @@
+# The AWS Load Balancer Controller turns this into an ALB (plan §9A.1). CloudFront is its only
+# client: it reaches origin.<domain> over HTTPS. The admin SPA comes from S3, so only /api and the
+# customer site are routed here; no host rules are needed.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bazaar-alb
+  annotations:
+    alb.ingress.kubernetes.io/load-balancer-name: 'bazaar-${ENV}'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: '${ORIGIN_CERTIFICATE_ARN}'
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: gateway, port: { name: http } } }
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: web, port: { name: http } } }

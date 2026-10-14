@@ -1,0 +1,32 @@
+{
+  "name": "bazaar-cdk",
+  "private": true,
+  "description": "Bazaar production on AWS as CDK code (plan \u00a79A): synthesized and tested locally, never deployed.",
+  "packageManager": "npm@11.19.1",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "synth": "cdk synth --quiet",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "cdk": "cdk"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.273.0",
+    "cdk-nag": "3.0.2",
+    "constructs": "10.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "aws-cdk": "2.1145.0",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "5.0.3"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "fsevents": false
+  }
+}

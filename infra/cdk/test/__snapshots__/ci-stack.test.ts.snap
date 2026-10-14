@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CiStack > matches the resource inventory 1`] = `
+{
+  "AWS::ECR::Repository": 8,
+  "AWS::IAM::Policy": 1,
+  "AWS::IAM::Role": 2,
+  "AWS::Lambda::Function": 1,
+  "Custom::AWSCDKOpenIdConnectProvider": 1,
+}
+`;

@@ -1,0 +1,35 @@
+name: cdk
+
+# Prod infrastructure as code (plan §9A.4): typecheck, Vitest assertions, cdk-nag, synth of every
+# stack for dev and prod. No AWS account is involved.
+on:
+  push:
+    branches: [main]
+    paths: ['infra/cdk/**', '.github/workflows/cdk.yml']
+  pull_request:
+    paths: ['infra/cdk/**', '.github/workflows/cdk.yml']
+
+concurrency:
+  group: cdk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: infra/cdk
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: infra/cdk/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Synthesize (cdk-nag fails the synth on any unacknowledged finding)
+        run: npm run synth
+      - run: npm audit --omit=dev --audit-level=high

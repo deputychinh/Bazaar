@@ -131,6 +131,13 @@ rollback: ## Deploy an earlier sha that is still in the registry: make rollback 
 	@test -n "$(filter command line,$(origin TAG))" || { echo "usage: make rollback TAG=<sha>"; exit 1; }
 	infra/k8s/deploy.sh $(TAG)
 
+# --- aws (prod as code, never deployed) --------------------------------------
+aws-test: ## CDK: typecheck + Vitest assertions (incl. cdk-nag) for dev and prod
+	cd infra/cdk && npm ci --no-audit --no-fund && npm run typecheck && npm test
+
+aws-synth: ## CDK: synthesize every stack of every environment to infra/cdk/cdk.out
+	cd infra/cdk && npm run synth
+
 dev-gateway: keys ## Run the gateway with reload on :4000
 	$(BACKEND) npm run dev -w @bazaar/gateway
 
@@ -143,4 +150,4 @@ dev-order: ## Run the order service with reload on :4020
 dev-notification: ## Run the notification service with reload on :4030
 	$(BACKEND) npm run dev -w @bazaar/notification
 
-.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images k8s-up k8s-up-cluster k8s-down k8s-status k8s-load release rollback
+.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images k8s-up k8s-up-cluster k8s-down k8s-status k8s-load release rollback aws-test aws-synth

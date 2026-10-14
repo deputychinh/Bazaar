@@ -36,8 +36,11 @@ up: env ## Start MySQL, MongoDB, Redis, Kafka (+ topics), Kafka UI, object stora
 	@for job in $(INIT_JOBS); do $(COMPOSE) run --rm --no-deps $$job || exit 1; done
 	@$(MAKE) --no-print-directory urls
 
-down: ## Stop the infrastructure (data is kept)
-	$(COMPOSE) down
+up-full: env keys ## Everything from images behind the edge proxy: http://bazaar.localhost:8000
+	TAG=$(TAG) $(COMPOSE) --profile full up -d --build --wait --wait-timeout 300
+
+down: ## Stop the infrastructure and the apps (data is kept)
+	$(COMPOSE) --profile full down
 
 ps: ## Show container status
 	$(COMPOSE) ps -a
@@ -117,4 +120,4 @@ dev-order: ## Run the order service with reload on :4020
 dev-notification: ## Run the notification service with reload on :4030
 	$(BACKEND) npm run dev -w @bazaar/notification
 
-.PHONY: help env install keys dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images
+.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images

@@ -27,8 +27,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: storage.protocol === 'https:' ? 'https' : 'http',
+        // Any port: compose serves storage on :8000, the cluster ingress on :80.
         hostname: storage.hostname,
-        port: storage.port,
         pathname: '/bazaar-images/**',
       },
     ],

@@ -24,7 +24,7 @@ $S3 s3api put-bucket-policy --bucket "$STORAGE_BUCKET_IMAGES" --policy file:///t
 cat > /tmp/cors.json <<CORS
 {
   "CORSRules": [{
-    "AllowedOrigins": ["http://localhost:3200", "http://admin.bazaar.localhost"],
+    "AllowedOrigins": ["http://localhost:3200", "http://admin.bazaar.localhost", "http://admin.bazaar.localhost:8000"],
     "AllowedMethods": ["PUT", "GET"],
     "AllowedHeaders": ["*"],
     "ExposeHeaders": ["ETag"],

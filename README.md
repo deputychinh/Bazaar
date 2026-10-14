@@ -47,6 +47,14 @@ make dev-catalog # catalog on http://localhost:4010, also reachable through the 
 make help        # every command
 ```
 
+Everything from container images, behind an edge proxy that mirrors the Kubernetes ingress:
+
+```bash
+make up-full     # builds the images, migrates, seeds, starts all six apps
+                 # → http://bazaar.localhost:8000 · http://admin.bazaar.localhost:8000
+ADMIN_URL=http://admin.bazaar.localhost:8000 GATEWAY_URL=http://bazaar.localhost:8000 make e2e
+```
+
 Demo data: `make migrate db-schema seed` loads 7 accounts, 13 categories, 3 shops and 1,000 bilingual products.
 Demo accounts, password **`Bazaar@2026!`**: `admin@bazaar.test`,
 `seller.minh@bazaar.test`, `seller.anna@bazaar.test`, `shopper.linh@bazaar.test`, `shopper.tom@bazaar.test`.

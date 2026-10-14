@@ -1,7 +1,43 @@
 # Local infrastructure for Bazaar (plan §8). `make up` starts it; `make down` stops it.
 # kafka-init and storage-init are one-shot jobs (topics, buckets) run by `make up` after the rest is healthy.
 # Every port is bound to 127.0.0.1 only. Values come from .env (see .env.example).
+# Profile `full` (`make up-full`) also runs the apps from their images behind an edge proxy:
+# http://bazaar.localhost:8000 and http://admin.bazaar.localhost:8000.
 name: bazaar
+
+# In-network addresses for the apps; everything else comes from .env.
+x-app-env: &app-env
+  NODE_ENV: production
+  IDENTITY_DATABASE_URL: mysql://${IDENTITY_DB_USER}:${IDENTITY_DB_PASSWORD}@mysql:3306/bazaar_identity
+  ORDER_DATABASE_URL: mysql://${ORDER_DB_USER}:${ORDER_DB_PASSWORD}@mysql:3306/bazaar_order
+  CATALOG_DATABASE_URL: mongodb://mongo:27017/bazaar_catalog?directConnection=true&replicaSet=rs0
+  NOTIFICATION_DATABASE_URL: mongodb://mongo:27017/bazaar_notification?directConnection=true&replicaSet=rs0
+  REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+  KAFKA_BROKERS: kafka:9092
+  GATEWAY_JWKS_URL: http://gateway:4000/.well-known/jwks.json
+  CATALOG_SERVICE_URL: http://catalog:4010
+  ORDER_SERVICE_URL: http://order:4020
+  NOTIFICATION_SERVICE_URL: http://notification:4030
+  STORAGE_ENDPOINT: http://storage:9000
+  STORAGE_PUBLIC_URL: http://storage.bazaar.localhost:8000
+  SMTP_HOST: mailpit
+  SMTP_PORT: 1025
+  WEB_APP_URL: http://bazaar.localhost:8000
+  WEB_REVALIDATE_URL: http://web:3100/api/revalidate
+  CORS_ORIGINS: http://bazaar.localhost:8000,http://admin.bazaar.localhost:8000
+  # The edge proxy sets X-Forwarded-For to the client address: trust exactly that hop.
+  TRUST_PROXY_HOPS: 1
+  JWT_PRIVATE_KEY_FILE: /run/secrets/jwt-private.pem
+  JWT_PUBLIC_KEY_FILE: /run/secrets/jwt-public.pem
+
+x-app: &app
+  profiles: [full]
+  env_file: .env
+  restart: unless-stopped
+  depends_on: &app-deps
+    db-seed: { condition: service_completed_successfully }
+    kafka-init: { condition: service_completed_successfully }
+    storage-init: { condition: service_completed_successfully }
 
 services:
   mysql:
@@ -131,6 +167,106 @@ services:
   mailpit:
     image: axllent/mailpit:v1.31.4
     ports: ['127.0.0.1:1026:1025', '127.0.0.1:8026:8025']
+
+  # --- profile full: migrations and seed (one-shot), then the apps ---------------------------
+  gateway-migrate:
+    profiles: [full]
+    image: ${REGISTRY:-localhost:5001}/bazaar/gateway-migrate:${TAG:-dev}
+    build: { context: backend, target: migrate, args: { SERVICE: gateway } }
+    environment: { <<: *app-env }
+    depends_on:
+      mysql: { condition: service_healthy }
+    restart: 'no'
+
+  order-migrate:
+    profiles: [full]
+    image: ${REGISTRY:-localhost:5001}/bazaar/order-migrate:${TAG:-dev}
+    build: { context: backend, target: migrate, args: { SERVICE: order } }
+    environment: { <<: *app-env }
+    depends_on:
+      mysql: { condition: service_healthy }
+    restart: 'no'
+
+  # Mongo schema (validators, indexes) and seed data, after the MySQL seed — all idempotent.
+  db-seed:
+    profiles: [full]
+    image: mongo:8.0.32
+    entrypoint: ['/bin/bash', '/seed.sh']
+    volumes:
+      - ./infra/docker/seed/seed.sh:/seed.sh:ro
+      - ./backend/db:/db:ro
+    depends_on:
+      mongo: { condition: service_healthy }
+      mysql-seed: { condition: service_completed_successfully }
+    restart: 'no'
+
+  mysql-seed:
+    profiles: [full]
+    image: mysql:8.4.11
+    environment:
+      MYSQL_PWD: ${MYSQL_ROOT_PASSWORD}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - mysql -hmysql -uroot bazaar_identity < /db/identity/data.sql && mysql -hmysql -uroot bazaar_order < /db/order/data.sql
+    volumes: ['./backend/db:/db:ro']
+    depends_on:
+      gateway-migrate: { condition: service_completed_successfully }
+      order-migrate: { condition: service_completed_successfully }
+    restart: 'no'
+
+  gateway:
+    <<: *app
+    image: ${REGISTRY:-localhost:5001}/bazaar/gateway:${TAG:-dev}
+    build: { context: backend, args: { SERVICE: gateway, PORT: 4000 } }
+    environment: { <<: *app-env, PORT: 4000 }
+    volumes: ['./backend/services/gateway/.secrets:/run/secrets:ro']
+
+  catalog:
+    <<: *app
+    image: ${REGISTRY:-localhost:5001}/bazaar/catalog:${TAG:-dev}
+    build: { context: backend, args: { SERVICE: catalog, PORT: 4010 } }
+    environment: { <<: *app-env, PORT: 4010 }
+
+  order:
+    <<: *app
+    image: ${REGISTRY:-localhost:5001}/bazaar/order:${TAG:-dev}
+    build: { context: backend, args: { SERVICE: order, PORT: 4020 } }
+    environment: { <<: *app-env, PORT: 4020 }
+
+  notification:
+    <<: *app
+    image: ${REGISTRY:-localhost:5001}/bazaar/notification:${TAG:-dev}
+    build: { context: backend, args: { SERVICE: notification, PORT: 4030 } }
+    environment: { <<: *app-env, PORT: 4030 }
+
+  web:
+    <<: *app
+    image: ${REGISTRY:-localhost:5001}/bazaar/web:${TAG:-dev}
+    build: { context: frontend-web }
+    environment:
+      API_BASE_URL: http://gateway:4000
+      SITE_URL: http://bazaar.localhost:8000
+    depends_on:
+      gateway: { condition: service_healthy }
+
+  admin:
+    profiles: [full]
+    image: ${REGISTRY:-localhost:5001}/bazaar/admin:${TAG:-dev}
+    build: { context: frontend-admin }
+    restart: unless-stopped
+
+  edge:
+    profiles: [full]
+    image: nginx:1.31.6-alpine
+    ports: ['127.0.0.1:8000:8000']
+    volumes: ['./infra/docker/edge/nginx.conf:/etc/nginx/conf.d/default.conf:ro']
+    networks:
+      default:
+        # The web container fetches images through the same public name browsers use.
+        aliases: [storage.bazaar.localhost]
+    depends_on: [gateway, web, admin, storage]
+    restart: unless-stopped
 
 volumes:
   mysql-data:

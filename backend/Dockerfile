@@ -38,7 +38,14 @@ WORKDIR /app/services/${SERVICE}
 USER node
 CMD ["npx", "prisma", "migrate", "deploy"]
 
-FROM base AS runtime
+FROM ${NODE_IMAGE} AS runtime
+# npm, npx, corepack and yarn are build tools: not shipped (smaller image, no CVEs in their deps).
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl ca-certificates tini \
+  && rm -rf /var/lib/apt/lists/* \
+    /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn* /opt/yarn-*
+WORKDIR /app
 ARG SERVICE
 # The service's port (gateway 4000, catalog 4010, order 4020, notification 4030).
 ARG PORT

@@ -1,0 +1,50 @@
+name: images
+
+# Builds every image and scans it (plan §11). Fails on HIGH/CRITICAL findings that have a fix.
+# CI builds linux/amd64; arm64 images are built on the Mac (`make images`). Nothing is pushed:
+# there is no remote registry in this local-only project.
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', 'frontend-web/**', 'frontend-admin/**', '.github/workflows/images.yml']
+  pull_request:
+    paths: ['backend/**', 'frontend-web/**', 'frontend-admin/**', '.github/workflows/images.yml']
+
+concurrency:
+  group: images-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: gateway, context: backend, args: "SERVICE=gateway\nPORT=4000" }
+          - { name: catalog, context: backend, args: "SERVICE=catalog\nPORT=4010" }
+          - { name: order, context: backend, args: "SERVICE=order\nPORT=4020" }
+          - { name: notification, context: backend, args: "SERVICE=notification\nPORT=4030" }
+          - { name: web, context: frontend-web, args: '' }
+          - { name: admin, context: frontend-admin, args: '' }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.context }}
+          build-args: ${{ matrix.args }}
+          tags: bazaar/${{ matrix.name }}:${{ github.sha }}
+          load: true
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: bazaar/${{ matrix.name }}:${{ github.sha }}
+          version: v0.75.0
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          format: table

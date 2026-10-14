@@ -16,7 +16,11 @@ ENV NEXT_OUTPUT=standalone NEXT_TELEMETRY_DISABLED=1 \
 RUN npm run build
 
 FROM ${NODE_IMAGE} AS runtime
-RUN apt-get update && apt-get install -y --no-install-recommends tini && rm -rf /var/lib/apt/lists/*
+# npm, npx, corepack and yarn are build tools: not shipped (smaller image, no CVEs in their deps).
+RUN apt-get update && apt-get install -y --no-install-recommends tini \
+  && rm -rf /var/lib/apt/lists/* \
+    /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn* /opt/yarn-*
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3100 HOSTNAME=0.0.0.0
 COPY --from=build --chown=node:node /app/.next/standalone ./

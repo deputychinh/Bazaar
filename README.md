@@ -55,6 +55,8 @@ make up-full     # builds the images, migrates, seeds, starts all six apps
 ADMIN_URL=http://admin.bazaar.localhost:8000 GATEWAY_URL=http://bazaar.localhost:8000 make e2e
 ```
 
+Staging on Kubernetes (kind): `make k8s-up` → http://bazaar.localhost — see [docs/k8s.md](docs/k8s.md).
+
 Demo data: `make migrate db-schema seed` loads 7 accounts, 13 categories, 3 shops and 1,000 bilingual products.
 Demo accounts, password **`Bazaar@2026!`**: `admin@bazaar.test`,
 `seller.minh@bazaar.test`, `seller.anna@bazaar.test`, `shopper.linh@bazaar.test`, `shopper.tom@bazaar.test`.

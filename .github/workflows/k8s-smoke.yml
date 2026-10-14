@@ -1,0 +1,54 @@
+name: k8s-smoke
+
+# The staging release, end to end on a kind cluster in CI (plan §10 "Cluster smoke"):
+# cluster + add-ons, images, data stores, db-setup Job, apps, then requests through the ingress.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/k8s/**'
+      - 'infra/docker/**'
+      - 'backend/**'
+      - 'frontend-web/**'
+      - 'frontend-admin/**'
+      - 'Makefile'
+      - '.github/workflows/k8s-smoke.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: k8s-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install kind
+        run: |
+          curl -fsSLo kind https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64
+          chmod +x kind && sudo mv kind /usr/local/bin/kind
+      - name: Cluster and add-ons
+        run: |
+          cp .env.example .env
+          make keys
+          make k8s-up-cluster
+      - name: Release (images → registry → data → db-setup → apps)
+        run: make release TAG=${GITHUB_SHA::7}
+      - name: Requests through the ingress
+        run: |
+          check() { curl -fsS -o /dev/null -w "%{http_code} $1$2\n" --resolve "$1:80:127.0.0.1" "http://$1$2"; }
+          check bazaar.localhost /en
+          check bazaar.localhost /vi/c/home-kitchen
+          check bazaar.localhost /api/v1/categories
+          check admin.bazaar.localhost /seller/orders
+          check storage.bazaar.localhost /bazaar-images/placeholders/crafts.svg
+          check bazaar.localhost '/_next/image?url=http%3A%2F%2Fstorage.bazaar.localhost%2Fbazaar-images%2Fplaceholders%2Fcrafts.svg&w=640&q=75'
+      - name: Cluster state on failure
+        if: failure()
+        run: |
+          kubectl get pods -A -o wide
+          kubectl get events -A --sort-by=.lastTimestamp | tail -50
+          kubectl -n bazaar-data logs job/db-setup --all-containers --tail=50 || true
+          for app in gateway catalog order notification web; do kubectl -n bazaar logs deploy/$app --tail=30 || true; done

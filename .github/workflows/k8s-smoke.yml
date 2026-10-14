@@ -63,5 +63,8 @@ jobs:
           pod=$(kubectl -n bazaar-data get pods -l job-name=db-setup -o name 2>/dev/null | tail -1)
           if [ -n "$pod" ]; then
             kubectl -n bazaar-data get "$pod" -o jsonpath='{range .status.initContainerStatuses[*]}{.name}={.state}{"\n"}{end}' 2>&1 | annotate 'db-setup steps'
-            kubectl -n bazaar-data logs "$pod" --all-containers --prefix --tail=40 2>&1 | annotate 'db-setup logs'
+            kubectl -n bazaar-data logs "$pod" -c identity-migrate --tail=15 2>&1 | annotate 'identity-migrate logs'
           fi
+          kubectl -n bazaar-data logs mysql-0 --tail=25 2>&1 | annotate 'mysql logs'
+          kubectl -n bazaar-data logs mysql-0 --previous --tail=10 2>&1 | annotate 'mysql previous logs'
+          kubectl -n bazaar-data exec mysql-0 -- sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -N -e "SELECT user, host, plugin FROM mysql.user; SHOW VARIABLES LIKE \"authentication_policy\";"' 2>&1 | annotate 'mysql users'

@@ -1,6 +1,7 @@
 import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elasticache from 'aws-cdk-lib/aws-elasticache';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as msk from 'aws-cdk-lib/aws-msk';
@@ -394,6 +395,20 @@ export class DataStack extends Stack {
       removalPolicy,
       autoDeleteObjects: !retain,
     });
+    // The images CDN (EdgeStack) reads objects through Origin Access Control. Granted here: the
+    // bucket's policy lives in this stack, and a grant from EdgeStack would make the stacks circular.
+    this.imagesBucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
+        resources: [this.imagesBucket.arnForObjects('*')],
+        conditions: {
+          StringEquals: { 'AWS:SourceAccount': this.account },
+          ArnLike: { 'AWS:SourceArn': `arn:aws:cloudfront::${this.account}:distribution/*` },
+        },
+      }),
+    );
+
     this.backupsBucket = new s3.Bucket(this, 'Backups', {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.KMS,

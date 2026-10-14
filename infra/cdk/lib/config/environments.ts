@@ -55,6 +55,7 @@ export const ENVIRONMENTS: Readonly<Record<EnvironmentName, EnvironmentConfig>> 
     },
     eks: { instanceType: 'm7g.large', minNodes: 3, desiredNodes: 3, maxNodes: 9 },
     domainName: 'bazaar.example',
+    hostedZoneId: 'Z0000000000000EXAMPLE',
     alarmEmail: 'oncall@bazaar.example',
     logRetentionDays: 90,
     retainData: true,

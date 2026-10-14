@@ -37,8 +37,10 @@ export interface EnvironmentConfig {
     readonly desiredNodes: number;
     readonly maxNodes: number;
   };
-  /** Public domain; without one CloudFront serves its default *.cloudfront.net name. */
+  /** Public domain; without one CloudFront serves its default *.cloudfront.net names. */
   readonly domainName?: string;
+  /** Route 53 zone of `domainName` (attributes, not a lookup, so synth stays offline). */
+  readonly hostedZoneId?: string;
   readonly alarmEmail: string;
   readonly logRetentionDays: number;
   /** Prod keeps data (RETAIN + deletion protection); dev can be torn down. */

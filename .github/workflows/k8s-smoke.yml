@@ -60,3 +60,8 @@ jobs:
           kubectl get pods -A --no-headers 2>&1 | grep -v ' Running \| Completed ' | annotate 'Pods not running'
           kubectl get events -A --field-selector type=Warning --sort-by=.lastTimestamp 2>&1 | tail -15 | annotate 'Warning events'
           kubectl -n bazaar-data get kafka bazaar -o jsonpath='{.status.conditions}' 2>&1 | annotate 'Kafka conditions'
+          pod=$(kubectl -n bazaar-data get pods -l job-name=db-setup -o name 2>/dev/null | tail -1)
+          if [ -n "$pod" ]; then
+            kubectl -n bazaar-data get "$pod" -o jsonpath='{range .status.initContainerStatuses[*]}{.name}={.state}{"\n"}{end}' 2>&1 | annotate 'db-setup steps'
+            kubectl -n bazaar-data logs "$pod" --all-containers --prefix --tail=40 2>&1 | annotate 'db-setup logs'
+          fi

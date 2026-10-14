@@ -1,0 +1,65 @@
+# Prometheus, Alertmanager, Grafana, node-exporter, kube-state-metrics (plan §9.3), sized for kind.
+fullnameOverride: kps
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    # Pick up every ServiceMonitor/PodMonitor/PrometheusRule, not only the chart's own.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    enableFeatures: [exemplar-storage]
+    # Tempo's metrics generator pushes span metrics and the service graph here.
+    enableRemoteWriteReceiver: true
+    resources:
+      requests: { cpu: 100m, memory: 512Mi }
+      limits: { memory: 1536Mi }
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests: { cpu: 10m, memory: 32Mi }
+grafana:
+  adminPassword: bazaar-local
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts: [grafana.bazaar.localhost]
+  # Dashboards and datasources come from ConfigMaps labelled grafana_dashboard / grafana_datasource.
+  sidecar:
+    dashboards: { enabled: true, searchNamespace: ALL }
+    datasources: { enabled: true }
+  additionalDataSources:
+    - name: Loki
+      uid: loki
+      type: loki
+      url: http://loki.observability.svc:3100
+      jsonData:
+        # A traceId in a log line opens the trace in Tempo.
+        derivedFields:
+          - name: traceId
+            matcherRegex: '"traceId":"(\w+)"'
+            url: '$${__value.raw}'
+            datasourceUid: tempo
+    - name: Tempo
+      uid: tempo
+      type: tempo
+      url: http://tempo.observability.svc:3200
+      jsonData:
+        tracesToLogsV2:
+          datasourceUid: loki
+          filterByTraceID: true
+          spanStartTimeShift: -5m
+          spanEndTimeShift: 5m
+        serviceMap: { datasourceUid: prometheus }
+  resources:
+    requests: { cpu: 50m, memory: 128Mi }
+prometheus-node-exporter:
+  resources:
+    requests: { cpu: 10m, memory: 24Mi }
+kube-state-metrics:
+  resources:
+    requests: { cpu: 10m, memory: 48Mi }
+# kind's control plane does not expose these components to scraping.
+kubeEtcd: { enabled: false }
+kubeControllerManager: { enabled: false }
+kubeScheduler: { enabled: false }
+kubeProxy: { enabled: false }

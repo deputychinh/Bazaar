@@ -78,6 +78,22 @@ spec:
       ports:
         - { port: http }
 ---
+# Prometheus (namespace observability) scrapes /metrics of the services.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: services-from-observability
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/component: service }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: observability }
+      ports:
+        - { port: http }
+---
 # The notification service triggers on-demand ISR on the web server.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

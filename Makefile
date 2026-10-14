@@ -114,6 +114,9 @@ k8s-up: k8s-up-cluster release ## Cluster + add-ons, then release the current sh
 k8s-up-cluster: ## Only the kind cluster, local registry and add-ons (Traefik, metrics-server, Strimzi)
 	infra/k8s/kind/cluster.sh up
 
+k8s-observability: ## Prometheus, Grafana, Loki, Tempo, Alloy, OTel Collector on kind (~2 GB more RAM)
+	infra/k8s/observability/install.sh
+
 k8s-down: ## Delete the kind cluster (registry images are kept)
 	infra/k8s/kind/cluster.sh down
 
@@ -150,4 +153,4 @@ dev-order: ## Run the order service with reload on :4020
 dev-notification: ## Run the notification service with reload on :4030
 	$(BACKEND) npm run dev -w @bazaar/notification
 
-.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images k8s-up k8s-up-cluster k8s-down k8s-status k8s-load release rollback aws-test aws-synth
+.PHONY: help env install keys up-full dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e images k8s-up k8s-up-cluster k8s-observability k8s-down k8s-status k8s-load release rollback aws-test aws-synth

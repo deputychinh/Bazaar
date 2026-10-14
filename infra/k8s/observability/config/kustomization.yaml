@@ -1,0 +1,5 @@
+# Monitoring config as code, applied by install.sh once the Prometheus Operator CRDs exist.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - monitors.yaml

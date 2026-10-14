@@ -1,0 +1,28 @@
+# What Prometheus scrapes (plan §9.3): the four services' /metrics and the Strimzi Kafka exporter
+# (consumer lag per group and topic).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: bazaar-services
+  namespace: observability
+spec:
+  namespaceSelector: { matchNames: [bazaar] }
+  selector:
+    matchLabels: { app.kubernetes.io/component: service }
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: kafka-exporter
+  namespace: observability
+spec:
+  namespaceSelector: { matchNames: [bazaar-data] }
+  selector:
+    matchLabels: { strimzi.io/kind: Kafka, strimzi.io/name: bazaar-kafka-exporter }
+  podMetricsEndpoints:
+    - port: tcp-prometheus
+      interval: 30s

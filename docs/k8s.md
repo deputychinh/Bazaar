@@ -48,7 +48,18 @@ infra/k8s/
 5. The apps are applied and every rollout is awaited. Pods sleep 5 s in `preStop` so no request is
    dropped while endpoints update.
 
-## Watching it
+## Observability (`make k8s-observability`)
+Installs into namespace `observability` (pinned charts): kube-prometheus-stack (Prometheus,
+Alertmanager, Grafana), Loki, Tempo, Alloy (pod logs) and an OTel Collector.
+
+- **Grafana**: http://grafana.bazaar.localhost (admin / `bazaar-local`). Datasources are linked:
+  a `traceId` in a Loki line opens the trace in Tempo; a span opens its logs.
+- **Metrics**: every service's `/metrics` (ServiceMonitor) and the Strimzi Kafka exporter (consumer
+  lag; `-1` means a partition without committed offsets).
+- **Traces**: the apps send OTLP to `otel-collector.observability.svc:4318` (set in the local overlay;
+  dropped silently when the stack is not installed). One checkout is one trace across gateway,
+  catalog, order, Kafka, the saga and notification.
+
 - `k9s` — pods, logs, events live.
 - `kubectl -n bazaar get hpa` — autoscaling on CPU (metrics-server).
 - `kubectl -n bazaar-data get kafka,kafkatopic` — Kafka and topics as Strimzi sees them.

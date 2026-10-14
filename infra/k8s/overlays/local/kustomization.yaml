@@ -7,6 +7,13 @@ resources:
   - ../../base
   - data
   - setup
+# Traces go to the OTel Collector of `make k8s-observability` (silently dropped when it is absent).
+configMapGenerator:
+  - name: bazaar-config
+    namespace: bazaar
+    behavior: merge
+    literals:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.observability.svc:4318
 secretGenerator:
   - name: bazaar-secrets
     namespace: bazaar

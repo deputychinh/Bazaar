@@ -1,0 +1,55 @@
+# Pod logs → Loki (plan §9.3). The apps log JSON (pino); service and level become labels.
+alloy:
+  configMap:
+    content: |
+      discovery.kubernetes "pods" {
+        role = "pod"
+      }
+
+      discovery.relabel "pods" {
+        targets = discovery.kubernetes.pods.targets
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          target_label  = "app"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+      }
+
+      loki.source.kubernetes "pods" {
+        targets    = discovery.relabel.pods.output
+        forward_to = [loki.process.json.receiver]
+      }
+
+      loki.process "json" {
+        stage.json {
+          expressions = { level = "level", traceId = "traceId" }
+        }
+        stage.labels {
+          values = { level = "" }
+        }
+        // High-cardinality ids are metadata, not labels.
+        stage.structured_metadata {
+          values = { traceId = "" }
+        }
+        forward_to = [loki.write.default.receiver]
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki.observability.svc:3100/loki/api/v1/push"
+        }
+      }
+  resources:
+    requests: { cpu: 20m, memory: 64Mi }
+controller:
+  type: daemonset
+  # Also collect logs of pods on the control-plane node (Traefik, CoreDNS).
+  tolerations:
+    - { key: node-role.kubernetes.io/control-plane, operator: Exists, effect: NoSchedule }

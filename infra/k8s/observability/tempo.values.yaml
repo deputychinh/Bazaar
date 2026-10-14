@@ -1,0 +1,18 @@
+# Traces (plan §9.3): Tempo single binary, OTLP from the collector, 2 days locally.
+# Note: this chart is marked deprecated upstream (successor: tempo-distributed); still the simplest
+# single-binary install, kept pinned until the move is worth it.
+tempo:
+  retention: 48h
+  receivers:
+    otlp:
+      protocols:
+        grpc: { endpoint: 0.0.0.0:4317 }
+        http: { endpoint: 0.0.0.0:4318 }
+  # Span metrics and the service graph go to Prometheus (RED per span, service map in Grafana).
+  metricsGenerator:
+    enabled: true
+    remoteWriteUrl: http://kps-prometheus.observability.svc:9090/api/v1/write
+persistence: { enabled: true, size: 5Gi }
+resources:
+  requests: { cpu: 50m, memory: 128Mi }
+  limits: { memory: 512Mi }

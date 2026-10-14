@@ -11,6 +11,9 @@ const isPrivateStorage =
   process.env.STORAGE_IS_PRIVATE === 'true' ||
   ['127.0.0.1', 'localhost'].includes(storage.hostname);
 const apiBaseUrl = process.env.API_BASE_URL ?? 'http://127.0.0.1:4000';
+// Images sit under the bucket name on S3-compatible storage; a CDN in front of the bucket (AWS)
+// serves them from its root, so the build sets STORAGE_IMAGE_PATH= (empty) there.
+const imagePath = process.env.STORAGE_IMAGE_PATH ?? '/bazaar-images';
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -29,7 +32,7 @@ const nextConfig: NextConfig = {
         protocol: storage.protocol === 'https:' ? 'https' : 'http',
         // Any port: compose serves storage on :8000, the cluster ingress on :80.
         hostname: storage.hostname,
-        pathname: '/bazaar-images/**',
+        pathname: `${imagePath}/**`,
       },
     ],
     // Category placeholders are SVG; served as attachments with a locked-down CSP (Next.js guidance).

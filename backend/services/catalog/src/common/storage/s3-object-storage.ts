@@ -27,11 +27,17 @@ export class S3ObjectStorage extends ObjectStorage {
   public constructor(config: AppConfig) {
     super();
     const { env } = config;
-    const credentials = {
-      accessKeyId: env.STORAGE_ACCESS_KEY,
-      secretAccessKey: env.STORAGE_SECRET_KEY,
+    const { STORAGE_ACCESS_KEY: accessKeyId, STORAGE_SECRET_KEY: secretAccessKey } = env;
+    // No static keys → the SDK's default chain (EKS Pod Identity on AWS).
+    const credentials =
+      accessKeyId === undefined || secretAccessKey === undefined
+        ? {}
+        : { credentials: { accessKeyId, secretAccessKey } };
+    const common = {
+      region: env.STORAGE_REGION,
+      forcePathStyle: env.STORAGE_FORCE_PATH_STYLE,
+      ...credentials,
     };
-    const common = { region: env.STORAGE_REGION, credentials, forcePathStyle: true };
     this.internal = new S3Client({ ...common, endpoint: env.STORAGE_ENDPOINT });
     this.public = new S3Client({ ...common, endpoint: env.STORAGE_PUBLIC_URL });
     this.bucket = env.STORAGE_BUCKET_IMAGES;

@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { AppConfig } from '../../config/app-config.js';
+import { MailTransport } from '../../enums/mail-transport.enum.js';
 import { ContactsRepository } from '../contacts/repositories/contacts.repository.js';
 import { PrismaContactsRepository } from '../contacts/repositories/prisma-contacts.repository.js';
 import { ContactsReaction } from '../contacts/services/contacts.reaction.js';
@@ -7,6 +9,7 @@ import { EmailRelayRunner } from '../emails/email-relay.runner.js';
 import { EmailQueueRepository } from '../emails/repositories/email-queue.repository.js';
 import { PrismaEmailQueueRepository } from '../emails/repositories/prisma-email-queue.repository.js';
 import { EmailSender } from '../emails/senders/email-sender.js';
+import { SesEmailSender } from '../emails/senders/ses-email-sender.js';
 import { SmtpEmailSender } from '../emails/senders/smtp-email-sender.js';
 import { EmailRelayService } from '../emails/services/email-relay.service.js';
 import { EmailReaction } from '../emails/services/email.reaction.js';
@@ -50,7 +53,14 @@ import { PrismaProcessedEventStore } from './prisma-processed-event.store.js';
     { provide: ContactsRepository, useClass: PrismaContactsRepository },
     { provide: OrderSummariesRepository, useClass: PrismaOrderSummariesRepository },
     { provide: EmailQueueRepository, useClass: PrismaEmailQueueRepository },
-    { provide: EmailSender, useClass: SmtpEmailSender },
+    {
+      provide: EmailSender,
+      inject: [AppConfig],
+      useFactory: (config: AppConfig): EmailSender =>
+        config.env.MAIL_TRANSPORT === MailTransport.Ses
+          ? new SesEmailSender(config)
+          : new SmtpEmailSender(config),
+    },
     { provide: EventReactions, useClass: AllEventReactions },
   ],
   exports: [ContactsRepository],

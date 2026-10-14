@@ -44,7 +44,7 @@ export class AppModule {
           pretty: env.NODE_ENV === Environment.Development,
         }),
         HttpCommonModule,
-        KafkaModule.forRoot({ clientId: env.SERVICE_NAME, brokers: env.KAFKA_BROKERS }),
+        KafkaModule.forRootFromEnv(env),
         PrismaModule,
         RedisModule.forRoot({ url: env.REDIS_URL }),
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),

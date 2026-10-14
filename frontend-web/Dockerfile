@@ -11,8 +11,11 @@ COPY . .
 ARG API_BASE_URL=http://gateway:4000
 ARG STORAGE_PUBLIC_URL=http://storage.bazaar.localhost
 ARG STORAGE_IS_PRIVATE=true
+# AWS: STORAGE_PUBLIC_URL=https://images.<domain>, STORAGE_IMAGE_PATH= (CDN serves the bucket root).
+ARG STORAGE_IMAGE_PATH=/bazaar-images
 ENV NEXT_OUTPUT=standalone NEXT_TELEMETRY_DISABLED=1 \
-  API_BASE_URL=${API_BASE_URL} STORAGE_PUBLIC_URL=${STORAGE_PUBLIC_URL} STORAGE_IS_PRIVATE=${STORAGE_IS_PRIVATE}
+  API_BASE_URL=${API_BASE_URL} STORAGE_PUBLIC_URL=${STORAGE_PUBLIC_URL} \
+  STORAGE_IS_PRIVATE=${STORAGE_IS_PRIVATE} STORAGE_IMAGE_PATH=${STORAGE_IMAGE_PATH}
 # public/ may be empty, and git keeps no empty folders: make sure it exists for the copy below.
 RUN mkdir -p public && npm run build
 

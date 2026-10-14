@@ -1,24 +1,28 @@
 import { JWT_DEFAULT_AUDIENCE, JWT_DEFAULT_ISSUER } from '@bazaar/contracts';
-import { baseEnvSchema } from '@bazaar/nest-common';
+import { baseEnvSchema, MONGODB_URL_PATTERN, REDIS_URL_PATTERN } from '@bazaar/nest-common';
 import { z } from 'zod';
 
 import {
   NOTIFICATION_DEFAULT_PORT,
   NOTIFICATION_SERVICE_NAME,
 } from '../constants/notification.constant.js';
+import { MailTransport } from '../enums/mail-transport.enum.js';
 
 /** Every variable the notification service reads (plan §6A.2 Config). */
 export const notificationEnvSchema = baseEnvSchema.extend({
   SERVICE_NAME: z.string().min(1).default(NOTIFICATION_SERVICE_NAME),
   PORT: z.coerce.number().int().positive().default(NOTIFICATION_DEFAULT_PORT),
-  NOTIFICATION_DATABASE_URL: z.string().startsWith('mongodb://'),
-  REDIS_URL: z.string().startsWith('redis://'),
+  NOTIFICATION_DATABASE_URL: z.string().regex(MONGODB_URL_PATTERN),
+  REDIS_URL: z.string().regex(REDIS_URL_PATTERN),
   GATEWAY_JWKS_URL: z.url().default('http://127.0.0.1:4000/.well-known/jwks.json'),
   JWT_ISSUER: z.string().min(1).default(JWT_DEFAULT_ISSUER),
   JWT_AUDIENCE: z.string().min(1).default(JWT_DEFAULT_AUDIENCE),
   SMTP_HOST: z.string().min(1).default('127.0.0.1'),
   SMTP_PORT: z.coerce.number().int().positive().default(1026),
   MAIL_FROM: z.string().min(3).default('Bazaar <no-reply@bazaar.test>'),
+  MAIL_TRANSPORT: z.enum(MailTransport).default(MailTransport.Smtp),
+  /** SES region when MAIL_TRANSPORT=ses; defaults to the SDK's (AWS_REGION). */
+  SES_REGION: z.string().min(1).optional(),
   /** Customer site, for links in emails (order pages). */
   WEB_APP_URL: z.url().default('http://localhost:3100'),
   /** How often queued emails are sent. */

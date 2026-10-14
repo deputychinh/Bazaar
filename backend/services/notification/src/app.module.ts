@@ -40,7 +40,7 @@ export class AppModule {
           issuer: env.JWT_ISSUER,
           audience: env.JWT_AUDIENCE,
         }),
-        KafkaModule.forRoot({ clientId: env.SERVICE_NAME, brokers: env.KAFKA_BROKERS }),
+        KafkaModule.forRootFromEnv(env),
         RedisModule.forRoot({ url: env.REDIS_URL }),
         PrismaModule,
         HealthModule.forRoot([PrismaHealthIndicator, RedisHealthIndicator, KafkaHealthIndicator]),

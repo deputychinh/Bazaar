@@ -11,7 +11,12 @@ export class KafkaConnection {
 
   public constructor(@Inject(KAFKA_MODULE_OPTIONS) options: KafkaModuleOptions) {
     this.kafka = new KafkaJS.Kafka({
-      kafkaJS: { clientId: options.clientId, brokers: options.brokers },
+      kafkaJS: {
+        clientId: options.clientId,
+        brokers: options.brokers,
+        ...(options.ssl === true ? { ssl: true } : {}),
+        ...(options.sasl === undefined ? {} : { sasl: options.sasl }),
+      },
     });
   }
 

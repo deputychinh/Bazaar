@@ -1,4 +1,5 @@
 import { Environment } from '../enums/environment.enum.js';
+import { KafkaSaslMechanism } from '../enums/kafka-sasl-mechanism.enum.js';
 import { LogLevel } from '../enums/log-level.enum.js';
 import { ConfigValidationError } from '../errors/config-validation.error.js';
 
@@ -19,6 +20,8 @@ describe('AppConfigLoader', () => {
       PORT: 4000,
       LOG_LEVEL: LogLevel.Info,
       KAFKA_BROKERS: ['localhost:9094', 'kafka:9092'],
+      KAFKA_SSL: false,
+      KAFKA_SASL_MECHANISM: KafkaSaslMechanism.ScramSha512,
     });
   });
 

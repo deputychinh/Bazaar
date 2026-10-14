@@ -143,7 +143,7 @@ Goal: on staging (kind) every request can be followed from metric to trace to lo
 | BZ-079 | Traces + log correlation | OpenTelemetry SDK in nest-common (HTTP, Prisma, Redis auto-instrumentation; trace context in Kafka headers across producer → consumer; manual spans for saga steps); `traceId` in every pino line; OTLP exporter configured by env, off by default | M | ☑ |
 | BZ-080 | Observability stack on kind | Helm (pinned): kube-prometheus-stack, Loki + Alloy, Tempo, OTel Collector in `observability`; ServiceMonitors for the apps, Strimzi Kafka exporter; Grafana at `grafana.bazaar.localhost` with datasources linked (metric → exemplar trace → logs) | L | ☑ |
 | BZ-081 | Dashboards + alerts as code | Grafana dashboards (JSON in repo): golden signals per service, Kafka lag/DLQ, order funnel; `PrometheusRule` SLO alerts (gateway availability, p95 latency, consumer lag, DLQ not empty, outbox age, crash loops) → Alertmanager → Mailpit, each linking `docs/runbook.md` | M | ☑ |
-| BZ-082 | Load tests | k6 scripts (`loadtest/`): browse + product page + API reads at 200 rps, checkout mix; `make load-test` against kind; NFR-02/03 results with hardware noted in the README | M | ☐ |
+| BZ-082 | Load tests | k6 scripts (`loadtest/`): browse + product page + API reads at 200 rps, checkout mix; `make load-test` against kind; NFR-02/03 results with hardware noted in the README | M | ☑ |
 | BZ-083 | Resilience drills | R1–R6 of plan §0.3 run on kind and written up in `docs/drills.md` (what was done, what was seen, follow-ups); R7/R8 written as procedures | M | ☐ |
 
 ## P10 — Docs & polish

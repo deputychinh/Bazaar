@@ -70,6 +70,18 @@ Demo accounts, password **`Bazaar@2026!`**: `admin@bazaar.test`,
 
 All ports are bound to `127.0.0.1`. Credentials in `.env.example` are for local use only.
 
+## Performance (k6, `make load-test`)
+Measured on staging (kind) on the development laptop — Apple Silicon, Docker Desktop with 8 CPU /
+15.6 GB, one replica of every app, no network between client and cluster. Numbers from a laptop are
+a floor for code regressions, not a capacity promise; run the same scripts against a real environment
+before quoting figures.
+
+| Target | Scenario | Result | Goal |
+|---|---|---|---|
+| NFR-03 public API reads | 200 req/s for 2 min (products, listings, search, categories) | p95 **10.6 ms**, p99 21.9 ms | p95 < 200 ms |
+| NFR-02 product page TTFB | 30 pages/s, warm ISR cache, EN + VI | p95 **4.7 ms** | p95 < 300 ms |
+| Checkout under load | 2 orders/s for 1 min through the saga | p95 **23.6 ms**, all accepted or 409 (sold out) | p95 < 800 ms |
+
 ## Documentation
 - [Project plan](docs/plan.md) — requirements, architecture, data, Kafka, Kubernetes, AWS, phases
 - [Coding conventions](CONTRIBUTING.md) — single-source declarations, classes + SOLID (backend), arrow functions + BEM (frontend)

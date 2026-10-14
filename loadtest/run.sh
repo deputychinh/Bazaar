@@ -18,6 +18,8 @@ trap restore EXIT
 echo "→ raising gateway rate limits for the run"
 kubectl -n bazaar set env deployment/gateway RATE_LIMIT_DEFAULT_PER_MINUTE=1000000 RATE_LIMIT_STRICT_PER_MINUTE=1000 >/dev/null
 kubectl -n bazaar rollout status deployment/gateway --timeout=180s >/dev/null
+# The replaced pod drains for a few seconds (preStop); requests sent then would fail on the client.
+sleep 15
 
 for scenario in ${SCENARIOS:-api-reads product-page checkout}; do
   echo "→ $scenario"

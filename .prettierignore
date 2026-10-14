@@ -18,3 +18,4 @@ next-env.d.ts
 # Rendered per release / made from .env (git-ignored).
 infra/k8s/.release
 infra/k8s/overlays/local/.generated
+loadtest/results

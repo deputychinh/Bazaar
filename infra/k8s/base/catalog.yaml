@@ -1,0 +1,89 @@
+# Catalog: shops, products, stock, images (plan §9.2). Image tag is set by the overlay (`images:`).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog
+  labels:
+    app.kubernetes.io/name: catalog
+    app.kubernetes.io/component: service
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: catalog
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: catalog
+        app.kubernetes.io/component: service
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: catalog
+          image: bazaar/catalog
+          ports:
+            - { name: http, containerPort: 4010 }
+          envFrom:
+            - configMapRef: { name: bazaar-config }
+          env:
+            - name: PORT
+              value: '4010'
+            - name: CATALOG_DATABASE_URL
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: CATALOG_DATABASE_URL } }
+            - name: REDIS_URL
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: REDIS_URL } }
+            - name: INTERNAL_API_KEY
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: INTERNAL_API_KEY } }
+            - name: STORAGE_ACCESS_KEY
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: STORAGE_ACCESS_KEY } }
+            - name: STORAGE_SECRET_KEY
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: STORAGE_SECRET_KEY } }
+          startupProbe:
+            httpGet: { path: /health/live, port: http }
+            periodSeconds: 2
+            failureThreshold: 60
+          livenessProbe:
+            httpGet: { path: /health/live, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: { path: /health/ready, port: http }
+            periodSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests: { cpu: 50m, memory: 160Mi }
+            limits: { memory: 512Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: tmp
+          emptyDir: { sizeLimit: 64Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog
+  labels:
+    app.kubernetes.io/name: catalog
+    app.kubernetes.io/component: service
+spec:
+  selector:
+    app.kubernetes.io/name: catalog
+  ports:
+    - { name: http, port: 4010, targetPort: http }

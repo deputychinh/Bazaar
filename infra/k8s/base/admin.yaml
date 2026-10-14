@@ -1,0 +1,68 @@
+# Admin site: static SPA on unprivileged nginx; /api is routed to the gateway by the ingress.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  labels:
+    app.kubernetes.io/name: admin
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: admin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: admin
+        app.kubernetes.io/component: frontend
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: admin
+          image: bazaar/admin
+          ports:
+            - { name: http, containerPort: 8080 }
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+            limits: { memory: 64Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts:
+            # nginx-unprivileged keeps its pid file and temp files under /tmp.
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: tmp
+          emptyDir: { sizeLimit: 32Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  labels:
+    app.kubernetes.io/name: admin
+    app.kubernetes.io/component: frontend
+spec:
+  selector:
+    app.kubernetes.io/name: admin
+  ports:
+    - { name: http, port: 8080, targetPort: http }

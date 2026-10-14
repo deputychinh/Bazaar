@@ -1,0 +1,83 @@
+# Customer site: Next.js standalone server (SSG/SSR/ISR). Server-side calls go straight to the gateway.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/component: frontend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web
+        app.kubernetes.io/component: frontend
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: web
+          image: bazaar/web
+          ports:
+            - { name: http, containerPort: 3100 }
+          env:
+            - name: API_BASE_URL
+              valueFrom: { configMapKeyRef: { name: bazaar-config, key: API_BASE_URL } }
+            - name: SITE_URL
+              valueFrom: { configMapKeyRef: { name: bazaar-config, key: SITE_URL } }
+            - name: REVALIDATE_SECRET
+              valueFrom: { secretKeyRef: { name: bazaar-secrets, key: REVALIDATE_SECRET } }
+          startupProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 2
+            failureThreshold: 30
+          livenessProbe:
+            tcpSocket: { port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /en, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            requests: { cpu: 50m, memory: 160Mi }
+            limits: { memory: 512Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+            # ISR pages and optimized images are cached here.
+            - { name: next-cache, mountPath: /app/.next/cache }
+      volumes:
+        - name: tmp
+          emptyDir: { sizeLimit: 64Mi }
+        - name: next-cache
+          emptyDir: { sizeLimit: 512Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/component: frontend
+spec:
+  selector:
+    app.kubernetes.io/name: web
+  ports:
+    - { name: http, port: 3100, targetPort: http }

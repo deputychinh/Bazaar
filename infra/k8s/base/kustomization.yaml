@@ -1,0 +1,44 @@
+# Environment-neutral app manifests (plan §9.2). Overlays add data stores or managed endpoints,
+# secrets and image tags: overlays/local (kind) and overlays/aws (EKS, P8).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: bazaar
+labels:
+  - pairs: { app.kubernetes.io/part-of: bazaar }
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - gateway.yaml
+  - catalog.yaml
+  - order.yaml
+  - notification.yaml
+  - web.yaml
+  - admin.yaml
+  - ingress.yaml
+  - network-policies.yaml
+# Non-secret settings shared by the apps; every value is an in-cluster address or a public URL.
+configMapGenerator:
+  - name: bazaar-config
+    literals:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - PRISMA_HIDE_UPDATE_MESSAGE=1
+      - KAFKA_BROKERS=bazaar-kafka-bootstrap.bazaar-data.svc:9092
+      - GATEWAY_JWKS_URL=http://gateway:4000/.well-known/jwks.json
+      - CATALOG_SERVICE_URL=http://catalog:4010
+      - ORDER_SERVICE_URL=http://order:4020
+      - NOTIFICATION_SERVICE_URL=http://notification:4030
+      - API_BASE_URL=http://gateway:4000
+      - STORAGE_ENDPOINT=http://storage.bazaar-data.svc:9000
+      - STORAGE_PUBLIC_URL=http://storage.bazaar.localhost
+      - STORAGE_BUCKET_IMAGES=bazaar-images
+      - SMTP_HOST=mailpit.bazaar-data.svc
+      - SMTP_PORT=1025
+      - SITE_URL=http://bazaar.localhost
+      - WEB_APP_URL=http://bazaar.localhost
+      - WEB_REVALIDATE_URL=http://web:3100/api/revalidate
+      - CORS_ORIGINS=http://bazaar.localhost,http://admin.bazaar.localhost
+      # Traefik writes X-Forwarded-For itself: exactly one trusted hop.
+      - TRUST_PROXY_HOPS=1
+      - FX_PROVIDER=http
+      - FX_STATIC_USD_VND=26000

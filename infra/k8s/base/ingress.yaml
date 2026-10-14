@@ -1,0 +1,27 @@
+# Traefik routes (plan §9.2). /api goes straight to the gateway on both sites, so the browser stays
+# same-origin (first-party refresh cookie, no CORS) and Traefik is the one hop the gateway trusts.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bazaar
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: bazaar.localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: gateway, port: { name: http } } }
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: web, port: { name: http } } }
+    - host: admin.bazaar.localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: gateway, port: { name: http } } }
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: admin, port: { name: http } } }

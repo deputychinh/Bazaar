@@ -1,4 +1,4 @@
-# Local staging on kind (plan §0.2): base apps + in-cluster data stores.
+# Local staging on kind (plan §0.2): base apps + in-cluster data stores + the db-setup Job.
 # Rendered by deploy.sh through .generated/kustomization.yaml, which pins every image to the
 # git sha being released and holds the secrets made from .env (git-ignored).
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -6,6 +6,7 @@ kind: Kustomization
 resources:
   - ../../base
   - data
+  - setup
 secretGenerator:
   - name: bazaar-secrets
     namespace: bazaar

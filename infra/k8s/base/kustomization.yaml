@@ -16,6 +16,7 @@ resources:
   - admin.yaml
   - ingress.yaml
   - network-policies.yaml
+  - scaling.yaml
 # Non-secret settings shared by the apps; every value is an in-cluster address or a public URL.
 configMapGenerator:
   - name: bazaar-config

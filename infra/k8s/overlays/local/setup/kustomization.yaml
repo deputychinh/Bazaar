@@ -1,0 +1,19 @@
+# The db-setup Job and its files (namespace bazaar-data). Applied by deploy.sh between the data
+# stores and the apps. Seed files are backend/db/* — the same files compose and `make seed` use.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: bazaar-data
+labels:
+  - pairs: { app.kubernetes.io/part-of: bazaar, bazaar.dev/phase: setup }
+resources:
+  - db-setup.yaml
+configMapGenerator:
+  - name: db-files
+    files:
+      - seed.sh=../../../../docker/seed/seed.sh
+      - identity-data.sql=../../../../../backend/db/identity/data.sql
+      - order-data.sql=../../../../../backend/db/order/data.sql
+      - catalog-schema.js=../../../../../backend/db/catalog/schema.js
+      - catalog-data.js=../../../../../backend/db/catalog/data.js
+      - notification-schema.js=../../../../../backend/db/notification/schema.js
+      - notification-data.js=../../../../../backend/db/notification/data.js

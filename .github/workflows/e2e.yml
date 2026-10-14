@@ -1,0 +1,86 @@
+name: e2e
+
+# Browser journeys across the whole stack: admin site → gateway → services → Kafka → Mailpit.
+on:
+  push:
+    branches: [main]
+    paths:
+      [
+        'backend/**',
+        'frontend-admin/**',
+        'e2e/**',
+        'docker-compose.yml',
+        '.github/workflows/e2e.yml',
+      ]
+  pull_request:
+    paths:
+      [
+        'backend/**',
+        'frontend-admin/**',
+        'e2e/**',
+        'docker-compose.yml',
+        '.github/workflows/e2e.yml',
+      ]
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  journeys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend-admin/package-lock.json
+            e2e/package-lock.json
+      - name: Start infrastructure
+        run: |
+          cp .env.example .env
+          make keys
+          docker compose up -d --wait --wait-timeout 300 mysql mongo redis kafka storage mailpit
+          docker compose run --rm --no-deps kafka-init
+          docker compose run --rm --no-deps storage-init
+      - name: Build, migrate and seed the backend
+        working-directory: backend
+        run: |
+          npm ci && npm run build
+          set -a && source ../.env && set +a
+          npm run migrate --workspaces --if-present
+          ./db/scripts/apply.sh schema
+          ./db/scripts/apply.sh data
+      - name: Start services and the admin site
+        run: |
+          for service in gateway catalog order notification; do
+            (cd backend/services/$service && nohup node --env-file=../../../.env --enable-source-maps dist/main.js > /tmp/$service.log 2>&1 &)
+          done
+          (cd frontend-admin && npm ci && npm run build && nohup npm run preview > /tmp/admin.log 2>&1 &)
+          for attempt in $(seq 1 90); do
+            curl -sf localhost:4000/health/ready && curl -sf localhost:4010/health/ready \
+              && curl -sf localhost:4020/health/ready && curl -sf localhost:4030/health/ready \
+              && curl -sf localhost:3200/login > /dev/null && break
+            sleep 2
+          done
+      - name: Playwright journeys
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npx playwright test
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
+      - name: Service logs on failure
+        if: failure()
+        run: tail -n 100 /tmp/gateway.log /tmp/catalog.log /tmp/order.log /tmp/notification.log /tmp/admin.log || true

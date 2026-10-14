@@ -76,6 +76,9 @@ test: ## Unit tests with coverage
 test-int: ## Integration tests (needs `make up`)
 	$(BACKEND) npm run test:int
 
+e2e: ## Playwright journeys (needs the stack running: up, seed, services, admin site on :3200)
+	cd e2e && npm ci && npx playwright install chromium && npx playwright test
+
 build: ## Build every backend package
 	$(BACKEND) npm run build
 
@@ -99,4 +102,4 @@ dev-order: ## Run the order service with reload on :4020
 dev-notification: ## Run the notification service with reload on :4030
 	$(BACKEND) npm run dev -w @bazaar/notification
 
-.PHONY: help env install keys dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format
+.PHONY: help env install keys dev-gateway dev-catalog dev-order dev-notification up down ps logs nuke urls migrate db-schema seed db-reset lint typecheck test test-int build openapi ci format e2e

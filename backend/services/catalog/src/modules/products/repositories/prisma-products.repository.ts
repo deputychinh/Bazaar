@@ -7,6 +7,7 @@ import { Prisma } from '#prisma';
 import { ProductSort } from '../../../enums/product-sort.enum.js';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service.js';
 import type {
+  ModerationCriteria,
   NewProduct,
   Product,
   ProductPage,
@@ -50,6 +51,30 @@ export class PrismaProductsRepository extends ProductsRepository {
     const where: Prisma.ProductWhereInput = {
       sellerId: criteria.sellerId,
       ...(criteria.status === undefined ? {} : { status: criteria.status }),
+    };
+    const [rows, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip: (criteria.page - 1) * criteria.pageSize,
+        take: criteria.pageSize,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+    return {
+      items: rows.map((row) => ProductMapper.toDomain(row)),
+      total,
+      page: criteria.page,
+      pageSize: criteria.pageSize,
+    };
+  }
+
+  public async findForModeration(criteria: ModerationCriteria): Promise<ProductPage> {
+    const where: Prisma.ProductWhereInput = {
+      ...(criteria.status === undefined ? {} : { status: criteria.status }),
+      ...(criteria.q === undefined
+        ? {}
+        : { title: { is: { en: { contains: criteria.q, mode: 'insensitive' } } } }),
     };
     const [rows, total] = await Promise.all([
       this.prisma.product.findMany({

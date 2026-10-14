@@ -159,5 +159,34 @@
     "CONFIRMED": "Confirmed",
     "COMPLETED": "Completed",
     "CANCELLED": "Cancelled"
+  },
+  "reason": {
+    "label": "Reason",
+    "cancel": "Cancel"
+  },
+  "sellers": {
+    "title": "Seller applications",
+    "status": "Status",
+    "none": "No applications here.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "reason": "Reason: {{reason}}"
+  },
+  "moderation": {
+    "title": "Product moderation",
+    "search": "Title contains",
+    "apply": "Apply",
+    "none": "No products match.",
+    "hide": "Hide",
+    "restore": "Restore",
+    "hiddenBecause": "Hidden: {{reason}}"
+  },
+  "events": {
+    "title": "Event log",
+    "type": "Event type",
+    "allTypes": "All types",
+    "aggregate": "Order or product id",
+    "none": "No events match.",
+    "payload": "Payload"
   }
 }

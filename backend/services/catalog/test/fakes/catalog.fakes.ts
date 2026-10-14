@@ -15,6 +15,7 @@ import { catalogEnvSchema } from '../../src/config/env.schema.js';
 import { ProductSort } from '../../src/enums/product-sort.enum.js';
 import type { Category } from '../../src/interfaces/category.interface.js';
 import type {
+  ModerationCriteria,
   NewProduct,
   Product,
   ProductPage,
@@ -188,6 +189,23 @@ export const productFixture = (overrides: Partial<Product> = {}): Product => ({
 export class InMemoryProductsRepository extends ProductsRepository {
   public constructor(public readonly rows: Product[] = []) {
     super();
+  }
+
+  public findForModeration(criteria: ModerationCriteria): Promise<ProductPage> {
+    const matches = this.rows
+      .filter((product) => criteria.status === undefined || product.status === criteria.status)
+      .filter(
+        (product) =>
+          criteria.q === undefined ||
+          product.title.en.toLowerCase().includes(criteria.q.toLowerCase()),
+      );
+    const start = (criteria.page - 1) * criteria.pageSize;
+    return Promise.resolve({
+      items: matches.slice(start, start + criteria.pageSize),
+      total: matches.length,
+      page: criteria.page,
+      pageSize: criteria.pageSize,
+    });
   }
 
   public findBySlugs(slugs: string[]): Promise<Product[]> {

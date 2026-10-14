@@ -42,5 +42,6 @@ export const CATALOG_ROUTES = [
   'seller/shop',
   'seller/products',
   'seller/products/*path',
+  'admin/products',
   'admin/products/*path',
 ];

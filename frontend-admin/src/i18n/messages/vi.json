@@ -159,5 +159,34 @@
     "CONFIRMED": "Đã xác nhận",
     "COMPLETED": "Hoàn tất",
     "CANCELLED": "Đã huỷ"
+  },
+  "reason": {
+    "label": "Lý do",
+    "cancel": "Huỷ"
+  },
+  "sellers": {
+    "title": "Đơn đăng ký bán hàng",
+    "status": "Trạng thái",
+    "none": "Không có đơn nào.",
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "reason": "Lý do: {{reason}}"
+  },
+  "moderation": {
+    "title": "Kiểm duyệt sản phẩm",
+    "search": "Tên có chứa",
+    "apply": "Áp dụng",
+    "none": "Không có sản phẩm phù hợp.",
+    "hide": "Ẩn",
+    "restore": "Khôi phục",
+    "hiddenBecause": "Đã ẩn: {{reason}}"
+  },
+  "events": {
+    "title": "Nhật ký sự kiện",
+    "type": "Loại sự kiện",
+    "allTypes": "Tất cả",
+    "aggregate": "Mã đơn hoặc sản phẩm",
+    "none": "Không có sự kiện phù hợp.",
+    "payload": "Dữ liệu"
   }
 }

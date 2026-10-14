@@ -54,6 +54,24 @@ export const routes: RouteObject[] = [
               Component: (await import('@/routes/platform/PlatformHomePage')).PlatformHomePage,
             }),
           },
+          {
+            path: 'sellers',
+            lazy: async () => ({
+              Component: (await import('@/routes/platform/SellersPage')).SellersPage,
+            }),
+          },
+          {
+            path: 'products',
+            lazy: async () => ({
+              Component: (await import('@/routes/platform/ModerationPage')).ModerationPage,
+            }),
+          },
+          {
+            path: 'events',
+            lazy: async () => ({
+              Component: (await import('@/routes/platform/EventsPage')).EventsPage,
+            }),
+          },
         ],
       },
       { path: '*', element: <NotFoundPage /> },

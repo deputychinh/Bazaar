@@ -1,10 +1,27 @@
 import { UserRole } from '@bazaar/contracts';
-import { ApiZodBody, ApiZodResponse, Roles, ZodValidationPipe } from '@bazaar/nest-common';
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  ApiZodBody,
+  ApiZodQuery,
+  ApiZodResponse,
+  Roles,
+  ZodValidationPipe,
+} from '@bazaar/nest-common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { type HideProductDto, hideProductSchema } from '../dto/moderation.dto.js';
-import { type SellerProduct, sellerProductSchema } from '../dto/seller-product.dto.js';
+import {
+  type HideProductDto,
+  hideProductSchema,
+  type ModerationQuery,
+  moderationQuerySchema,
+} from '../dto/moderation.dto.js';
+import {
+  type SellerProduct,
+  type SellerProductPage,
+  sellerProductPageSchema,
+  sellerProductSchema,
+} from '../dto/seller-product.dto.js';
+import { ProductsRepository } from '../repositories/products.repository.js';
 import { ProductModerationService } from '../services/product-moderation.service.js';
 import { ProductPresenter } from '../services/product-presenter.js';
 
@@ -16,7 +33,19 @@ export class AdminProductsController {
   public constructor(
     private readonly moderation: ProductModerationService,
     private readonly presenter: ProductPresenter,
+    private readonly products: ProductsRepository,
   ) {}
+
+  /** Every product (any status or seller), newest first, filterable by status and title. */
+  @Get()
+  @ApiZodQuery(moderationQuerySchema)
+  @ApiZodResponse(HttpStatus.OK, sellerProductPageSchema)
+  public async list(
+    @Query(new ZodValidationPipe(moderationQuerySchema)) query: ModerationQuery,
+  ): Promise<SellerProductPage> {
+    const page = await this.products.findForModeration(query);
+    return { ...page, items: page.items.map((product) => this.presenter.seller(product)) };
+  }
 
   @Get(':id')
   @ApiZodResponse(HttpStatus.OK, sellerProductSchema)

@@ -1,6 +1,7 @@
 import type { LocalizedText, ProductStatus } from '@bazaar/contracts';
 
 import type {
+  ModerationCriteria,
   NewProduct,
   Product,
   ProductImage,
@@ -37,6 +38,9 @@ export abstract class ProductsRepository {
   public abstract findBySlugs(slugs: string[]): Promise<Product[]>;
 
   public abstract findBySeller(criteria: SellerProductsCriteria): Promise<ProductPage>;
+
+  /** Every product, newest first, for moderation. */
+  public abstract findForModeration(criteria: ModerationCriteria): Promise<ProductPage>;
 
   /** Throws ConflictError when a SKU is already used by another product. */
   public abstract create(product: NewProduct, transaction: Transaction): Promise<Product>;

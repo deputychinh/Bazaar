@@ -212,6 +212,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminProductsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/products/{id}": {
         parameters: {
             query?: never;
@@ -1405,6 +1421,90 @@ export interface operations {
                         createdAt: string;
                         /** Format: date-time */
                         updatedAt: string;
+                    };
+                };
+            };
+            /** @description Error (problem details). Translate `code`; `message` is for developers. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
+                };
+            };
+        };
+    };
+    AdminProductsController_list: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ProductStatus"];
+                q?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        items: {
+                            id: string;
+                            slug: string;
+                            title: {
+                                en: string;
+                                vi?: string;
+                            };
+                            minPriceUsdCents: number;
+                            imageUrl: string | null;
+                            rating: {
+                                average: number;
+                                count: number;
+                            };
+                            inStock: boolean;
+                            description: {
+                                en: string;
+                                vi?: string;
+                            };
+                            categoryId: string;
+                            status: components["schemas"]["ProductStatus"];
+                            attributes: {
+                                [key: string]: unknown;
+                            } | null;
+                            variants: {
+                                sku: string;
+                                priceUsdCents: number;
+                                stock: number;
+                                attributes: {
+                                    [key: string]: unknown;
+                                } | null;
+                            }[];
+                            images: {
+                                url: string;
+                                key: string;
+                                alt: {
+                                    en: string;
+                                    vi?: string;
+                                } | null;
+                            }[];
+                            /** Format: date-time */
+                            publishedAt: string | null;
+                            hiddenReason: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                        }[];
+                        total: number;
+                        page: number;
+                        pageSize: number;
                     };
                 };
             };

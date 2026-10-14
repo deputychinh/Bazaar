@@ -69,6 +69,14 @@ export interface NewProduct {
   totalStock: number;
 }
 
+/** Admin moderation list: any status and seller, optional title search. */
+export interface ModerationCriteria {
+  status?: ProductStatus;
+  q?: string;
+  page: number;
+  pageSize: number;
+}
+
 export interface SellerProductsCriteria {
   sellerId: string;
   status?: ProductStatus;

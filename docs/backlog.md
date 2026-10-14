@@ -105,7 +105,7 @@ to the gateway (Vite dev server locally, the ingress in Kubernetes), so the refr
 | BZ-059 | Seller products | List with URL pagination/filter, create and edit with React Hook Form + zod (EN/VI text, variants, stock), publish/unpublish, image upload through a presigned URL | L | ☑ |
 | BZ-060 | Seller orders | Queue by status, ship and deliver actions, list refreshes on its own | M | ☑ |
 | BZ-061 | Stats + dashboards | Order service: seller sales per day and order counts, platform GMV / orders by status / top sellers; seller and platform dashboards with a simple chart | M | ☑ |
-| BZ-062 | Platform admin | Seller applications approve/reject, product moderation list (catalog admin list) with hide/restore, event log viewer | M | ☐ |
+| BZ-062 | Platform admin | Seller applications approve/reject, product moderation list (catalog admin list) with hide/restore, event log viewer | M | ☑ |
 | BZ-063 | Journeys | Playwright: seller (sign in → create product → publish → ship an order) and admin (approve seller → hide product) against the running stack | M | ☐ |
 
 ## P7 — Docker + Kubernetes · P8 — AWS CDK · P9 — Observability + quality · P10 — Docs & polish

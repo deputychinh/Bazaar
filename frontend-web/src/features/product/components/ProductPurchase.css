@@ -1,44 +1,109 @@
 .product-purchase {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-stack);
+  gap: var(--space-5);
 }
 
-.product-purchase__variants {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: var(--space-0);
+.product-purchase__price-box {
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-ink-50);
+  border-radius: var(--radius-sm);
+}
+
+.product-purchase__price {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-medium);
+  color: var(--color-price);
+}
+
+.product-purchase__row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  margin: 0;
+  padding: 0;
   border: 0;
 }
 
-.product-purchase__legend {
-  font-weight: var(--weight-semibold);
-  margin-block-end: var(--space-2);
+.product-purchase__label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* A legend ignores grid placement; float it into the first column instead. */
+.product-purchase__variants {
+  display: block;
+}
+
+.product-purchase__variants .product-purchase__label {
+  inline-size: 110px;
+  float: inline-start;
+  padding-block-start: var(--space-2);
+}
+
+.product-purchase__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-inline-start: calc(110px + var(--space-3));
 }
 
 .product-purchase__option {
+  position: relative;
   display: inline-flex;
-  gap: var(--space-2);
   align-items: center;
-  padding: var(--padding-control-sm);
+  min-block-size: 40px;
+  padding-inline: var(--space-4);
+  font-size: var(--text-sm);
+  background: var(--color-surface);
   border: 1px solid var(--color-border-control);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
-.product-purchase__option:has(.product-purchase__input:checked) {
+.product-purchase__option:hover {
+  color: var(--color-primary);
   border-color: var(--color-primary);
 }
 
+/* Selected chip: brand border and a corner tick, as on marketplace variant pickers. */
+.product-purchase__option:has(.product-purchase__input:checked) {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.product-purchase__option:has(.product-purchase__input:checked)::after {
+  position: absolute;
+  border-block-start: 12px solid transparent;
+  border-inline-end: 12px solid var(--color-primary);
+  content: '';
+  inset-block-end: 0;
+  inset-inline-end: 0;
+}
+
+.product-purchase__option:has(.product-purchase__input:focus-visible) {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
 .product-purchase__option:has(.product-purchase__input:disabled) {
-  opacity: 0.5;
+  color: var(--color-text-muted);
+  background: var(--color-ink-50);
   cursor: not-allowed;
+  border-style: dashed;
+}
+
+.product-purchase__quantity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
 }
 
 .product-purchase__stock {
   font-size: var(--text-sm);
-  color: var(--color-on-success-subtle);
+  color: var(--color-text-muted);
 }
 
 .product-purchase__stock.is-out {

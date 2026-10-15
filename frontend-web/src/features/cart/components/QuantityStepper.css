@@ -1,14 +1,17 @@
 .quantity-stepper {
   display: inline-flex;
-  align-items: center;
+  align-items: stretch;
+  block-size: 36px;
+  background: var(--color-surface);
   border: 1px solid var(--color-border-control);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
 }
 
 .quantity-stepper__button {
-  min-inline-size: var(--space-8);
-  padding: var(--padding-control-sm);
-  font-size: var(--text-md);
+  min-inline-size: 36px;
+  padding: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-none);
   background: none;
   border: 0;
   cursor: pointer;
@@ -19,7 +22,13 @@
   cursor: not-allowed;
 }
 
+.quantity-stepper__button:hover:not(:disabled) {
+  color: var(--color-primary);
+}
+
 .quantity-stepper__value {
-  min-inline-size: var(--space-8);
-  text-align: center;
+  display: grid;
+  place-items: center;
+  min-inline-size: 48px;
+  border-inline: 1px solid var(--color-border-control);
 }

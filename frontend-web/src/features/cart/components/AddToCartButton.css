@@ -4,7 +4,26 @@
   gap: var(--space-2);
 }
 
+.add-to-cart-button__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.add-to-cart-button__action {
+  flex: 1 1 180px;
+  max-inline-size: 240px;
+}
+
+.add-to-cart-button__action:disabled {
+  color: var(--color-text-muted);
+  background: var(--color-ink-200);
+}
+
 .add-to-cart-button__status {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
   min-block-size: var(--space-6);
   font-size: var(--text-sm);
   color: var(--color-on-success-subtle);

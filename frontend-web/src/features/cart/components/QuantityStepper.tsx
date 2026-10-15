@@ -10,6 +10,8 @@ import './QuantityStepper.css';
 interface QuantityStepperProps {
   value: number;
   max: number;
+  /** Lowest value the minus button reaches (the cart goes to 0 to remove a line). */
+  min?: number;
   /** Visible product name, so screen readers know which line the buttons change. */
   label: string;
   onChange: (quantity: number) => void;
@@ -18,6 +20,7 @@ interface QuantityStepperProps {
 export const QuantityStepper = ({
   value,
   max,
+  min = 0,
   label,
   onChange,
 }: QuantityStepperProps): ReactElement => {
@@ -29,6 +32,7 @@ export const QuantityStepper = ({
         type="button"
         className="quantity-stepper__button"
         aria-label={t('decrease')}
+        disabled={value <= min}
         onClick={() => onChange(value - 1)}
       >
         −

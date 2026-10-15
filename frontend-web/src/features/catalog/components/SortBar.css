@@ -1,0 +1,77 @@
+.sort-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  background: var(--color-ink-200);
+  border-radius: var(--radius-sm);
+}
+
+.sort-bar__label {
+  color: var(--color-text-muted);
+}
+
+.sort-bar__tabs,
+.sort-bar__price {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.sort-bar__tab {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 34px;
+  padding-inline: var(--space-4);
+  text-decoration: none;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.sort-bar__tab:hover {
+  color: var(--color-primary);
+}
+
+.sort-bar__tab--current,
+.sort-bar__tab--current:hover {
+  color: var(--color-on-brand);
+  background: var(--color-primary);
+}
+
+.sort-bar__pager {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-start: auto;
+}
+
+.sort-bar__position {
+  margin-inline-end: var(--space-2);
+}
+
+.sort-bar__page {
+  color: var(--color-primary);
+}
+
+.sort-bar__step {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 34px;
+  block-size: 34px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+}
+
+.sort-bar__flip {
+  transform: scaleX(-1);
+}
+
+.sort-bar__step.is-disabled {
+  color: var(--color-ink-400);
+  background: var(--color-ink-100);
+}

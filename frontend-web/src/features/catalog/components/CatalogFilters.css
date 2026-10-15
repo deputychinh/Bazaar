@@ -1,40 +1,71 @@
 .catalog-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
-  gap: var(--space-4);
-  align-items: end;
-  padding: var(--padding-card);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.catalog-filters__heading {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+}
+
+.catalog-filters__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-block-start: 1px solid var(--color-border);
+  padding-block-start: var(--space-4);
+}
+
+.catalog-filters__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.catalog-filters__range {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
 }
 
 .catalog-filters__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.catalog-filters__field--wide {
-  grid-column: 1 / -1;
-}
-
-.catalog-filters__label {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
-  color: var(--color-text-muted);
+  flex: 1;
 }
 
 .catalog-filters__input {
-  min-block-size: var(--size-touch-target);
-  padding: var(--padding-control-sm);
-  font: inherit;
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-control);
-  border-radius: var(--radius-md);
+  min-block-size: 34px;
+  font-size: var(--text-sm);
 }
 
-.catalog-filters__submit {
-  align-self: end;
+.catalog-filters__dash {
+  color: var(--color-text-muted);
+}
+
+.catalog-filters__ratings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-filters__rating {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+}
+
+.catalog-filters__rating:hover,
+.catalog-filters__rating--current {
+  color: var(--color-text);
+  background: var(--color-primary-subtle);
 }

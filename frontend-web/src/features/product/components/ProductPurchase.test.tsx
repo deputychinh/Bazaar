@@ -36,13 +36,14 @@ describe('ProductPurchase', () => {
     await userEvent.click(screen.getByRole('radio', { name: 'L' }));
     expect(screen.getByText('$12.00')).toBeInTheDocument();
     expect(screen.getByText('In stock')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Increase quantity' }));
     await userEvent.click(screen.getByRole('button', { name: 'Add to cart' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Added to your cart.');
+    expect(screen.getByText(/Added to your cart\./)).toBeInTheDocument();
     expect(JSON.parse(window.localStorage.getItem(CART_STORAGE_KEY)!)).toEqual([
       expect.objectContaining({
         sku: 'L',
-        quantity: 1,
+        quantity: 2,
         unitPriceUsdCents: 1200,
         variantLabel: { en: 'L', vi: 'L' },
         maxQuantity: 20,

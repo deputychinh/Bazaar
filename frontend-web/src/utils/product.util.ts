@@ -1,3 +1,4 @@
+import { TRANSLATED_ATTRIBUTES } from '@/constants/catalog.constant';
 import type { ProductVariant } from '@/interfaces/catalog.interface';
 import type { LocalizedText } from '@/interfaces/localized-text.interface';
 
@@ -32,3 +33,19 @@ export const variantLabel = (variant: ProductVariant): LocalizedText => {
 /** The first variant a buyer can order, so the page opens on something purchasable. */
 export const defaultVariant = (variants: readonly ProductVariant[]): ProductVariant | undefined =>
   variants.find((variant) => variant.stock > 0) ?? variants[0];
+
+/** Product attributes as spec rows (origin → Việt Nam); values of unknown shape are skipped. */
+export const attributeRows = (
+  attributes: Record<string, unknown> | null,
+): { key: string; value: LocalizedText }[] =>
+  Object.entries(attributes ?? {}).flatMap(([key, value]) =>
+    part(value).map((text) => ({ key, value: text })),
+  );
+
+/** Fallback label of an attribute without a translation: "material" → "Material". */
+export const attributeName = (key: string): string =>
+  `${key.charAt(0).toUpperCase()}${key.slice(1)}`;
+
+/** Whether an attribute key has a translated label. */
+export const isTranslatedAttribute = (key: string): key is (typeof TRANSLATED_ATTRIBUTES)[number] =>
+  (TRANSLATED_ATTRIBUTES as readonly string[]).includes(key);

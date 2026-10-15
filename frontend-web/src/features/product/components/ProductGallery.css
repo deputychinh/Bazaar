@@ -8,8 +8,8 @@
   position: relative;
   overflow: hidden;
   aspect-ratio: 1;
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
+  background: var(--color-ink-50);
+  border-radius: var(--radius-sm);
 }
 
 .product-gallery__placeholder {
@@ -33,12 +33,12 @@
 .product-gallery__thumb {
   position: relative;
   overflow: hidden;
-  inline-size: var(--space-20);
-  block-size: var(--space-20);
+  inline-size: 82px;
+  block-size: 82px;
   padding: var(--space-0);
   background: var(--color-surface);
   border: 2px solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 

@@ -41,10 +41,14 @@ export const EventsPage = (): ReactElement => {
   return (
     <main id="main" className="page container">
       <h1>{t('events.title')}</h1>
-      <form className="platform-list__filter" onSubmit={apply}>
+      <form className="page__toolbar platform-list__toolbar" onSubmit={apply}>
         <label className="platform-list__filter">
           {t('events.type')}
-          <select value={chosenType} onChange={(event) => setChosenType(event.target.value)}>
+          <select
+            className="select platform-list__control"
+            value={chosenType}
+            onChange={(event) => setChosenType(event.target.value)}
+          >
             <option value="">{t('events.allTypes')}</option>
             {Object.values(EventType).map((value) => (
               <option key={value} value={value}>
@@ -55,7 +59,11 @@ export const EventsPage = (): ReactElement => {
         </label>
         <label className="platform-list__filter">
           {t('events.aggregate')}
-          <input value={aggregate} onChange={(event) => setAggregate(event.target.value)} />
+          <input
+            className="input platform-list__control"
+            value={aggregate}
+            onChange={(event) => setAggregate(event.target.value)}
+          />
         </label>
         <Button type="submit" variant={ButtonVariant.Secondary}>
           {t('moderation.apply')}

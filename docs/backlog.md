@@ -161,8 +161,8 @@ Goal: the customer site and the admin site look and feel like a real marketplace
 
 | Id | Ticket | Acceptance criteria | Size | Status |
 |---|---|---|---|---|
-| BZ-088 | Shell + home | Global UI styles always loaded (buttons, skip link, form controls); header with utility strip, logo, large search box, cart with count, category bar; multi-column footer; home with banner, category tiles with icons, best-seller row and a dense "today's picks" grid | L | ☐ |
+| BZ-088 | Shell + home | Global UI styles always loaded (buttons, skip link, form controls); header with utility strip, logo, large search box, cart with count, category bar; multi-column footer; home with banner, category tiles with icons, best-seller row and a dense "today's picks" grid | L | ☑ |
 | BZ-089 | Product imagery | Generated illustrations per product type and colour (script in repo, assets uploaded by storage-init), seed uses them; journeys clean up the products they create | M | ☑ |
-| BZ-090 | Listing + product page | Product card (image, two-line title, prominent price, stars, sold count, badges); category/search with sort tabs and a dense grid; product page with gallery, price box, variant chips, quantity, add to cart + buy now, shop card, specs, reviews | L | ☐ |
-| BZ-091 | Seller centre look | Admin: sidebar layout, stat cards with icons and trends, 30-day sales chart, proper tables with status chips | M | ☐ |
-| BZ-092 | Visual QA | Fresh screenshots in the README; Lighthouse CI and contrast checks still pass; Playwright journeys green | S | ☐ |
+| BZ-090 | Listing + product page | Product card (image, two-line title, prominent price, stars, sold count, badges); category/search with sort tabs and a dense grid; product page with gallery, price box, variant chips, quantity, add to cart + buy now, shop card, specs, reviews | L | ☑ |
+| BZ-091 | Seller centre look | Admin: sidebar layout, stat cards with icons and trends, 30-day sales chart, proper tables with status chips | M | ☑ |
+| BZ-092 | Visual QA | Fresh screenshots in the README; Lighthouse CI and contrast checks still pass; Playwright journeys green | S | ☑ |

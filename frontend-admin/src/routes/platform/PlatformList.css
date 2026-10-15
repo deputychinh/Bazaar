@@ -41,3 +41,13 @@
   font-family: var(--font-mono);
   font-size: var(--text-xs);
 }
+
+.platform-list__toolbar {
+  align-self: stretch;
+}
+
+.platform-list__control {
+  inline-size: auto;
+  min-inline-size: 180px;
+  min-block-size: 36px;
+}

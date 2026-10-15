@@ -46,14 +46,20 @@ export const ModerationPage = (): ReactElement => {
   return (
     <main id="main" className="page container">
       <h1>{t('moderation.title')}</h1>
-      <form className="platform-list__filter" onSubmit={apply}>
+      <form className="page__toolbar platform-list__toolbar" onSubmit={apply}>
         <label className="platform-list__filter">
           {t('moderation.search')}
-          <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
+          <input
+            className="input platform-list__control"
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
         </label>
         <label className="platform-list__filter">
           {t('products.status')}
           <select
+            className="select platform-list__control"
             value={status ?? ''}
             onChange={(event) => {
               const next = new URLSearchParams(params);

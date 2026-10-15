@@ -1,27 +1,25 @@
 import 'server-only';
 
-import { PHASE_PRODUCTION_BUILD } from 'next/constants';
+import { unstable_cache } from 'next/cache';
 
 import { ProductSort } from '@/api/catalog.schema';
-import { serverEnv } from '@/config/env.server';
-import { HOME_DISCOVER_COUNT, HOME_TOP_SELLERS_COUNT } from '@/constants/catalog.constant';
+import {
+  HOME_DISCOVER_COUNT,
+  HOME_FEED_REVALIDATE_SECONDS,
+  HOME_TOP_SELLERS_COUNT,
+} from '@/constants/catalog.constant';
 import type { HomeFeed } from '@/interfaces/home.interface';
 
 import { listCategories, listProducts } from './catalog.server';
 
-/**
- * Rows of the home page. Image builds have no gateway, so the build renders the page without
- * products (null) and the first visit after revalidation fills it. Later failures throw, so ISR
- * keeps serving the last good page instead of caching an empty one.
- */
-export const getHomeFeed = async (): Promise<HomeFeed | null> => {
+/** Throws when the catalog cannot answer, so a failure is never cached. */
+const loadHomeFeed = async (): Promise<HomeFeed> => {
   const [topSales, discover, categories] = await Promise.all([
     listProducts({ sort: ProductSort.best_selling, pageSize: HOME_TOP_SELLERS_COUNT }),
     listProducts({ sort: ProductSort.rating, pageSize: HOME_DISCOVER_COUNT }),
     listCategories(),
   ]);
   if (topSales.data === null || discover.data === null) {
-    if (serverEnv.NEXT_PHASE === PHASE_PRODUCTION_BUILD) return null;
     throw new Error(`Home feed unavailable: ${topSales.errorCode ?? discover.errorCode}`);
   }
   const flat = categories.flatMap((category) => [category, ...category.children]);
@@ -39,4 +37,20 @@ export const getHomeFeed = async (): Promise<HomeFeed | null> => {
       imageUrl: covers[index]?.data?.items[0]?.imageUrl ?? null,
     })),
   };
+};
+
+const cachedHomeFeed = unstable_cache(loadHomeFeed, ['home-feed'], {
+  revalidate: HOME_FEED_REVALIDATE_SECONDS,
+});
+
+/**
+ * Rows of the home page, cached for 2 minutes and refreshed in the background. Null only when
+ * the catalog is down and nothing is cached yet (the page then shows a short notice).
+ */
+export const getHomeFeed = async (): Promise<HomeFeed | null> => {
+  try {
+    return await cachedHomeFeed();
+  } catch {
+    return null;
+  }
 };

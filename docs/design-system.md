@@ -23,7 +23,7 @@ Rules for writing CSS: plan §6A.6. Contrast ratios below were computed with the
 ## 3. Colour — semantic
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--color-bg` | ink-50 | ink-900 | Page background |
+| `--color-bg` | ink-100 | ink-900 | Page background (grey canvas under white panels, marketplace style) |
 | `--color-surface` | #FFFFFF | ink-800 | Cards, panels, inputs |
 | `--color-surface-raised` | #FFFFFF | ink-700 | Popovers, menus (with shadow) |
 | `--color-text` | ink-900 | ink-50 | Body text |
@@ -40,11 +40,19 @@ Rules for writing CSS: plan §6A.6. Contrast ratios below were computed with the
 | `--color-danger` / `-subtle` / `--color-on-danger-subtle` | red-600 / red-50 / red-700 | red-400 / red-900 / red-200 | Status: error, destructive |
 | `--color-info` / `-subtle` / `--color-on-info-subtle` | blue-600 / blue-50 / blue-700 | blue-400 / blue-900 / blue-200 | Status: info |
 | `--color-focus-ring` | saffron-500 | saffron-400 | 2 px focus outline + 2 px offset |
+| `--color-brand-from` / `--color-brand-to` | saffron-600 / saffron-700 | saffron-800 / saffron-900 | Header gradient |
+| `--color-on-brand` / `--color-on-brand-muted` | #FFFFFF / saffron-50 | #FFFFFF / saffron-50 | Text on the brand gradient / its hover |
+| `--color-price` | saffron-600 | saffron-300 | Prices on cards and the product page |
+| `--color-star` / `--color-star-empty` | amber-600 / ink-300 | amber-600 / ink-600 | Rating stars (the rating is also given as text) |
 
 ### Contrast check (light theme unless noted)
 | Pair | Ratio | Level |
 |---|---|---|
-| text ink-900 on bg ink-50 | 16.74 | AAA |
+| text ink-900 on bg ink-100 | 16.03 | AAA |
+| text-muted ink-600 on bg ink-100 | 6.99 | AA |
+| white on brand saffron-600 → 700 | 5.18 → 7.31 | AA |
+| on-brand-muted saffron-50 on saffron-600 | 4.79 | AA |
+| star amber-600 on white | 3.19 | ≥ 3:1 (graphics) ✔ |
 | text-muted ink-600 on white | 7.63 | AAA |
 | white on primary saffron-600 | 5.18 | AA |
 | white on primary-hover saffron-700 | 7.31 | AAA |
@@ -79,9 +87,9 @@ Minimum touch target: 44 × 44 px — controls use `min-block-size: var(--size-t
 | `--font-sans` | `'Inter Variable', 'Inter Variable Fallback', system-ui, sans-serif` — UI and body (supports Vietnamese diacritics) |
 | `--font-display` | `'Fraunces Variable', 'Fraunces Variable Fallback', Georgia, serif` — headings on the customer site only |
 | `--font-mono` | `'JetBrains Mono', ui-monospace, monospace` — SKUs, ids |
-| Sizes | `--text-xs 12px` · `--text-sm 14px` · `--text-md 16px` · `--text-lg 18px` · `--text-xl 20px` · `--text-2xl 24px` · `--text-3xl 30px` · `--text-4xl 36px` · `--text-5xl 48px` |
+| Sizes | `--text-2xs 11px` (star glyphs only) · `--text-xs 12px` · `--text-sm 14px` · `--text-md 16px` · `--text-lg 18px` · `--text-xl 20px` · `--text-2xl 24px` · `--text-3xl 30px` · `--text-4xl 36px` · `--text-5xl 48px` |
 | Weights | `--weight-regular 400` · `--weight-medium 500` · `--weight-semibold 600` · `--weight-bold 700` |
-| Line heights | `--leading-tight 1.2` (headings) · `--leading-normal 1.5` (UI) · `--leading-relaxed 1.7` (long text, Vietnamese) |
+| Line heights | `--leading-none 1` (icons, badges) · `--leading-tight 1.2` (headings) · `--leading-snug 1.4` (card titles) · `--leading-normal 1.5` (UI) · `--leading-relaxed 1.7` (long text, Vietnamese) |
 
 Body text is never smaller than `--text-sm`; prices use `font-variant-numeric: tabular-nums`.
 The `* Fallback` families are metric-matched local fonts declared in `styles/base/fonts.css` (no layout shift on font swap).
@@ -90,8 +98,8 @@ The `* Fallback` families are metric-matched local fonts declared in `styles/bas
 | Group | Tokens |
 |---|---|
 | Radius | `--radius-sm 4px` · `--radius-md 8px` (controls) · `--radius-lg 12px` (cards) · `--radius-xl 16px` (modals) · `--radius-full 9999px` (pills, avatars) |
-| Shadow | `--shadow-sm 0 1px 2px rgb(28 25 23 / 6%)` · `--shadow-md 0 4px 12px rgb(28 25 23 / 8%)` · `--shadow-lg 0 12px 32px rgb(28 25 23 / 12%)` |
-| Z-index | `--z-base 0` · `--z-dropdown 100` · `--z-sticky 200` · `--z-overlay 300` · `--z-modal 400` · `--z-toast 500` |
+| Shadow | `--shadow-sm 0 1px 2px rgb(28 25 23 / 6%)` · `--shadow-md 0 4px 12px rgb(28 25 23 / 8%)` · `--shadow-lg 0 12px 32px rgb(28 25 23 / 12%)` · `--shadow-card-hover 0 2px 12px rgb(194 65 12 / 18%)` |
+| Z-index | `--z-base 0` · `--z-raised 1` · `--z-dropdown 100` · `--z-sticky 200` · `--z-overlay 300` · `--z-modal 400` · `--z-toast 500` |
 | Breakpoints (custom media) | `--bp-sm (min-width: 640px)` · `--bp-md (min-width: 768px)` · `--bp-lg (min-width: 1024px)` · `--bp-xl (min-width: 1280px)` |
 | Layout | `--container-max 1200px` · `--container-narrow 720px` · `--header-height 64px` · `--sidebar-width 248px` (admin) · `--size-touch-target 44px` |
 | Motion | `--duration-fast 120ms` · `--duration-normal 200ms` · `--duration-slow 320ms` · `--ease-standard cubic-bezier(0.2, 0, 0, 1)`; all transitions disabled under `prefers-reduced-motion: reduce` |

@@ -43,7 +43,8 @@ test('admin site', async ({ page }) => {
     .getByRole('navigation', { name: 'Main' })
     .getByRole('link', { name: 'Moderation' })
     .click();
-  await expect(page.getByRole('listitem').first()).toBeVisible();
+  await expect(page).toHaveURL(/\/platform\/products/);
+  await expect(page.locator('main').getByRole('listitem').first()).toBeVisible();
   await page.screenshot(shot('admin-platform-moderation'));
 });
 

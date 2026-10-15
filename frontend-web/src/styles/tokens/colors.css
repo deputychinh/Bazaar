@@ -91,9 +91,9 @@
   --color-brand-from: var(--color-saffron-600);
   --color-brand-to: var(--color-saffron-700);
   --color-on-brand: #fff;
-  --color-on-brand-muted: var(--color-saffron-100);
+  --color-on-brand-muted: var(--color-saffron-50);
   --color-price: var(--color-saffron-600);
-  --color-star: var(--color-amber-500);
+  --color-star: var(--color-amber-600);
   --color-star-empty: var(--color-ink-300);
 
   color-scheme: light;
@@ -127,7 +127,10 @@
   --color-focus-ring: var(--color-saffron-400);
   --color-brand-from: var(--color-saffron-800);
   --color-brand-to: var(--color-saffron-900);
+  --color-on-brand: #fff;
+  --color-on-brand-muted: var(--color-saffron-50);
   --color-price: var(--color-saffron-300);
+  --color-star: var(--color-amber-600);
   --color-star-empty: var(--color-ink-600);
 
   color-scheme: dark;

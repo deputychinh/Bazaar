@@ -34,7 +34,7 @@ export const ReasonForm = ({ actionLabel, isBusy, onConfirm }: ReasonFormProps):
       <label className="reason-form__label">
         {t('reason.label')}
         <input
-          className="reason-form__input"
+          className="input reason-form__input"
           value={reason}
           minLength={3}
           maxLength={500}

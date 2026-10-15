@@ -33,7 +33,7 @@ test('an admin approves a new seller application', async ({ page }) => {
   await application.getByRole('button', { name: 'Approve' }).click();
   await expect(application).toBeHidden();
 
-  await page.getByLabel('Status').selectOption('APPROVED');
+  await page.getByRole('combobox', { name: 'Status' }).selectOption('APPROVED');
   await expect(page.getByRole('listitem').filter({ hasText: shopName })).toBeVisible();
 });
 
@@ -59,7 +59,9 @@ test('an admin hides a product with a reason, then restores it', async ({ page }
 
   await signIn(page, ADMIN);
   await page.getByRole('link', { name: 'Moderation' }).click();
-  await page.getByLabel('Status').selectOption('PUBLISHED');
+  // The dashboard also has a "status" region: wait for the moderation page itself.
+  await expect(page.getByRole('heading', { name: 'Product moderation' })).toBeVisible();
+  await page.getByRole('combobox', { name: 'Status' }).selectOption('PUBLISHED');
   await page.getByLabel('Title contains').fill(sku);
   await page.getByRole('button', { name: 'Apply' }).click();
 
@@ -68,7 +70,7 @@ test('an admin hides a product with a reason, then restores it', async ({ page }
   await card.getByLabel('Reason').fill('Journey test: checking moderation');
   await card.getByRole('button', { name: 'Hide' }).click();
 
-  await page.getByLabel('Status').selectOption('HIDDEN');
+  await page.getByRole('combobox', { name: 'Status' }).selectOption('HIDDEN');
   await expect(card.getByText('Hidden: Journey test: checking moderation')).toBeVisible();
   await card.getByRole('button', { name: 'Restore' }).click();
   await expect(card).toHaveCount(0);

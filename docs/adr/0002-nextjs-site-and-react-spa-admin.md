@@ -23,3 +23,9 @@ login, is used for long sessions and needs no SEO.
 - Two build pipelines and two sets of dependencies (accepted, see ADR 0001); design tokens are shared
   by copy and checked by `scripts/check-tokens.mjs`.
 - ISR needs the revalidation hook and a shared secret; the web server needs a writable cache volume.
+
+## Update (P11, BZ-092)
+The home page left SSG when it became a marketplace home (best sellers, category tiles, daily
+picks). Image builds have no gateway, so a prerendered home shipped without products until its first
+revalidation. It now renders per request from a feed cached for 2 minutes (`unstable_cache`); a
+failed refresh is never cached and the last good feed keeps being served. Info pages stay SSG.

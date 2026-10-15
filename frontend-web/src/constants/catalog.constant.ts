@@ -24,6 +24,8 @@ export const HEADER_CATEGORY_SLUGS = [
 /** Home page rows. */
 export const HOME_TOP_SELLERS_COUNT = 6;
 export const HOME_DISCOVER_COUNT = 24;
+/** Home rows are cached this long (seconds) and refreshed in the background. */
+export const HOME_FEED_REVALIDATE_SECONDS = 120;
 export const PRODUCT_CARD_SIZES =
   '(min-width: 1280px) 200px, (min-width: 1024px) 17vw, (min-width: 640px) 25vw, 50vw';
 /** Rating filter links in the listing sidebar ("4★ & up"…). */

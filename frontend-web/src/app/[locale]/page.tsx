@@ -9,10 +9,10 @@ import { ProductRow } from '@/features/home/components/ProductRow';
 import { pageLocale } from '@/i18n/page-locale';
 
 /**
- * ISR: the home page is cached and rebuilt in the background at most every 2 minutes, so best
- * sellers and new ratings show up without a deploy. Must be a literal: Next reads it at build time.
+ * Rendered per request from a cached feed (api/home.server.ts): a prerendered page would be built
+ * without the catalog (image builds have no gateway) and show no products until revalidated.
  */
-export const revalidate = 120;
+export const dynamic = 'force-dynamic';
 
 const HomePage = async ({ params }: PageProps<'/[locale]'>): Promise<ReactElement> => {
   const locale = await pageLocale(params);

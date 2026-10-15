@@ -11,7 +11,7 @@ A production-style fullstack project run entirely on a laptop: **React with thre
 ## Tour
 | | |
 |---|---|
-| ![Customer site, home](docs/screenshots/web-home-en.png) **Customer site** — SSG home page (`/en`) | ![Category, Vietnamese](docs/screenshots/web-category-vi.png) **SSR category** in Vietnamese, prices shown in VND (stored in USD) |
+| ![Customer site, home](docs/screenshots/web-home-en.png) **Customer site** — marketplace home (`/en`): banner, category tiles, top sales, daily picks | ![Category, Vietnamese](docs/screenshots/web-category-vi.png) **SSR category** in Vietnamese, prices shown in VND (stored in USD) |
 | ![Product page](docs/screenshots/web-product-vi.png) **ISR product page**, revalidated when the seller edits it | ![Seller dashboard](docs/screenshots/admin-seller-dashboard.png) **Admin SPA, seller** — dashboard with sales stats |
 | ![Seller orders](docs/screenshots/admin-seller-orders.png) **Seller order queue** — ship and deliver | ![Moderation](docs/screenshots/admin-platform-moderation.png) **Platform admin** — product moderation |
 | ![Grafana services](docs/screenshots/grafana-services.png) **Grafana** — golden signals per service and route | ![One checkout, one trace](docs/screenshots/grafana-trace.png) **One checkout = one trace** across gateway, catalog, order, Kafka and notification |
@@ -29,7 +29,7 @@ Screenshots come from the staging cluster: `cd e2e && npm run screenshots` (need
 ## Stack
 | Area | Choice |
 |---|---|
-| Customer site | Next.js (React 19) — landing pages SSG, catalog SSR + ISR, EN / VI |
+| Customer site | Next.js (React 19) — info pages SSG, home from a cached feed, catalog SSR + ISR, EN / VI |
 | Admin site | React SPA (Vite) — sellers and platform admins |
 | Backend | NestJS 12 (ESM), TypeScript 6, one gateway + catalog, order, notification services |
 | Messaging | Apache Kafka 4.3 (KRaft), transactional outbox, retry + dead-letter topics |

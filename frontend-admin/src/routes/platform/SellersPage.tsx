@@ -28,9 +28,13 @@ export const SellersPage = (): ReactElement => {
   return (
     <main id="main" className="page container">
       <h1>{t('sellers.title')}</h1>
-      <label className="platform-list__filter">
+      <label className="page__toolbar platform-list__filter">
         {t('sellers.status')}
-        <select value={status} onChange={(event) => setParams({ status: event.target.value })}>
+        <select
+          className="select platform-list__control"
+          value={status}
+          onChange={(event) => setParams({ status: event.target.value })}
+        >
           {Object.values(SellerApplicationStatus).map((value) => (
             <option key={value} value={value}>
               {t(`status.${value}`)}

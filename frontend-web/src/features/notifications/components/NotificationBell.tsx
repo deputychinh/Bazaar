@@ -3,7 +3,9 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { useEffect, useId, useState, type ReactElement } from 'react';
 
+import { Icon } from '@/components/Icon/Icon';
 import { NOTIFICATION_POLL_INTERVAL_MS } from '@/constants/checkout.constant';
+import { IconName } from '@/enums/icon-name.enum';
 import { useAuth } from '@/features/auth/useAuth';
 import { Link } from '@/i18n/navigation';
 import type { NotificationPage } from '@/interfaces/notification.interface';
@@ -61,7 +63,8 @@ export const NotificationBell = (): ReactElement | null => {
         aria-label={t('label', { count: unread })}
         onClick={toggle}
       >
-        <span aria-hidden="true">🔔</span>
+        <Icon name={IconName.Bell} />
+        <span className="notification-bell__text">{t('title')}</span>
         {unread > 0 && (
           <span className="notification-bell__badge" aria-hidden="true">
             {unread}

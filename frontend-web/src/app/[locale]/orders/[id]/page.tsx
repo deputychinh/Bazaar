@@ -19,7 +19,7 @@ const OrderPage = async ({ params }: PageProps<'/[locale]/orders/[id]'>): Promis
   const t = await getTranslations({ locale, namespace: 'orders' });
   const { id } = await params;
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <h1>{t('detailTitle')}</h1>
       <RequireAuth>
         <OrderDetail orderId={id} />

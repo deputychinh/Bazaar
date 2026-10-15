@@ -8,3 +8,22 @@
   border: 0;
   clip-path: inset(50%);
 }
+
+/* Hidden until focused by keyboard, then pinned above the header (WCAG 2.4.1). */
+.skip-link {
+  position: absolute;
+  z-index: var(--z-toast);
+  padding: var(--padding-control);
+  font-weight: var(--weight-semibold);
+  color: var(--color-on-brand);
+  background: var(--color-text);
+  border-radius: var(--radius-sm);
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  color: var(--color-on-brand);
+  transform: none;
+}

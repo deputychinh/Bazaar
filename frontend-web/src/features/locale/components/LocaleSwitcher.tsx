@@ -30,7 +30,7 @@ export const LocaleSwitcher = (): ReactElement => {
         disabled={isPending}
       >
         {LOCALES.map((option) => (
-          <option key={option} value={option} lang={option}>
+          <option key={option} className="locale-switcher__option" value={option} lang={option}>
             {t(`locales.${option}`)}
           </option>
         ))}

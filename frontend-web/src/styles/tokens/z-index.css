@@ -1,5 +1,6 @@
 :root {
   --z-base: 0;
+  --z-raised: 1;
   --z-dropdown: 100;
   --z-sticky: 200;
   --z-overlay: 300;

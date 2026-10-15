@@ -14,8 +14,9 @@
   padding: var(--padding-card);
   text-decoration: none;
   color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .order-list__link:hover {

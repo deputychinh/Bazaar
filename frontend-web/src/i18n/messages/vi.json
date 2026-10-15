@@ -17,30 +17,39 @@
   "home": {
     "heading": "Hàng thủ công từ những người làm nghề Việt Nam",
     "lead": "Gốm Bát Tràng, lụa Hà Đông và nhiều hơn nữa — trực tiếp từ người làm ra chúng.",
-    "shopNow": "Bắt đầu mua sắm",
+    "shopNow": "Mua sắm ngay",
     "sell": "Mở cửa hàng",
-    "categoriesTitle": "Mua theo danh mục",
-    "categories": {
-      "crafts": "Thủ công mỹ nghệ",
-      "fashion": "Thời trang",
-      "home-kitchen": "Nhà cửa & Bếp",
-      "beauty": "Làm đẹp"
-    },
-    "valuesTitle": "Vì sao chọn Bazaar",
-    "values": [
+    "bannerKicker": "Sản xuất tại Việt Nam",
+    "promoSellTitle": "Bán hàng trên Bazaar",
+    "promoSellText": "Đăng bán miễn phí · 8% mỗi đơn",
+    "promoRatedTitle": "Được đánh giá cao",
+    "promoRatedText": "Người mua yêu thích",
+    "perksLabel": "Vì sao chọn Bazaar",
+    "perks": [
       {
-        "title": "Do người thật làm ra",
-        "text": "Mỗi cửa hàng do chính người làm nghề quản lý — bạn biết ai làm ra món đồ mình mua."
+        "title": "Từ tay nghệ nhân",
+        "text": "Mỗi shop do chính người làm vận hành"
       },
       {
-        "title": "Giá công bằng",
-        "text": "Người làm nghề giữ phần lớn giá bán; không qua trung gian."
+        "title": "USD hoặc VND",
+        "text": "Xem giá theo tiền của bạn"
       },
       {
-        "title": "Mua sắm bằng ngôn ngữ của bạn",
-        "text": "Tiếng Anh hoặc tiếng Việt, giá theo USD hoặc VND."
+        "title": "Thanh toán an toàn",
+        "text": "Trả bằng thẻ, tính tiền theo USD"
+      },
+      {
+        "title": "Theo dõi đơn trực tiếp",
+        "text": "Từ thanh toán đến lúc giao"
       }
-    ]
+    ],
+    "categoriesTitle": "Danh mục",
+    "topSalesTitle": "Bán chạy nhất",
+    "seeAll": "Xem tất cả",
+    "topBadge": "TOP",
+    "discoverTitle": "Gợi ý hôm nay",
+    "seeMore": "Xem thêm",
+    "unavailable": "Chưa tải được sản phẩm. Vui lòng thử lại sau ít phút."
   },
   "errors": {
     "VALIDATION_FAILED": "Vui lòng kiểm tra các trường được đánh dấu.",
@@ -69,7 +78,15 @@
     "sell": "Bán hàng trên Bazaar",
     "cart": "Giỏ hàng",
     "home": "Trang chủ",
-    "cartWithCount": "{count, plural, =0 {Giỏ hàng, trống} other {Giỏ hàng, # sản phẩm}}"
+    "cartWithCount": "{count, plural, =0 {Giỏ hàng, trống} other {Giỏ hàng, # sản phẩm}}",
+    "sellerCentre": "Kênh Người Bán",
+    "about": "Về Bazaar",
+    "pricing": "Phí người bán",
+    "searchLabel": "Tìm trên Bazaar",
+    "searchPlaceholder": "Tìm gốm sứ, lụa, bộ ấm trà…",
+    "search": "Tìm kiếm",
+    "categoriesLabel": "Danh mục phổ biến",
+    "toolsLabel": "Tài khoản và cài đặt"
   },
   "currency": {
     "label": "Tiền tệ",
@@ -79,10 +96,23 @@
   },
   "footer": {
     "label": "Chân trang",
+    "customerTitle": "Chăm sóc khách hàng",
+    "aboutTitle": "Về Bazaar",
+    "sellTitle": "Bán hàng",
+    "paymentTitle": "Thanh toán",
+    "deliveryTitle": "Vận chuyển",
+    "orders": "Đơn mua",
+    "cart": "Giỏ hàng",
+    "account": "Tài khoản",
     "about": "Giới thiệu",
-    "pricing": "Bảng phí",
-    "sell": "Bán hàng trên Bazaar",
-    "note": "Giá VND chỉ mang tính tham khảo. Mọi đơn hàng được tính bằng USD."
+    "pricing": "Phí người bán",
+    "sell": "Kênh Người Bán",
+    "openShop": "Mở shop",
+    "paymentText": "Thẻ, thanh toán bằng USD",
+    "deliveryText": "Từng shop tự giao, theo dõi trực tiếp",
+    "note": "Giá VND chỉ mang tính tham khảo. Mọi đơn hàng được tính bằng USD.",
+    "copyright": "© {year} Bazaar. Sàn thương mại mô phỏng: không bán hàng thật.",
+    "region": "Quốc gia & khu vực: Việt Nam"
   },
   "product": {
     "outOfStock": "Hết hàng",
@@ -93,9 +123,23 @@
     "variant": "Phân loại",
     "inStock": "Còn hàng",
     "lowStock": "Chỉ còn {count}",
-    "soldBy": "Bán bởi <shop></shop>",
-    "description": "Mô tả",
-    "breadcrumbs": "Đường dẫn"
+    "description": "Mô tả sản phẩm",
+    "breadcrumbs": "Đường dẫn",
+    "sold": "Đã bán {count}",
+    "ratings": "Đánh giá",
+    "quantity": "Số lượng",
+    "shopLabel": "Cửa hàng",
+    "shopNote": "Nhà sản xuất độc lập trên Bazaar",
+    "viewShop": "Xem shop",
+    "specifications": "Chi tiết sản phẩm",
+    "category": "Danh mục",
+    "stock": "Kho hàng",
+    "attributes": {
+      "origin": "Xuất xứ",
+      "material": "Chất liệu",
+      "colour": "Màu sắc",
+      "size": "Kích cỡ"
+    }
   },
   "pagination": {
     "label": "Phân trang",
@@ -169,25 +213,30 @@
     "searchTitle": "Tìm kiếm",
     "resultsFor": "Kết quả cho “{query}”",
     "categories": "Danh mục",
-    "search": "Tìm kiếm",
     "minPrice": "Giá từ (USD)",
     "maxPrice": "Giá đến (USD)",
     "minRating": "Đánh giá",
-    "anyRating": "Tất cả",
     "ratingAtLeast": "Từ {rating}★",
     "sort": "Sắp xếp",
-    "sortDefault": "Đề xuất",
     "sorts": {
       "relevance": "Phù hợp nhất",
       "newest": "Mới nhất",
       "price_asc": "Giá: thấp đến cao",
       "price_desc": "Giá: cao đến thấp",
-      "rating": "Đánh giá cao"
+      "rating": "Đánh giá cao",
+      "best_selling": "Bán chạy"
     },
     "apply": "Áp dụng",
     "results": "{count} sản phẩm",
     "noResults": "Không tìm thấy sản phẩm",
-    "noResultsHint": "Hãy bớt bộ lọc hoặc thử từ khoá khác."
+    "noResultsHint": "Hãy bớt bộ lọc hoặc thử từ khoá khác.",
+    "filters": "Bộ lọc tìm kiếm",
+    "allCategories": "Tất cả danh mục",
+    "priceRange": "Khoảng giá (USD)",
+    "minPlaceholder": "$ Từ",
+    "maxPlaceholder": "$ Đến",
+    "andUp": "trở lên",
+    "clearFilters": "Xoá tất cả"
   },
   "shop": {
     "notFound": "Không tìm thấy cửa hàng"
@@ -211,7 +260,8 @@
     "subtotal": "Tạm tính",
     "summary": "Tóm tắt đơn hàng",
     "pricesConfirmed": "Giá và tồn kho được xác nhận khi thanh toán. Phí vận chuyển tính theo từng shop.",
-    "checkout": "Thanh toán"
+    "checkout": "Thanh toán",
+    "buyNow": "Mua ngay"
   },
   "auth": {
     "signInTitle": "Đăng nhập",
@@ -311,6 +361,7 @@
     }
   },
   "notifications": {
+    "title": "Thông báo",
     "label": "{count, plural, =0 {Thông báo} other {Thông báo, # chưa đọc}}",
     "empty": "Chưa có thông báo nào.",
     "kind": {
@@ -333,5 +384,13 @@
     "comment": "Nhận xét (không bắt buộc)",
     "submit": "Gửi đánh giá",
     "thanks": "Cảm ơn bạn đã đánh giá!"
+  },
+  "categories": {
+    "crafts": "Thủ công mỹ nghệ",
+    "fashion": "Thời trang",
+    "home-kitchen": "Nhà cửa & Bếp",
+    "beauty": "Làm đẹp",
+    "electronics": "Điện tử",
+    "books": "Sách"
   }
 }

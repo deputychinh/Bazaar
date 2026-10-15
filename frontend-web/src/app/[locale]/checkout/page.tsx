@@ -21,7 +21,7 @@ const CheckoutPage = async ({ params }: PageProps<'/[locale]/checkout'>): Promis
   const locale = await pageLocale(params);
   const t = await getTranslations({ locale, namespace: 'checkout' });
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <h1>{t('title')}</h1>
       <RequireAuth>
         <CheckoutView />

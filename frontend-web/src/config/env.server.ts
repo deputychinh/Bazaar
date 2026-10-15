@@ -11,6 +11,8 @@ const serverEnvSchema = z.object({
     (value) => (value === '' ? undefined : value),
     z.string().min(32).optional(),
   ),
+  /** Set by Next itself; 'phase-production-build' while `next build` prerenders pages. */
+  NEXT_PHASE: z.string().optional(),
 });
 
 type ServerEnv = z.infer<typeof serverEnvSchema>;

@@ -1,7 +1,8 @@
+/* Dense marketplace grid: many small tiles rather than a few big ones. */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--gap-grid);
+  gap: var(--space-2);
   padding: 0;
   list-style: none;
 }
@@ -12,8 +13,21 @@
   }
 }
 
-@media (--bp-lg) {
+@media (--bp-md) {
   .product-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (--bp-lg) {
+  .product-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+@media (--bp-xl) {
+  .product-grid--wide {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }

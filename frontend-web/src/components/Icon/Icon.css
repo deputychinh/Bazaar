@@ -1,0 +1,5 @@
+.icon {
+  flex-shrink: 0;
+  inline-size: 1.25em;
+  block-size: 1.25em;
+}

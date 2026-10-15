@@ -15,8 +15,9 @@
 
 .cart-view__group {
   padding: var(--padding-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .cart-view__shop {
@@ -92,7 +93,8 @@
   align-self: start;
   padding: var(--padding-card);
   background: var(--color-surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .cart-view__total {

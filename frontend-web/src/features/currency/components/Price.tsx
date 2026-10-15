@@ -12,12 +12,13 @@ import './Price.css';
 interface PriceProps {
   usdCents: number;
   isLarge?: boolean;
+  className?: string;
 }
 
-export const Price = ({ usdCents, isLarge = false }: PriceProps): ReactElement => {
+export const Price = ({ usdCents, isLarge = false, className }: PriceProps): ReactElement => {
   const { currency, locale, usdToVnd } = useCurrency();
   return (
-    <span className={cx('price', isLarge && 'price--large')}>
+    <span className={cx('price', isLarge && 'price--large', className)}>
       {formatPrice({ usdCents, currency, locale, usdToVnd })}
     </span>
   );

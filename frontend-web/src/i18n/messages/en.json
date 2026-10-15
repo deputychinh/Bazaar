@@ -17,30 +17,39 @@
   "home": {
     "heading": "Handmade goods from independent Vietnamese makers",
     "lead": "Ceramics from Bát Tràng, silk from Hà Đông, and more — straight from the people who make them.",
-    "shopNow": "Start shopping",
+    "shopNow": "Shop now",
     "sell": "Open your shop",
-    "categoriesTitle": "Shop by category",
-    "categories": {
-      "crafts": "Arts & crafts",
-      "fashion": "Fashion",
-      "home-kitchen": "Home & kitchen",
-      "beauty": "Beauty"
-    },
-    "valuesTitle": "Why Bazaar",
-    "values": [
+    "bannerKicker": "Made in Vietnam",
+    "promoSellTitle": "Sell on Bazaar",
+    "promoSellText": "Free to list · 8% per sale",
+    "promoRatedTitle": "Top rated picks",
+    "promoRatedText": "Loved by shoppers",
+    "perksLabel": "Why shop on Bazaar",
+    "perks": [
       {
-        "title": "Made by real people",
-        "text": "Every shop is run by its maker — you know who made what you buy."
+        "title": "Straight from makers",
+        "text": "Every shop is run by its maker"
       },
       {
-        "title": "Fair prices",
-        "text": "Makers keep most of the price; there are no middlemen."
+        "title": "USD or VND",
+        "text": "Prices in your currency"
       },
       {
-        "title": "Shop in your language",
-        "text": "English or Vietnamese, prices in USD or VND."
+        "title": "Secure checkout",
+        "text": "Pay by card, charged in USD"
+      },
+      {
+        "title": "Live order tracking",
+        "text": "From payment to delivery"
       }
-    ]
+    ],
+    "categoriesTitle": "Categories",
+    "topSalesTitle": "Top sales",
+    "seeAll": "See all",
+    "topBadge": "TOP",
+    "discoverTitle": "Daily discover",
+    "seeMore": "See more",
+    "unavailable": "Products could not be loaded right now. Please try again in a moment."
   },
   "errors": {
     "VALIDATION_FAILED": "Please check the highlighted fields.",
@@ -69,7 +78,15 @@
     "sell": "Sell on Bazaar",
     "cart": "Cart",
     "home": "Home",
-    "cartWithCount": "{count, plural, =0 {Cart, empty} one {Cart, # item} other {Cart, # items}}"
+    "cartWithCount": "{count, plural, =0 {Cart, empty} one {Cart, # item} other {Cart, # items}}",
+    "sellerCentre": "Seller Centre",
+    "about": "About Bazaar",
+    "pricing": "Seller fees",
+    "searchLabel": "Search Bazaar",
+    "searchPlaceholder": "Search ceramics, silk, tea sets…",
+    "search": "Search",
+    "categoriesLabel": "Popular categories",
+    "toolsLabel": "Account and settings"
   },
   "currency": {
     "label": "Currency",
@@ -79,10 +96,23 @@
   },
   "footer": {
     "label": "Footer",
-    "about": "About",
-    "pricing": "Pricing",
-    "sell": "Sell on Bazaar",
-    "note": "Prices in VND are indicative. Every order is charged in USD."
+    "customerTitle": "Customer service",
+    "aboutTitle": "About Bazaar",
+    "sellTitle": "Sell",
+    "paymentTitle": "Payment",
+    "deliveryTitle": "Delivery",
+    "orders": "My orders",
+    "cart": "Shopping cart",
+    "account": "My account",
+    "about": "About us",
+    "pricing": "Seller fees",
+    "sell": "Seller Centre",
+    "openShop": "Open a shop",
+    "paymentText": "Cards, charged in USD",
+    "deliveryText": "Shipped by each shop, tracked live",
+    "note": "Prices in VND are indicative. Every order is charged in USD.",
+    "copyright": "© {year} Bazaar. A demo marketplace: no real goods are sold.",
+    "region": "Country & region: Vietnam"
   },
   "product": {
     "outOfStock": "Out of stock",
@@ -93,9 +123,23 @@
     "variant": "Option",
     "inStock": "In stock",
     "lowStock": "Only {count} left",
-    "soldBy": "Sold by <shop></shop>",
-    "description": "Description",
-    "breadcrumbs": "Breadcrumb"
+    "description": "Product description",
+    "breadcrumbs": "Breadcrumb",
+    "sold": "{count} sold",
+    "ratings": "Ratings",
+    "quantity": "Quantity",
+    "shopLabel": "Shop",
+    "shopNote": "Independent maker on Bazaar",
+    "viewShop": "View shop",
+    "specifications": "Product specifications",
+    "category": "Category",
+    "stock": "Stock",
+    "attributes": {
+      "origin": "Origin",
+      "material": "Material",
+      "colour": "Colour",
+      "size": "Size"
+    }
   },
   "pagination": {
     "label": "Pages",
@@ -169,25 +213,30 @@
     "searchTitle": "Search",
     "resultsFor": "Results for “{query}”",
     "categories": "Categories",
-    "search": "Search",
     "minPrice": "Min price (USD)",
     "maxPrice": "Max price (USD)",
     "minRating": "Rating",
-    "anyRating": "Any",
     "ratingAtLeast": "{rating}★ and up",
     "sort": "Sort by",
-    "sortDefault": "Recommended",
     "sorts": {
       "relevance": "Best match",
       "newest": "Newest",
       "price_asc": "Price: low to high",
       "price_desc": "Price: high to low",
-      "rating": "Top rated"
+      "rating": "Top rated",
+      "best_selling": "Best selling"
     },
     "apply": "Apply",
     "results": "{count, plural, one {# product} other {# products}}",
     "noResults": "No products found",
-    "noResultsHint": "Try fewer filters or another word."
+    "noResultsHint": "Try fewer filters or another word.",
+    "filters": "Search filter",
+    "allCategories": "All categories",
+    "priceRange": "Price range (USD)",
+    "minPlaceholder": "$ Min",
+    "maxPlaceholder": "$ Max",
+    "andUp": "& up",
+    "clearFilters": "Clear all"
   },
   "shop": {
     "notFound": "Shop not found"
@@ -211,7 +260,8 @@
     "subtotal": "Subtotal",
     "summary": "Order summary",
     "pricesConfirmed": "Prices and stock are confirmed at checkout. Shipping is calculated per shop.",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "buyNow": "Buy now"
   },
   "auth": {
     "signInTitle": "Sign in",
@@ -311,6 +361,7 @@
     }
   },
   "notifications": {
+    "title": "Notifications",
     "label": "{count, plural, =0 {Notifications} one {Notifications, # unread} other {Notifications, # unread}}",
     "empty": "No notifications yet.",
     "kind": {
@@ -333,5 +384,13 @@
     "comment": "Your review (optional)",
     "submit": "Post review",
     "thanks": "Thank you for your review!"
+  },
+  "categories": {
+    "crafts": "Arts & crafts",
+    "fashion": "Fashion",
+    "home-kitchen": "Home & kitchen",
+    "beauty": "Beauty",
+    "electronics": "Electronics",
+    "books": "Books"
   }
 }

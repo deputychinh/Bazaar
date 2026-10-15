@@ -4,12 +4,20 @@
 
 .notification-bell__button {
   position: relative;
-  min-block-size: var(--size-touch-target);
-  padding: var(--padding-control-sm);
-  font: inherit;
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  min-block-size: 32px;
+  padding: 0;
+  font-size: var(--text-sm);
+  color: inherit;
   background: none;
   border: 0;
   cursor: pointer;
+}
+
+.notification-bell__button:hover {
+  color: var(--color-on-brand-muted);
 }
 
 .notification-bell__badge {
@@ -17,11 +25,12 @@
   padding-inline: var(--space-1);
   font-size: var(--text-xs);
   font-weight: var(--weight-bold);
-  color: var(--color-text-inverse);
-  background: var(--color-danger);
+  line-height: var(--leading-snug);
+  color: var(--color-primary);
+  background: var(--color-surface);
   border-radius: var(--radius-full);
-  inset-block-start: var(--space-1);
-  inset-inline-end: var(--space-0);
+  inset-block-start: 0;
+  inset-inline-start: 10px;
 }
 
 .notification-bell__panel {
@@ -29,6 +38,7 @@
   z-index: var(--z-dropdown);
   inline-size: min(360px, 90vw);
   padding: var(--padding-card);
+  color: var(--color-text);
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);

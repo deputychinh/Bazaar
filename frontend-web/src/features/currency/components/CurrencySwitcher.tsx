@@ -18,8 +18,12 @@ export const CurrencySwitcher = (): ReactElement => {
     <label className="currency-switcher">
       <span className="visually-hidden">{t('label')}</span>
       <select className="currency-switcher__select" value={currency} onChange={onChange}>
-        <option value={DisplayCurrency.USD}>{t('USD')}</option>
-        <option value={DisplayCurrency.VND}>{t('VND')}</option>
+        <option className="currency-switcher__option" value={DisplayCurrency.USD}>
+          {t('USD')}
+        </option>
+        <option className="currency-switcher__option" value={DisplayCurrency.VND}>
+          {t('VND')}
+        </option>
       </select>
     </label>
   );

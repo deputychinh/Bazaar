@@ -5,6 +5,9 @@
   align-items: center;
   padding: var(--padding-section);
   text-align: center;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .empty-state__title {

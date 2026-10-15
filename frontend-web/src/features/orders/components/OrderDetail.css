@@ -19,8 +19,9 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--padding-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .order-detail__shop {

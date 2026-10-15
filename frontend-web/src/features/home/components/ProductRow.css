@@ -1,0 +1,9 @@
+.product-row__footer {
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--space-5);
+}
+
+.product-row__more {
+  min-inline-size: min(100%, 320px);
+}

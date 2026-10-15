@@ -23,7 +23,7 @@ const OrdersPage = async ({
   const { page } = await searchParams;
   const pageNumber = Math.max(1, Number.parseInt(typeof page === 'string' ? page : '1', 10) || 1);
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <h1>{t('title')}</h1>
       <RequireAuth>
         <OrderList page={pageNumber} />

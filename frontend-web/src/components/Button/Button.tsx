@@ -3,8 +3,6 @@ import type { ButtonHTMLAttributes, ReactElement } from 'react';
 import { ButtonVariant } from '@/enums/button-variant.enum';
 import { cx } from '@/utils/cx.util';
 
-import './Button.css';
-
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   isFullWidth?: boolean;

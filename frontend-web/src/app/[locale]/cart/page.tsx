@@ -20,7 +20,7 @@ const CartPage = async ({ params }: PageProps<'/[locale]/cart'>): Promise<ReactE
   const locale = await pageLocale(params);
   const t = await getTranslations({ locale, namespace: 'cart' });
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <h1>{t('title')}</h1>
       <CartView />
     </main>

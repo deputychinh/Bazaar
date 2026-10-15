@@ -1,9 +1,29 @@
 .locale-switcher__select {
-  min-block-size: var(--size-touch-target);
-  padding: var(--padding-control-sm);
-  font: inherit;
+  min-block-size: 32px;
+  padding: 0 var(--space-5) 0 var(--space-1);
+  font-size: var(--text-sm);
+  color: inherit;
+  background-color: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    right 9px center,
+    right 5px center;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+}
+
+.locale-switcher__select:hover {
+  background-color: rgb(255 255 255 / 12%);
+}
+
+/* The open list is drawn by the browser on a white surface. */
+.locale-switcher__option {
   color: var(--color-text);
   background: var(--color-surface);
-  border: 1px solid var(--color-border-control);
-  border-radius: var(--radius-md);
 }

@@ -43,7 +43,7 @@ export const ProductEditorPage = (): ReactElement => {
   const failure = save.error ?? action.error;
 
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <header className="stack">
         <h1>{current === undefined ? t('productForm.newTitle') : t('productForm.editTitle')}</h1>
         {current !== undefined && <StatusBadge status={current.status} />}

@@ -39,7 +39,7 @@ export const EventsPage = (): ReactElement => {
   };
 
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <h1>{t('events.title')}</h1>
       <form className="platform-list__filter" onSubmit={apply}>
         <label className="platform-list__filter">

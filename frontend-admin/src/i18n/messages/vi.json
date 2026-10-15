@@ -25,7 +25,11 @@
     "sellers": "Người bán",
     "moderation": "Kiểm duyệt",
     "events": "Nhật ký sự kiện",
-    "signOut": "Đăng xuất"
+    "signOut": "Đăng xuất",
+    "sellerCentre": "Kênh Người Bán",
+    "adminCentre": "Trung tâm quản trị",
+    "sectionShop": "Shop của tôi",
+    "sectionPlatform": "Sàn"
   },
   "login": {
     "title": "Đăng nhập Bazaar Quản trị",
@@ -150,7 +154,10 @@
     "topSellers": "Người bán nổi bật",
     "shop": "Shop",
     "orders": "Đơn",
-    "sales": "Doanh số"
+    "sales": "Doanh số",
+    "last30": "30 ngày gần nhất, cập nhật trực tiếp",
+    "toShipNotice": "Đơn đang chờ giao: {{count}}",
+    "byStatus": "Đơn theo trạng thái"
   },
   "orderStatus": {
     "PENDING": "Đã đặt",

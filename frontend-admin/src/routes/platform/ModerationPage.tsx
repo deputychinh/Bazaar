@@ -44,7 +44,7 @@ export const ModerationPage = (): ReactElement => {
   };
 
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <h1>{t('moderation.title')}</h1>
       <form className="platform-list__filter" onSubmit={apply}>
         <label className="platform-list__filter">

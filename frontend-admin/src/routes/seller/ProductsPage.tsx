@@ -5,8 +5,10 @@ import { Link, useSearchParams } from 'react-router';
 import { ProductStatus } from '@/api/catalog.schema';
 import { EmptyState } from '@/components/EmptyState/EmptyState';
 import { ErrorState } from '@/components/ErrorState/ErrorState';
+import { Icon } from '@/components/Icon/Icon';
 import { Pagination } from '@/components/Pagination/Pagination';
 import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
+import { IconName } from '@/enums/icon-name.enum';
 import { useSellerProducts } from '@/features/products/hooks/useSellerProducts';
 import { formatUsd } from '@/utils/money.util';
 
@@ -30,16 +32,21 @@ export const ProductsPage = (): ReactElement => {
   };
 
   return (
-    <main id="main" className="products-page container stack">
-      <header className="products-page__header">
-        <h1>{t('products.title')}</h1>
+    <main id="main" className="page container">
+      <header className="page__head">
+        <h1 className="page__title">{t('products.title')}</h1>
         <Link className="button button--primary" to="/seller/products/new">
+          <Icon name={IconName.Plus} />
           {t('products.new')}
         </Link>
       </header>
-      <label className="products-page__filter">
-        {t('products.status')}
-        <select value={status ?? ''} onChange={changeStatus}>
+      <label className="page__toolbar products-page__filter">
+        <span className="products-page__filter-label">{t('products.status')}</span>
+        <select
+          className="select products-page__select"
+          value={status ?? ''}
+          onChange={changeStatus}
+        >
           <option value="">{t('products.allStatuses')}</option>
           {Object.values(ProductStatus).map((value) => (
             <option key={value} value={value}>
@@ -56,46 +63,57 @@ export const ProductsPage = (): ReactElement => {
         <EmptyState title={t('products.none')} />
       ) : (
         <>
-          <table className="products-page__table">
-            <thead>
-              <tr>
-                <th className="products-page__cell" scope="col">
-                  {t('products.name')}
-                </th>
-                <th className="products-page__cell" scope="col">
-                  {t('products.status')}
-                </th>
-                <th className="products-page__cell" scope="col">
-                  {t('products.price')}
-                </th>
-                <th className="products-page__cell" scope="col">
-                  {t('products.stock')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.data.items.map((product) => (
-                <tr key={product.id}>
-                  <td className="products-page__cell">
-                    <Link to={`/seller/products/${product.id}`}>
-                      {i18n.language === 'vi' && product.title.vi
-                        ? product.title.vi
-                        : product.title.en}
-                    </Link>
-                  </td>
-                  <td className="products-page__cell">
-                    <StatusBadge status={product.status} />
-                  </td>
-                  <td className="products-page__cell">
-                    {formatUsd(product.minPriceUsdCents, i18n.language)}
-                  </td>
-                  <td className="products-page__cell">
-                    {product.variants.reduce((sum, variant) => sum + variant.stock, 0)}
-                  </td>
+          <div className="panel">
+            <table className="data-table">
+              <thead>
+                <tr className="data-table__head">
+                  <th className="data-table__cell" scope="col">
+                    {t('products.name')}
+                  </th>
+                  <th className="data-table__cell" scope="col">
+                    {t('products.status')}
+                  </th>
+                  <th className="data-table__cell data-table__cell--number" scope="col">
+                    {t('products.price')}
+                  </th>
+                  <th className="data-table__cell data-table__cell--number" scope="col">
+                    {t('products.stock')}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {products.data.items.map((product) => (
+                  <tr key={product.id} className="data-table__row">
+                    <td className="data-table__cell">
+                      <div className="products-page__product">
+                        <span className="products-page__thumb">
+                          {product.imageUrl === null ? (
+                            <Icon name={IconName.Box} />
+                          ) : (
+                            <img className="products-page__image" src={product.imageUrl} alt="" />
+                          )}
+                        </span>
+                        <Link className="products-page__name" to={`/seller/products/${product.id}`}>
+                          {i18n.language === 'vi' && product.title.vi
+                            ? product.title.vi
+                            : product.title.en}
+                        </Link>
+                      </div>
+                    </td>
+                    <td className="data-table__cell">
+                      <StatusBadge status={product.status} />
+                    </td>
+                    <td className="data-table__cell data-table__cell--number">
+                      {formatUsd(product.minPriceUsdCents, i18n.language)}
+                    </td>
+                    <td className="data-table__cell data-table__cell--number">
+                      {product.variants.reduce((sum, variant) => sum + variant.stock, 0)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <Pagination page={page} totalPages={Math.ceil(products.data.total / PAGE_SIZE)} />
         </>
       )}

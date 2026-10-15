@@ -9,8 +9,8 @@
   max-inline-size: 400px;
   padding: var(--padding-card);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
 }
 
 .login-page__title {

@@ -1,10 +1,11 @@
-.platform-home-page__table {
-  inline-size: 100%;
-  border-collapse: collapse;
-}
-
-.platform-home-page__cell {
-  padding: var(--space-3);
-  text-align: start;
-  border-block-end: 1px solid var(--color-border);
+.platform-home-page__rank {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 24px;
+  block-size: 24px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-on-brand);
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
 }

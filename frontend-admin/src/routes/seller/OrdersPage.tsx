@@ -35,7 +35,7 @@ export const OrdersPage = (): ReactElement => {
   const fulfil = useFulfil();
 
   return (
-    <main id="main" className="orders-page container stack">
+    <main id="main" className="orders-page page container">
       <h1>{t('orders.title')}</h1>
       <div className="orders-page__tabs" role="group" aria-label={t('orders.filter')}>
         {TABS.map((tab) => (

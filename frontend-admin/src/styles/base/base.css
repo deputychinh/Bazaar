@@ -1,4 +1,7 @@
+/* Header, page, footer: the footer stays at the bottom of short pages. */
 body {
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-sans);
   font-size: var(--text-md);
   font-weight: var(--weight-regular);
@@ -14,21 +17,21 @@ body {
 h1,
 h2,
 h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
 }
 
 h1 {
-  font-size: var(--text-4xl);
+  font-size: var(--text-2xl);
 }
 
 h2 {
-  font-size: var(--text-3xl);
+  font-size: var(--text-xl);
 }
 
 h3 {
-  font-size: var(--text-2xl);
+  font-size: var(--text-lg);
 }
 
 a {
@@ -48,4 +51,8 @@ a:hover {
 ::selection {
   color: var(--color-on-primary-subtle);
   background-color: var(--color-primary-subtle);
+}
+
+main {
+  flex-grow: 1;
 }

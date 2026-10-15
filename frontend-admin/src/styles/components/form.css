@@ -1,0 +1,49 @@
+/* Native controls look the same everywhere, without a wrapper component. */
+.input,
+.select {
+  inline-size: 100%;
+  min-block-size: var(--size-touch-target);
+  padding: var(--padding-control-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    right 16px center,
+    right 11px center;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+  padding-inline-end: var(--space-8);
+}
+
+.input:hover,
+.select:hover {
+  border-color: var(--color-text-muted);
+}
+
+.input:focus-visible,
+.select:focus-visible {
+  border-color: var(--color-primary);
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+}

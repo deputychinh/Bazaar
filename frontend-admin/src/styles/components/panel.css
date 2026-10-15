@@ -1,0 +1,48 @@
+/* A white block on the grey page: every home row, filter box and product section sits in one. */
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel__head {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  min-block-size: 56px;
+  padding: var(--space-3) var(--padding-card);
+  border-block-end: 1px solid var(--color-border);
+}
+
+.panel__title {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.panel__title--brand {
+  color: var(--color-primary);
+}
+
+.panel__more {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+
+.panel__body {
+  padding: var(--padding-card);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-block: var(--space-5) var(--space-10);
+}

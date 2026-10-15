@@ -26,7 +26,7 @@ export const SellersPage = (): ReactElement => {
   const review = useReview();
 
   return (
-    <main id="main" className="container stack">
+    <main id="main" className="page container">
       <h1>{t('sellers.title')}</h1>
       <label className="platform-list__filter">
         {t('sellers.status')}

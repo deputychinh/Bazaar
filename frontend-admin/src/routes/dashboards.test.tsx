@@ -11,6 +11,13 @@ const daily = [
 ];
 
 describe('dashboards', () => {
+  // The chart spans the 30 days up to today; pin today so the fixtures stay inside it.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-15T12:00:00Z'));
+  });
+  afterEach(() => vi.useRealTimers());
+
   it('show a seller their sales, orders and what waits to ship', async () => {
     signedInAs('SELLER');
     server.use(http.get('*/api/v1/seller/stats', () => HttpResponse.json({ daily, toShip: 2 })));

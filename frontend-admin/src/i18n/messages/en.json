@@ -25,7 +25,11 @@
     "sellers": "Sellers",
     "moderation": "Moderation",
     "events": "Event log",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "sellerCentre": "Seller Centre",
+    "adminCentre": "Admin Centre",
+    "sectionShop": "My shop",
+    "sectionPlatform": "Marketplace"
   },
   "login": {
     "title": "Sign in to Bazaar Admin",
@@ -150,7 +154,10 @@
     "topSellers": "Top sellers",
     "shop": "Shop",
     "orders": "Orders",
-    "sales": "Sales"
+    "sales": "Sales",
+    "last30": "Last 30 days, updated live",
+    "toShipNotice": "Orders waiting to be shipped: {{count}}",
+    "byStatus": "Orders by status"
   },
   "orderStatus": {
     "PENDING": "Placed",

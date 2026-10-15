@@ -1,0 +1,58 @@
+/* Page scaffolding inside the Seller Centre shell. */
+.page__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page__title {
+  font-size: var(--text-2xl);
+}
+
+.page__lead {
+  inline-size: 100%;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.page__subtitle {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+}
+
+.page__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.page__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: var(--space-4);
+}
+
+.page__notice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-on-warning-subtle);
+  background: var(--color-warning-subtle);
+  border-radius: var(--radius-sm);
+  border-inline-start: 4px solid var(--color-warning);
+}
+
+.page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
